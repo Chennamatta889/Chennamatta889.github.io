@@ -1,12 +1,19 @@
 # Matta Chenna Rao — Cloud DevOps Portfolio
 
-Responsive static portfolio website.
+A responsive, recruiter-first personal portfolio for Cloud DevOps, Platform Engineering and SRE opportunities.
 
-## GitHub Pages
-This repository is named `Chennamatta889.github.io`, so its expected personal site URL is:
-https://chennamatta889.github.io/
+## Design direction
+An editorial warm-neutral visual system with restrained green accents, strong typographic hierarchy, clear navigation and compact technical case studies. It borrows proven developer-portfolio patterns: concise positioning, inspectable work, contribution-focused descriptions, clear experience chronology and low-friction contact.
 
-Configure Settings → Pages → Deploy from a branch → main → /(root).
+## Files
+- index.html — semantic page structure and content
+- styles.css — responsive visual system
+- script.js — accessible mobile navigation and current year
+- profile.jpg — supplied professional portrait
+- .nojekyll — disables GitHub Pages Jekyll processing
 
-## Before sharing
-Please verify the employment dates shown for the JPMC engagement (March 2024–July 2025) against employment records. Older resume versions contain different dates. Confirm all responsibilities, metrics and certifications are accurate and approved for public display.
+## Publish
+Designed for GitHub Pages from the repository root (main branch).
+
+## Content notes
+Selected work cards describe activities and contributions from the user's stated work history. They are not presented as sole ownership of enterprise-wide systems. Employment dates and project details should be checked against official records before formal applications. Performance metrics are intentionally omitted unless measurement and context can be substantiated.
