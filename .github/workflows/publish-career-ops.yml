@@ -147,6 +147,8 @@ jobs:
           grep -Fq "./private-workspace.js?v=$GITHUB_RUN_ID" site/index.html
           grep -q 'id="applicationFollowup"' site/index.html
           grep -q 'id="confirmAppliedDate"' site/index.html
+          grep -q 'id="confirmNotYet"' site/index.html
+          grep -Fq 'pendingTrackingWrites' site/private-workspace.js
           grep -Fq "./styles.css?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq 'id="resultsCount" hidden' site/index.html
           grep -Fq 'id="navJobsCount" hidden' site/index.html
@@ -219,6 +221,8 @@ jobs:
           grep -Fq 'experienceFilter' /tmp/career-ops-live-app.js
           grep -Fq 'recordEmployerOpen' /tmp/career-ops-live-app.js
           grep -Fq 'confirmApplication' /tmp/career-ops-live-app.js
+          curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/private-workspace.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-private.js
+          grep -Fq 'pendingTrackingWrites' /tmp/career-ops-live-private.js
           curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/job-text.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-job-text.js
           grep -Fq 'experienceRequirement' /tmp/career-ops-live-job-text.js
           node -e 'const f=require("/tmp/career-ops-live-jobs.json"); const filled=f.jobs.filter(j=>typeof j.requiredExperience==="string"&&j.requiredExperience); if(filled.length===0) process.exit(2); console.log("Employer-stated experience fields present in public feed:",filled.length);'
