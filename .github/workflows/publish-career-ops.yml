@@ -63,7 +63,8 @@ jobs:
           node --check job-text.js
           node --check application-email.js
           node --check scripts/universal-job-scan.mjs
-          node --test scripts/universal-job-scan.test.mjs scripts/application-email.test.cjs scripts/job-text.test.cjs scripts/google-oauth.test.cjs scripts/navigation-ui.test.cjs scripts/phase45-stability.test.cjs
+          node --check scripts/guard-public-feed.mjs
+          node --test scripts/guard-public-feed.test.mjs scripts/universal-job-scan.test.mjs scripts/application-email.test.cjs scripts/job-text.test.cjs scripts/google-oauth.test.cjs scripts/navigation-ui.test.cjs scripts/phase45-stability.test.cjs
 
       - name: Install browser resume extraction libraries
         shell: bash
@@ -122,6 +123,7 @@ jobs:
         shell: bash
         run: |
           FEED_OUTPUT="$GITHUB_WORKSPACE/site/data/jobs.json" node scripts/universal-job-scan.mjs
+          node scripts/guard-public-feed.mjs "$GITHUB_WORKSPACE/site/data/jobs.json"
 
       - name: Verify output and preserved portfolio
         shell: bash
@@ -219,7 +221,7 @@ jobs:
           # A successful homepage is not enough: the job cards need the public
           # data file and the new browser script at the same root path.
           curl --retry 3 --retry-delay 2 -fsSL --max-time 40 "https://chennamatta889.github.io/data/jobs.json?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-jobs.json
-          node -e 'const f=require("/tmp/career-ops-live-jobs.json"); if(f.schema!=="careerops.public-jobs.v1"||!Array.isArray(f.jobs)||f.jobs.length<1) process.exit(1); console.log("Public root job feed is accessible and contains valid employer postings");'
+          node -e 'const f=require("/tmp/career-ops-live-jobs.json"); if(f.schema!=="careerops.public-jobs.v1"||!Array.isArray(f.jobs)||f.jobs.length<1||!Array.isArray(f.source_health)||f.source_health.length<50) process.exit(1); console.log("Public root job feed is accessible with verified source health");'
           curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/app.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-app.js
           grep -Fq 'discoverFeedStatus' /tmp/career-ops-live-app.js
           grep -Fq 'jobsGrid' /tmp/career-ops-live-app.js
