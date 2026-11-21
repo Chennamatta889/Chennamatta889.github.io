@@ -108,7 +108,8 @@ jobs:
           cp -R career-ops-source/resources site/resources
           # Version app and CSS URLs for every deployment to prevent stale
           # browser caches from combining an old script with a new HTML layout.
-          sed -i "s|?v=20261121-experience-filter-v1|?v=$GITHUB_RUN_ID|g" site/index.html
+          sed -i -e "s|?v=20261121-experience-filter-v1|?v=$GITHUB_RUN_ID|g" \
+            -e "s|?v=20261121-application-confirmation-v1|?v=$GITHUB_RUN_ID|g" site/index.html
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.worker.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/mammoth/mammoth.browser.min.js" site/vendor/
@@ -143,6 +144,9 @@ jobs:
           grep -q 'id="dialogExperience"' site/index.html
           grep -Fq "./job-text.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" site/index.html
+          grep -Fq "./private-workspace.js?v=$GITHUB_RUN_ID" site/index.html
+          grep -q 'id="applicationFollowup"' site/index.html
+          grep -q 'id="confirmAppliedDate"' site/index.html
           grep -Fq "./styles.css?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq 'id="resultsCount" hidden' site/index.html
           grep -Fq 'id="navJobsCount" hidden' site/index.html
@@ -213,6 +217,8 @@ jobs:
           grep -Fq 'discoverFeedStatus' /tmp/career-ops-live-app.js
           grep -Fq 'jobsGrid' /tmp/career-ops-live-app.js
           grep -Fq 'experienceFilter' /tmp/career-ops-live-app.js
+          grep -Fq 'recordEmployerOpen' /tmp/career-ops-live-app.js
+          grep -Fq 'confirmApplication' /tmp/career-ops-live-app.js
           curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/job-text.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-job-text.js
           grep -Fq 'experienceRequirement' /tmp/career-ops-live-job-text.js
           node -e 'const f=require("/tmp/career-ops-live-jobs.json"); const filled=f.jobs.filter(j=>typeof j.requiredExperience==="string"&&j.requiredExperience); if(filled.length===0) process.exit(2); console.log("Employer-stated experience fields present in public feed:",filled.length);'
@@ -220,6 +226,8 @@ jobs:
           grep -Fq 'id="feedFreshness"' /tmp/career-ops-root.html
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" /tmp/career-ops-root.html
           grep -Fq 'id="experienceFilter"' /tmp/career-ops-root.html
+          grep -Fq 'id="applicationFollowup"' /tmp/career-ops-root.html
+          grep -Fq 'id="confirmApplied"' /tmp/career-ops-root.html
           grep -Fq 'id="resultsCount" hidden' /tmp/career-ops-root.html
           ! grep -Fq 'capped at 500' /tmp/career-ops-root.html
           # Google must be able to request the exact file publicly, not an SPA page.
