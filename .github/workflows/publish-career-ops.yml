@@ -139,22 +139,37 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Smoke test root and preserved websites
+      - name: Smoke test root, career guides and preserved websites
         shell: bash
         run: |
           set -euo pipefail
           for attempt in 1 2 3 4 5 6; do
-            if curl -fsSL --max-time 12 \
-              "https://chennamatta889.github.io/?release=$GITHUB_RUN_ID" | grep -q 'id="page-discover"'; then
+            # Write response to a file first: curl | grep -q under pipefail can
+            # fail with curl code 23 if grep closes the pipe after a match.
+            curl -fsSL --max-time 15 \
+              "https://chennamatta889.github.io/?release=$GITHUB_RUN_ID" \
+              -o /tmp/career-ops-root.html || true
+            if [ -s /tmp/career-ops-root.html ] && \
+                 grep -Fq 'id="page-discover"' /tmp/career-ops-root.html; then
               echo "Career-Ops is live at the root URL."
               break
             fi
             if [ "$attempt" -eq 6 ]; then
-              echo "Root still shows a different site; check Pages publishing source." >&2
+              echo "Root did not serve Career-Ops; inspect Pages publishing source." >&2
               exit 1
             fi
             sleep 6
           done
-          curl -fsSL --max-time 12 "https://chennamatta889.github.io/portfolio/" | grep -q 'Cloud DevOps Engineer'
-          curl -fsSL --max-time 12 "https://chennamatta889.github.io/draftflowai/" | grep -iq 'Draftflow'
-          echo "Portfolio and DraftflowAI preserved and accessible."
+          curl -fsSL --max-time 15 "https://chennamatta889.github.io/portfolio/" -o /tmp/career-ops-portfolio.html
+          grep -Fq 'Cloud DevOps Engineer' /tmp/career-ops-portfolio.html
+          curl -fsSL --max-time 15 "https://chennamatta889.github.io/draftflowai/" -o /tmp/career-ops-draftflow.html
+          grep -iq 'Draftflow' /tmp/career-ops-draftflow.html
+          curl -fsSL --max-time 15 "https://chennamatta889.github.io/resources/" -o /tmp/career-ops-guides.html
+          grep -Fq 'ats-resume-guide.html' /tmp/career-ops-guides.html
+          curl -fsSL --max-time 15 "https://chennamatta889.github.io/privacy.html" -o /tmp/career-ops-privacy.html
+          grep -Fq 'Privacy Policy' /tmp/career-ops-privacy.html
+          curl -fsSL --max-time 15 "https://chennamatta889.github.io/ads.txt" -o /tmp/career-ops-ads.txt
+          grep -Fq 'pub-4795680811840492' /tmp/career-ops-ads.txt
+          curl -fsSL --max-time 15 "https://chennamatta889.github.io/sitemap.xml" -o /tmp/career-ops-sitemap.xml
+          grep -Fq '/resources/' /tmp/career-ops-sitemap.xml
+          echo "Homepage, career guides, legal pages, ads.txt, sitemap, portfolio and DraftflowAI verified."
