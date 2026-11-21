@@ -108,7 +108,7 @@ jobs:
           cp -R career-ops-source/resources site/resources
           # Version app and CSS URLs for every deployment to prevent stale
           # browser caches from combining an old script with a new HTML layout.
-          sed -i "s|?v=20261121-jobcards-recovery-v1|?v=$GITHUB_RUN_ID|g" site/index.html
+          sed -i "s|?v=20261121-experience-filter-v1|?v=$GITHUB_RUN_ID|g" site/index.html
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.worker.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/mammoth/mammoth.browser.min.js" site/vendor/
@@ -139,6 +139,9 @@ jobs:
           grep -q 'id="loadMoreJobs"' site/index.html
           grep -q 'id="feedFreshness"' site/index.html
           grep -q 'id="jobsGrid"' site/index.html
+          grep -q 'id="experienceFilter"' site/index.html
+          grep -q 'id="dialogExperience"' site/index.html
+          grep -Fq "./job-text.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./styles.css?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq 'id="resultsCount" hidden' site/index.html
@@ -212,6 +215,7 @@ jobs:
           grep -Fq 'id="loadMoreJobs"' /tmp/career-ops-root.html
           grep -Fq 'id="feedFreshness"' /tmp/career-ops-root.html
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" /tmp/career-ops-root.html
+          grep -Fq 'id="experienceFilter"' /tmp/career-ops-root.html
           grep -Fq 'id="resultsCount" hidden' /tmp/career-ops-root.html
           ! grep -Fq 'capped at 500' /tmp/career-ops-root.html
           # Google must be able to request the exact file publicly, not an SPA page.
