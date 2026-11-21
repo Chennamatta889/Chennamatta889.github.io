@@ -108,7 +108,7 @@ jobs:
           cp -R career-ops-source/resources site/resources
           # Version app and CSS URLs for every deployment to prevent stale
           # browser caches from combining an old script with a new HTML layout.
-          sed -E -i "s|(\\./(app\\.js|styles\\.css))\\?v=[A-Za-z0-9_-]+|\\1?v=$GITHUB_RUN_ID|g" site/index.html
+          sed -i "s|?v=20261121-jobcards-recovery-v1|?v=$GITHUB_RUN_ID|g" site/index.html
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.worker.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/mammoth/mammoth.browser.min.js" site/vendor/
