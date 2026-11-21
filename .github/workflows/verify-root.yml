@@ -1,0 +1,50 @@
+name: Verify Career-Ops root homepage
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - '.github/workflows/verify-root.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Verify published homepage and preserved sites
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6 7 8; do
+            curl --retry 2 -fsSL --max-time 15 \
+              "https://chennamatta889.github.io/?v=$GITHUB_RUN_ID" -o /tmp/career-ops-root.html || true
+            if [ -s /tmp/career-ops-root.html ] &&
+                grep -Fq 'id="page-discover"' /tmp/career-ops-root.html &&
+                grep -Fq '<base href="/career-ops-cloud/">' /tmp/career-ops-root.html; then
+              echo "Career-Ops homepage confirmed at https://chennamatta889.github.io/"
+              break
+            fi
+            if [ "$attempt" -eq 8 ]; then
+              echo "Root page is not yet serving Career-Ops." >&2
+              exit 1
+            fi
+            sleep 8
+          done
+
+          curl --retry 2 -fsSL --max-time 15 \
+            "https://chennamatta889.github.io/portfolio/" -o /tmp/career-ops-portfolio.html
+          grep -Fq 'Cloud DevOps Engineer' /tmp/career-ops-portfolio.html
+
+          curl --retry 2 -fsSL --max-time 15 \
+            "https://chennamatta889.github.io/draftflowai/" -o /tmp/career-ops-draftflow.html
+          grep -iq 'Draftflow' /tmp/career-ops-draftflow.html
+
+          curl --retry 2 -fsSL --max-time 15 \
+            "https://chennamatta889.github.io/career-ops-cloud/app.js" -o /tmp/career-ops-app.js
+          grep -Fq 'CareerOpsDashboard' /tmp/career-ops-app.js
+          echo "Root homepage, legacy portfolio, DraftflowAI and live app scripts verified."
