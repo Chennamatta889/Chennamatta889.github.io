@@ -202,6 +202,13 @@ jobs:
           grep -Fq 'pub-4795680811840492' /tmp/career-ops-ads.txt
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/sitemap.xml" -o /tmp/career-ops-sitemap.xml
           grep -Fq '/resources/' /tmp/career-ops-sitemap.xml
+          # A successful homepage is not enough: the job cards need the public
+          # data file and the new browser script at the same root path.
+          curl --retry 3 --retry-delay 2 -fsSL --max-time 40 "https://chennamatta889.github.io/data/jobs.json?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-jobs.json
+          node -e 'const f=require("/tmp/career-ops-live-jobs.json"); if(f.schema!=="careerops.public-jobs.v1"||!Array.isArray(f.jobs)||f.jobs.length<1) process.exit(1); console.log("Public root job feed is accessible and contains valid employer postings");'
+          curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/app.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-app.js
+          grep -Fq 'discoverFeedStatus' /tmp/career-ops-live-app.js
+          grep -Fq 'jobsGrid' /tmp/career-ops-live-app.js
           grep -Fq 'id="loadMoreJobs"' /tmp/career-ops-root.html
           grep -Fq 'id="feedFreshness"' /tmp/career-ops-root.html
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" /tmp/career-ops-root.html
