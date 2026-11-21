@@ -212,6 +212,10 @@ jobs:
           curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/app.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-app.js
           grep -Fq 'discoverFeedStatus' /tmp/career-ops-live-app.js
           grep -Fq 'jobsGrid' /tmp/career-ops-live-app.js
+          grep -Fq 'experienceFilter' /tmp/career-ops-live-app.js
+          curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/job-text.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-job-text.js
+          grep -Fq 'experienceRequirement' /tmp/career-ops-live-job-text.js
+          node -e 'const f=require("/tmp/career-ops-live-jobs.json"); const filled=f.jobs.filter(j=>typeof j.requiredExperience==="string"&&j.requiredExperience); if(filled.length===0) process.exit(2); console.log("Employer-stated experience fields present in public feed:",filled.length);'
           grep -Fq 'id="loadMoreJobs"' /tmp/career-ops-root.html
           grep -Fq 'id="feedFreshness"' /tmp/career-ops-root.html
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" /tmp/career-ops-root.html
