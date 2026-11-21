@@ -1,0 +1,149 @@
+name: Publish Career-Ops at account homepage
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-career-ops.yml'
+      - 'draftflowai/**'
+      - 'index.html'
+      - 'styles.css'
+      - 'script.js'
+      - 'profile.jpg'
+  schedule:
+    # Publish fresh source and vacancies at most every six hours.
+    - cron: '23 */6 * * *'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: career-ops-root-deploy
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment:
+      name: github-pages
+      url: 'https://chennamatta889.github.io/'
+    steps:
+      - name: Check out existing account homepage
+        uses: actions/checkout@v4
+        with:
+          path: account-site
+
+      - name: Check out Career-Ops source
+        uses: actions/checkout@v4
+        with:
+          repository: Chennamatta889/career-ops-cloud
+          ref: main
+          path: career-ops-source
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate source, OAuth and routing
+        working-directory: career-ops-source
+        run: |
+          node --check app.js
+          node --check ai-studio.js
+          node --check job-text.js
+          node --check scripts/universal-job-scan.mjs
+          node --test scripts/job-text.test.cjs scripts/google-oauth.test.cjs scripts/navigation-ui.test.cjs
+
+      - name: Install browser resume extraction libraries
+        shell: bash
+        run: |
+          npm install --prefix "$RUNNER_TEMP/career-ops-vendor" \
+            --no-save --package-lock=false --ignore-scripts --omit=optional \
+            --no-audit --no-fund pdfjs-dist@5.4.624 mammoth@1.11.0
+
+      - name: Assemble Career-Ops with preserved previous sites
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site/data site/vendor site/portfolio
+          # Original personal portfolio: https://chennamatta889.github.io/portfolio/
+          cp account-site/index.html account-site/styles.css \
+             account-site/script.js account-site/profile.jpg site/portfolio/
+          # Original DraftflowAI remains at /draftflowai/
+          if [ -d account-site/draftflowai ]; then
+            cp -R account-site/draftflowai site/draftflowai
+          fi
+          # Career-Ops is now the site's index, not a frame or redirect.
+          cp career-ops-source/index.html career-ops-source/styles.css \
+             career-ops-source/match-engine.js career-ops-source/job-categories.js \
+             career-ops-source/job-text.js career-ops-source/careerops-config.js \
+             career-ops-source/app.js career-ops-source/resume-parser.js \
+             career-ops-source/ai-studio.js career-ops-source/private-workspace.js \
+             career-ops-source/health-check.js site/
+          cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.min.mjs" site/vendor/
+          cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.worker.min.mjs" site/vendor/
+          cp "$RUNNER_TEMP/career-ops-vendor/node_modules/mammoth/mammoth.browser.min.js" site/vendor/
+          touch site/.nojekyll
+
+      - name: Refresh public IT and non-IT employer vacancies
+        working-directory: career-ops-source
+        shell: bash
+        run: |
+          FEED_OUTPUT="$GITHUB_WORKSPACE/site/data/jobs.json" node scripts/universal-job-scan.mjs
+
+      - name: Verify output and preserved portfolio
+        shell: bash
+        run: |
+          set -euo pipefail
+          for asset in index.html app.js ai-studio.js careerops-config.js \
+            private-workspace.js job-text.js health-check.js \
+            vendor/pdf.min.mjs vendor/pdf.worker.min.mjs \
+            vendor/mammoth.browser.min.js data/jobs.json \
+            portfolio/index.html portfolio/styles.css portfolio/script.js \
+            portfolio/profile.jpg draftflowai/index.html; do
+              test -s "site/$asset"
+          done
+          grep -q 'id="page-discover"' site/index.html
+          grep -q 'https://chennamatta889.github.io/' site/ai-studio.js
+          grep -q '"careerops.public-jobs.v1"' site/data/jobs.json
+          echo "Root build validated, old portfolio and DraftflowAI retained."
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Allow Pages artifact metadata to propagate
+        run: sleep 12
+
+      - name: Deploy homepage
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Smoke test root and preserved websites
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fsSL --max-time 12 \
+              "https://chennamatta889.github.io/?release=$GITHUB_RUN_ID" | grep -q 'id="page-discover"'; then
+              echo "Career-Ops is live at the root URL."
+              break
+            fi
+            if [ "$attempt" -eq 6 ]; then
+              echo "Root still shows a different site; check Pages publishing source." >&2
+              exit 1
+            fi
+            sleep 6
+          done
+          curl -fsSL --max-time 12 "https://chennamatta889.github.io/portfolio/" | grep -q 'Cloud DevOps Engineer'
+          curl -fsSL --max-time 12 "https://chennamatta889.github.io/draftflowai/" | grep -iq 'Draftflow'
+          echo "Portfolio and DraftflowAI preserved and accessible."
