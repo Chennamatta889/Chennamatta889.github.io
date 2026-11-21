@@ -62,7 +62,7 @@ jobs:
           node --check ai-studio.js
           node --check job-text.js
           node --check scripts/universal-job-scan.mjs
-          node --test scripts/job-text.test.cjs scripts/google-oauth.test.cjs scripts/navigation-ui.test.cjs
+          node --test scripts/job-text.test.cjs scripts/google-oauth.test.cjs scripts/navigation-ui.test.cjs scripts/phase45-stability.test.cjs
 
       - name: Install browser resume extraction libraries
         shell: bash
@@ -133,6 +133,9 @@ jobs:
               test -s "site/$asset"
           done
           grep -q 'id="page-discover"' site/index.html
+          grep -q 'id="loadMoreJobs"' site/index.html
+          grep -q 'id="feedFreshness"' site/index.html
+          grep -q 'DISCOVER_PAGE_SIZE' site/app.js
           grep -q 'https://chennamatta889.github.io/' site/ai-studio.js
           grep -q '"careerops.public-jobs.v1"' site/data/jobs.json
           for verification_file in account-site/google*.html; do
@@ -189,6 +192,8 @@ jobs:
           grep -Fq 'pub-4795680811840492' /tmp/career-ops-ads.txt
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/sitemap.xml" -o /tmp/career-ops-sitemap.xml
           grep -Fq '/resources/' /tmp/career-ops-sitemap.xml
+          grep -Fq 'id="loadMoreJobs"' /tmp/career-ops-root.html
+          grep -Fq 'id="feedFreshness"' /tmp/career-ops-root.html
           # Google must be able to request the exact file publicly, not an SPA page.
           for verification_file in account-site/google*.html; do
             [ -f "$verification_file" ] || continue
