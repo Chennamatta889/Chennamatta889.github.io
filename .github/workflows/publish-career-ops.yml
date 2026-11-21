@@ -113,6 +113,12 @@ jobs:
           grep -q '"careerops.public-jobs.v1"' site/data/jobs.json
           echo "Root build validated, old portfolio and DraftflowAI retained."
 
+      - name: Use GitHub Actions as the Pages publishing source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X PUT repos/Chennamatta889/Chennamatta889.github.io/pages -f build_type=workflow
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
