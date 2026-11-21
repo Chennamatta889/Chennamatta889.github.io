@@ -15,6 +15,7 @@ on:
       - "resource-styles.css"
       - "sitemap.xml"
       - "ads.txt"
+      - "google*.html"
       - "robots.txt"
   schedule:
     - cron: "15 5 * * *"
@@ -92,6 +93,18 @@ jobs:
              career-ops-source/privacy.html career-ops-source/terms.html \
              career-ops-source/resource-styles.css career-ops-source/ads.txt \
              career-ops-source/robots.txt career-ops-source/sitemap.xml site/
+          # Search Console serves its exact account-provided verification HTML
+          # at the site root. Keep it in this account-site repository so
+          # re-deploying Career-Ops does not accidentally remove ownership.
+          for verification_file in account-site/google*.html; do
+            [ -f "$verification_file" ] || continue
+            verification_name="$(basename "$verification_file")"
+            if ! grep -Fqx "google-site-verification: $verification_name" "$verification_file"; then
+              echo "Invalid Search Console verification file: $verification_name" >&2
+              exit 1
+            fi
+            cp "$verification_file" "site/$verification_name"
+          done
           cp -R career-ops-source/resources site/resources
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.worker.min.mjs" site/vendor/
@@ -122,6 +135,10 @@ jobs:
           grep -q 'id="page-discover"' site/index.html
           grep -q 'https://chennamatta889.github.io/' site/ai-studio.js
           grep -q '"careerops.public-jobs.v1"' site/data/jobs.json
+          for verification_file in account-site/google*.html; do
+            [ -f "$verification_file" ] || continue
+            cmp -s "$verification_file" "site/$(basename "$verification_file")"
+          done
           echo "Root build validated, old portfolio and DraftflowAI retained."
 
       - name: Configure GitHub Pages
@@ -172,4 +189,25 @@ jobs:
           grep -Fq 'pub-4795680811840492' /tmp/career-ops-ads.txt
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/sitemap.xml" -o /tmp/career-ops-sitemap.xml
           grep -Fq '/resources/' /tmp/career-ops-sitemap.xml
+          # Google must be able to request the exact file publicly, not an SPA page.
+          for verification_file in account-site/google*.html; do
+            [ -f "$verification_file" ] || continue
+            verification_name="$(basename "$verification_file")"
+            verified=false
+            for attempt in 1 2 3 4 5 6; do
+              if curl -fsSL --max-time 15 \\
+                 "https://chennamatta889.github.io/$verification_name" \\
+                 -o "/tmp/$verification_name" && \\
+                 cmp -s "$verification_file" "/tmp/$verification_name"; then
+                verified=true
+                break
+              fi
+              sleep 5
+            done
+            if [ "$verified" != "true" ]; then
+              echo "Search Console file not publicly available: /$verification_name" >&2
+              exit 1
+            fi
+            echo "Search Console file available at /$verification_name"
+          done
           echo "Homepage, career guides, legal pages, ads.txt, sitemap, portfolio and DraftflowAI verified."
