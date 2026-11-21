@@ -235,6 +235,7 @@ jobs:
           grep -Fq 'recordEmployerOpen' /tmp/career-ops-live-app.js
           grep -Fq 'confirmApplication' /tmp/career-ops-live-app.js
           grep -Fq 'analyseEmailReview' /tmp/career-ops-live-app.js
+          grep -Fq 'No jobs match this combination' /tmp/career-ops-live-app.js
           curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/job-search.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-job-search.js
           grep -Fq 'CareerOpsJobSearch' /tmp/career-ops-live-job-search.js
           curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/application-email.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-email.js
