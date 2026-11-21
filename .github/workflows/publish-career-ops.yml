@@ -195,10 +195,7 @@ jobs:
             verification_name="$(basename "$verification_file")"
             verified=false
             for attempt in 1 2 3 4 5 6; do
-              if curl -fsSL --max-time 15 \\
-                 "https://chennamatta889.github.io/$verification_name" \\
-                 -o "/tmp/$verification_name" && \\
-                 cmp -s "$verification_file" "/tmp/$verification_name"; then
+              if curl -fsSL --max-time 15 "https://chennamatta889.github.io/$verification_name" -o "/tmp/$verification_name" && cmp -s "$verification_file" "/tmp/$verification_name"; then
                 verified=true
                 break
               fi
