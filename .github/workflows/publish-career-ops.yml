@@ -61,8 +61,9 @@ jobs:
           node --check app.js
           node --check ai-studio.js
           node --check job-text.js
+          node --check application-email.js
           node --check scripts/universal-job-scan.mjs
-          node --test scripts/universal-job-scan.test.mjs scripts/job-text.test.cjs scripts/google-oauth.test.cjs scripts/navigation-ui.test.cjs scripts/phase45-stability.test.cjs
+          node --test scripts/universal-job-scan.test.mjs scripts/application-email.test.cjs scripts/job-text.test.cjs scripts/google-oauth.test.cjs scripts/navigation-ui.test.cjs scripts/phase45-stability.test.cjs
 
       - name: Install browser resume extraction libraries
         shell: bash
@@ -85,7 +86,7 @@ jobs:
           # Career-Ops is now the site's index, not a frame or redirect.
           cp career-ops-source/index.html career-ops-source/styles.css \
              career-ops-source/match-engine.js career-ops-source/job-categories.js \
-             career-ops-source/job-text.js career-ops-source/careerops-config.js \
+             career-ops-source/job-text.js career-ops-source/application-email.js career-ops-source/careerops-config.js \
              career-ops-source/app.js career-ops-source/resume-parser.js \
              career-ops-source/ai-studio.js career-ops-source/private-workspace.js \
              career-ops-source/health-check.js site/
@@ -109,7 +110,8 @@ jobs:
           # Version app and CSS URLs for every deployment to prevent stale
           # browser caches from combining an old script with a new HTML layout.
           sed -i -e "s|?v=20261121-experience-filter-v1|?v=$GITHUB_RUN_ID|g" \
-            -e "s|?v=20261121-application-confirmation-v1|?v=$GITHUB_RUN_ID|g" site/index.html
+            -e "s|?v=20261121-application-confirmation-v1|?v=$GITHUB_RUN_ID|g" \
+            -e "s|?v=20261121-phase08-10-v1|?v=$GITHUB_RUN_ID|g" site/index.html
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.worker.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/mammoth/mammoth.browser.min.js" site/vendor/
@@ -126,7 +128,7 @@ jobs:
         run: |
           set -euo pipefail
           for asset in index.html app.js ai-studio.js careerops-config.js \
-            private-workspace.js job-text.js health-check.js \
+            private-workspace.js job-text.js application-email.js health-check.js \
             vendor/pdf.min.mjs vendor/pdf.worker.min.mjs \
             vendor/mammoth.browser.min.js data/jobs.json \
             portfolio/index.html portfolio/styles.css portfolio/script.js \
@@ -144,6 +146,9 @@ jobs:
           grep -q 'id="dialogExperience"' site/index.html
           grep -Fq "./job-text.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" site/index.html
+          grep -Fq "./application-email.js?v=$GITHUB_RUN_ID" site/index.html
+          grep -q 'id="emailReviewPanel"' site/index.html
+          grep -q 'id="applicationDuplicateWarning"' site/index.html
           grep -Fq "./private-workspace.js?v=$GITHUB_RUN_ID" site/index.html
           grep -q 'id="applicationFollowup"' site/index.html
           grep -q 'id="confirmAppliedDate"' site/index.html
@@ -221,6 +226,9 @@ jobs:
           grep -Fq 'experienceFilter' /tmp/career-ops-live-app.js
           grep -Fq 'recordEmployerOpen' /tmp/career-ops-live-app.js
           grep -Fq 'confirmApplication' /tmp/career-ops-live-app.js
+          grep -Fq 'analyseEmailReview' /tmp/career-ops-live-app.js
+          curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/application-email.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-email.js
+          grep -Fq 'isLikelyAcknowledgement' /tmp/career-ops-live-email.js
           curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/private-workspace.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-private.js
           grep -Fq 'pendingTrackingWrites' /tmp/career-ops-live-private.js
           curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/job-text.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-job-text.js
@@ -231,6 +239,7 @@ jobs:
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" /tmp/career-ops-root.html
           grep -Fq 'id="experienceFilter"' /tmp/career-ops-root.html
           grep -Fq 'id="applicationFollowup"' /tmp/career-ops-root.html
+          grep -Fq 'id="emailReviewPanel"' /tmp/career-ops-root.html
           grep -Fq 'id="confirmApplied"' /tmp/career-ops-root.html
           grep -Fq 'id="resultsCount" hidden' /tmp/career-ops-root.html
           ! grep -Fq 'capped at 500' /tmp/career-ops-root.html
