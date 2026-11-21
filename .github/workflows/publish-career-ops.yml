@@ -226,6 +226,7 @@ jobs:
           # data file and the new browser script at the same root path.
           curl --retry 3 --retry-delay 2 -fsSL --max-time 40 "https://chennamatta889.github.io/data/jobs.json?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-jobs.json
           node -e 'const f=require("/tmp/career-ops-live-jobs.json"); if(f.schema!=="careerops.public-jobs.v1"||!Array.isArray(f.jobs)||f.jobs.length<1||!Array.isArray(f.source_health)||f.source_health.length<50) process.exit(1); console.log("Public root job feed is accessible with verified source health");'
+          node -e 'const f=require("/tmp/career-ops-live-jobs.json");if(!f.source_health.some(s=>s.provider==="lever"&&s.status==="ok"))process.exit(1);console.log("Verified public Lever employer postings are included in job discovery");'
           curl --retry 3 -fsSL --max-time 20 "https://chennamatta889.github.io/app.js?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-app.js
           grep -Fq 'discoverFeedStatus' /tmp/career-ops-live-app.js
           grep -Fq 'jobsGrid' /tmp/career-ops-live-app.js
