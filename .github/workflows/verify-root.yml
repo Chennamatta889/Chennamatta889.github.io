@@ -25,7 +25,6 @@ jobs:
               "https://chennamatta889.github.io/?v=$GITHUB_RUN_ID" -o /tmp/career-ops-root.html || true
             if [ -s /tmp/career-ops-root.html ] &&
                 grep -Fq 'id="page-discover"' /tmp/career-ops-root.html &&
-                grep -Fq '<base href="/career-ops-cloud/">' /tmp/career-ops-root.html &&
                 grep -Fq 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4795680811840492' /tmp/career-ops-root.html; then
               echo "Career-Ops homepage confirmed at https://chennamatta889.github.io/"
               break

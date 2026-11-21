@@ -2,6 +2,22 @@ name: Publish Career-Ops at account homepage
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/publish-career-ops.yml"
+      - "index.html"
+      - "about.html"
+      - "contact.html"
+      - "privacy.html"
+      - "terms.html"
+      - "resources/**"
+      - "resource-styles.css"
+      - "sitemap.xml"
+      - "ads.txt"
+      - "robots.txt"
+  schedule:
+    - cron: "15 5 * * *"
 
 permissions:
   contents: read
@@ -60,8 +76,7 @@ jobs:
           set -euo pipefail
           mkdir -p site/data site/vendor site/portfolio
           # Original personal portfolio: https://chennamatta889.github.io/portfolio/
-          cp account-site/index.html account-site/styles.css \
-             account-site/script.js account-site/profile.jpg site/portfolio/
+          cp -R account-site/portfolio/. site/portfolio/
           # Original DraftflowAI remains at /draftflowai/
           if [ -d account-site/draftflowai ]; then
             cp -R account-site/draftflowai site/draftflowai
@@ -73,6 +88,11 @@ jobs:
              career-ops-source/app.js career-ops-source/resume-parser.js \
              career-ops-source/ai-studio.js career-ops-source/private-workspace.js \
              career-ops-source/health-check.js site/
+          cp career-ops-source/about.html career-ops-source/contact.html \
+             career-ops-source/privacy.html career-ops-source/terms.html \
+             career-ops-source/resource-styles.css career-ops-source/ads.txt \
+             career-ops-source/robots.txt career-ops-source/sitemap.xml site/
+          cp -R career-ops-source/resources site/resources
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.worker.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/mammoth/mammoth.browser.min.js" site/vendor/
@@ -93,7 +113,10 @@ jobs:
             vendor/pdf.min.mjs vendor/pdf.worker.min.mjs \
             vendor/mammoth.browser.min.js data/jobs.json \
             portfolio/index.html portfolio/styles.css portfolio/script.js \
-            portfolio/profile.jpg draftflowai/index.html; do
+            portfolio/profile.jpg draftflowai/index.html \
+            privacy.html about.html contact.html terms.html \
+            resource-styles.css resources/index.html \
+            ads.txt robots.txt sitemap.xml; do
               test -s "site/$asset"
           done
           grep -q 'id="page-discover"' site/index.html
