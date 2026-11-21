@@ -141,8 +141,8 @@ jobs:
           grep -q 'id="jobsGrid"' site/index.html
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./styles.css?v=$GITHUB_RUN_ID" site/index.html
-          ! grep -q 'id="resultsCount"' site/index.html
-          ! grep -q 'id="navJobsCount"' site/index.html
+          grep -Fq 'id="resultsCount" hidden' site/index.html
+          grep -Fq 'id="navJobsCount" hidden' site/index.html
           ! grep -q 'capped at 500' site/index.html
           node -e 'const f=require("./site/data/jobs.json"); if(f.schema!=="careerops.public-jobs.v1"||!Array.isArray(f.jobs)||f.scan.max_published!==undefined) process.exit(1); const types=Object.values(f.category_counts); if(types.reduce((a,b)=>a+b,0)!==f.jobs.length) process.exit(2);'
           grep -q 'DISCOVER_PAGE_SIZE' site/app.js
@@ -212,7 +212,7 @@ jobs:
           grep -Fq 'id="loadMoreJobs"' /tmp/career-ops-root.html
           grep -Fq 'id="feedFreshness"' /tmp/career-ops-root.html
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" /tmp/career-ops-root.html
-          ! grep -Fq 'id="resultsCount"' /tmp/career-ops-root.html
+          grep -Fq 'id="resultsCount" hidden' /tmp/career-ops-root.html
           ! grep -Fq 'capped at 500' /tmp/career-ops-root.html
           # Google must be able to request the exact file publicly, not an SPA page.
           for verification_file in account-site/google*.html; do
