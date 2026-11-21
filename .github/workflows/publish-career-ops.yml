@@ -2,18 +2,6 @@ name: Publish Career-Ops at account homepage
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/publish-career-ops.yml'
-      - 'draftflowai/**'
-      - 'index.html'
-      - 'styles.css'
-      - 'script.js'
-      - 'profile.jpg'
-  schedule:
-    # Publish fresh source and vacancies at most every six hours.
-    - cron: '23 */6 * * *'
 
 permissions:
   contents: read
@@ -112,12 +100,6 @@ jobs:
           grep -q 'https://chennamatta889.github.io/' site/ai-studio.js
           grep -q '"careerops.public-jobs.v1"' site/data/jobs.json
           echo "Root build validated, old portfolio and DraftflowAI retained."
-
-      - name: Use GitHub Actions as the Pages publishing source
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api -X PUT repos/Chennamatta889/Chennamatta889.github.io/pages -f build_type=workflow
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
