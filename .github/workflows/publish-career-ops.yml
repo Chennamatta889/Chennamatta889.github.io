@@ -317,6 +317,19 @@ jobs:
           curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/assets/energy-v2-extra.js?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-v2-extra-live.js
           grep -Fq 'GharWattV2Extra' /tmp/gharwatt-v2-extra-live.js
           echo "GharWatt V2: all core and advanced energy tools are publicly reachable."
+          # Confirm the refreshed toolkit actually shipped, including styles and search filters.
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/energy-tools/?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-live-ui.html
+          grep -Fq 'id="gw-tool-search"' /tmp/gharwatt-live-ui.html
+          grep -Fq 'data-gw-filter="appliances"' /tmp/gharwatt-live-ui.html
+          grep -Fq 'data-gw-tool-card' /tmp/gharwatt-live-ui.html
+          grep -Fq 'ui-refresh.css' /tmp/gharwatt-live-ui.html
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/assets/ui-refresh.css?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-live-ui.css
+          grep -Fq '.gw-directory-grid' /tmp/gharwatt-live-ui.css
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/assets/toolkit-ui.js?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-live-ui.js
+          grep -Fq 'GharWattToolkitUI' /tmp/gharwatt-live-ui.js
+          grep -Fq 'gw-home-toolkit-highlight' /tmp/gharwatt-live.html
+          echo "GharWatt UI refresh: live searchable dashboard, styling and navigation verified."
+
 
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/" -o /tmp/enquiryflow-v3-student.html
           grep -Fq "Ctech Academy | Courses and Student Enquiries" /tmp/enquiryflow-v3-student.html
