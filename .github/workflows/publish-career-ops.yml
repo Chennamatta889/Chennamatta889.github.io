@@ -87,7 +87,7 @@ jobs:
           node --check assets/production-staff.js
           node --check assets/production-student.js
           node --check assets/staff-form.js
-          node --test tests/ctech-catalogue.test.mjs tests/main-launch.test.mjs
+          node --test tests/ctech-catalogue.test.mjs tests/ctech-favicon.test.mjs tests/main-launch.test.mjs
 
       - name: Install browser resume extraction libraries
         shell: bash
