@@ -38,4 +38,13 @@
   function wireMenu(){const b=$('menu-toggle'),nav=$('main-nav');if(!b||!nav)return;b.addEventListener('click',()=>{const open=!nav.classList.contains('open');nav.classList.toggle('open',open);b.setAttribute('aria-expanded',String(open));b.textContent=open?'Close':'Menu'});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu'}))}
   wireMenu();wireSolar();wireQuotes();
   window.GharWattMath=Object.freeze({centralSubsidy,specialStates});
+  // Lazy-load the small GharWatt offer after existing calculator/menu setup.
+  // Product link and dismiss frequency are handled independently.
+  if(document.currentScript?.src){
+    const offerScript=document.createElement('script');
+    offerScript.src=new URL('affiliate-popup.js',document.currentScript.src).href;
+    offerScript.async=true;
+    document.head.appendChild(offerScript);
+  }
+
 })();
