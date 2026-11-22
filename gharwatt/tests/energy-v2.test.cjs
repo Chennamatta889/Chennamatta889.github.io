@@ -63,3 +63,23 @@ test('low OCR confidence prevents silent suggestions even if some numbers look p
  assert.equal(m.assessBillText(text,m.parseBillText(text),15).readable,false);
  assert.equal(m.assessBillText(text,m.parseBillText(text),75).readable,true);
 });
+
+
+test('high OCR confidence with just one bill field is not enough to auto-fill',()=>{
+ const raw='Rounded Bill: 1,830.00';
+ const parsed=m.parseBillText(raw);
+ assert.equal(parsed.amount,1830);
+ assert.equal(m.assessBillText(raw,parsed,95).readable,false);
+ assert.equal(m.assessBillText(raw,parsed,null).readable,true);
+});
+test('full-page and focused photo scans use different page segmentation modes',()=>{
+ assert.equal(m.ocrPageSegMode(false),'11');
+ assert.equal(m.ocrPageSegMode(true),'6');
+});
+test('gibberish from a two-column printed bill is rejected even when Tesseract reports confidence',()=>{
+ const text='sass San Er Ososm Co\\nDuplicate Bill\\n[B Fa Tes TRG somata Toe Tram]\\nB EDE MTT';
+ const parsed=m.parseBillText(text);
+ assert.equal(parsed.amount,null);
+ assert.equal(parsed.units,null);
+ assert.equal(m.assessBillText(text,parsed,87).readable,false);
+});
