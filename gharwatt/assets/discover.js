@@ -147,7 +147,7 @@ for(const item of APPLIANCES){
  const wattL=document.createElement('label');wattL.textContent='Watts per device';const watts=document.createElement('input');watts.type='number';watts.min='1';watts.max='10000';watts.step='1';watts.inputMode='numeric';watts.value=item.watts;wattL.append(watts);fields.append(countL,wattL);advanced.append(fields);
  const hint=document.createElement('p');hint.textContent=item.tip;options.append(select,advanced,hint);card.append(options);
  function update(){
-  const choice={id:item.id,count:count.value,usage:select.value,watts:watts.value};
+  const choice={id:item.id,count:count.value,usage:select.value,watts:watts.value===String(item.watts)?null:watts.value};
   const valid=estimateItem(choice.id,choice.count,choice.usage,choice.watts);
   if(!valid){set('gw-appliance-status','Check the optional count, watts or usage assumptions for '+item.name+'.');return;}
   state.selected.set(item.id,choice);renderEstimate();
@@ -155,7 +155,7 @@ for(const item of APPLIANCES){
  }
  top.addEventListener('click',()=>{
   if(state.selected.has(item.id)){state.selected.delete(item.id);options.hidden=true;top.setAttribute('aria-pressed','false');top.querySelector('.gw-choose-label').textContent='Add +'}
-  else{state.selected.set(item.id,{id:item.id,count:count.value,watts:watts.value,usage:select.value});options.hidden=false;top.setAttribute('aria-pressed','true');top.querySelector('.gw-choose-label').textContent='Selected ✓'}
+  else{state.selected.set(item.id,{id:item.id,count:count.value,watts:watts.value===String(item.watts)?null:watts.value,usage:select.value});options.hidden=false;top.setAttribute('aria-pressed','true');top.querySelector('.gw-choose-label').textContent='Selected ✓'}
   renderEstimate();
  });
  [count,watts,select].forEach(e=>e.addEventListener('input',update));
@@ -227,7 +227,7 @@ catch{}
 showChallenge();
 $('gw-challenge-save').addEventListener('click',()=>{
  if(!$('gw-challenge-consent').checked){set('gw-challenge-status','Tick the consent box before saving progress locally.');return;}
- try{storage?.setItem('gharwatt:challenge-v1',JSON.stringify(state.challenge));set('gw-challenge-status','Saved on this device. No account or server upload.');}
+ try{if(!storage)throw new Error('Local storage unavailable');storage.setItem('gharwatt:challenge-v1',JSON.stringify(state.challenge));set('gw-challenge-status','Saved on this device. No account or server upload.');}
  catch{set('gw-challenge-status','Browser storage unavailable. Your checkmarks will disappear after reloading.');}
 });
 $('gw-challenge-clear').addEventListener('click',()=>{
@@ -263,8 +263,8 @@ updateTrackerPreview();
 $('gw-send-tracker').addEventListener('click',()=>{
  if(!state.snapshot){set('gw-track-note','Enter a bill amount above before copying details.');return;}
  const s=state.snapshot;
- try{session?.setItem('gharwatt:tracker-prefill-v1',JSON.stringify({amount:s.amount,units:s.units,createdAt:Date.now()}));}catch{}
- root.location.href='../monthly-tracker/';
+ try{if(!session)throw new Error('Session storage unavailable');session.setItem('gharwatt:tracker-prefill-v1',JSON.stringify({amount:s.amount,units:s.units,createdAt:Date.now()}));root.location.href='../monthly-tracker/';}
+ catch{set('gw-track-note','Your browser blocked temporary storage, so we could not copy the numbers. Open the tracker manually instead.');}
 });
 function updateSolar(){
  const s=state.snapshot;
