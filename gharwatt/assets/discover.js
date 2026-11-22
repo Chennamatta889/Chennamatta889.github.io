@@ -169,7 +169,11 @@ function renderEstimate(){
   leader.textContent='Biggest estimate: '+current.dominant.name+' · '+num(current.dominant.units)+' units ('+current.dominantShare+'% of selected appliance estimate). Based on assumed watts and hours, not measured use.';
   box.append(leader);
   const review=document.createElement('a');review.className='gw-estimate-review';
-  review.href='#gw-card-'+current.dominant.id;review.textContent='Review '+current.dominant.name.toLowerCase()+' usage assumptions ↑';box.append(review);
+  review.href='#gw-card-'+current.dominant.id;review.textContent='Review '+current.dominant.name.toLowerCase()+' usage assumptions ↑';
+  review.addEventListener('click',()=>{
+   const target=$('gw-card-'+current.dominant.id);
+   const tune=target?.querySelector('.gw-usage-details');if(tune)tune.open=true;
+  });box.append(review);
  }
  if(current.status==='period-unknown'){
   const prompt=document.createElement('button');prompt.type='button';prompt.className='gw-confirm-month';
@@ -226,16 +230,26 @@ for(const item of APPLIANCES){
  const fields=document.createElement('div');fields.className='gw-advanced-pair';
  const countL=document.createElement('label');countL.textContent='How many';const count=document.createElement('input');count.type='number';count.min='1';count.max='20';count.step='1';count.inputMode='numeric';count.value='1';countL.append(count);
  const wattL=document.createElement('label');wattL.textContent='Watts per device';const watts=document.createElement('input');watts.type='number';watts.min='1';watts.max='10000';watts.step='1';watts.inputMode='numeric';watts.value=item.watts;wattL.append(watts);fields.append(countL,wattL);advanced.append(fields);
- const hint=document.createElement('p');hint.textContent=item.tip;options.append(select,advanced,hint);card.append(options);
+ const hint=document.createElement('p');hint.textContent=item.tip;
+ // Keep selected cards compact: show one short Adjust link, not all the form fields.
+ const tune=document.createElement('details');tune.className='gw-usage-details';
+ const tuneLabel=document.createElement('summary');tuneLabel.textContent='Regular usage · Adjust';
+ const tuneBody=document.createElement('div');tuneBody.className='gw-usage-controls';
+ const usageCaption=document.createElement('label');usageCaption.className='gw-usage-caption';
+ usageCaption.textContent='About how often?';usageCaption.append(select);
+ tuneBody.append(usageCaption,advanced,hint);tune.append(tuneLabel,tuneBody);
+ options.append(tune);card.append(options);
  function update(){
   const choice={id:item.id,count:count.value,usage:select.value,watts:watts.value===String(item.watts)?null:watts.value};
   const valid=estimateItem(choice.id,choice.count,choice.usage,choice.watts);
   if(!valid){set('gw-appliance-status','Check the optional count, watts or usage assumptions for '+item.name+'.');return;}
-  state.selected.set(item.id,choice);renderEstimate();
+  state.selected.set(item.id,choice);
+  tuneLabel.textContent=select.value.charAt(0).toUpperCase()+select.value.slice(1)+' usage · Adjust';
+  renderEstimate();
   set('gw-appliance-status','These are estimates, not readings from your meter. You can correct the assumptions anytime.');
  }
  top.addEventListener('click',()=>{
-  if(state.selected.has(item.id)){state.selected.delete(item.id);options.hidden=true;top.setAttribute('aria-pressed','false');top.querySelector('.gw-choose-label').textContent='Add +'}
+  if(state.selected.has(item.id)){state.selected.delete(item.id);options.hidden=true;tune.open=false;top.setAttribute('aria-pressed','false');top.querySelector('.gw-choose-label').textContent='Add +'}
   else{state.selected.set(item.id,{id:item.id,count:count.value,watts:watts.value===String(item.watts)?null:watts.value,usage:select.value});options.hidden=false;top.setAttribute('aria-pressed','true');top.querySelector('.gw-choose-label').textContent='Selected ✓'}
   renderEstimate();
  });
@@ -249,6 +263,7 @@ $('gw-clear-appliances').addEventListener('click',()=>{
   button.setAttribute('aria-pressed','false');
   button.querySelector('.gw-choose-label').textContent='Add +';
   card.querySelector('.gw-appliance-options').hidden=true;
+  const tune=card.querySelector('.gw-usage-details');if(tune)tune.open=false;
  }
  renderEstimate();
  set('gw-appliance-status','Selections cleared. Choose only the appliances you actually use.');
@@ -338,6 +353,22 @@ $('gw-language').addEventListener('change',()=>{
  set('gw-discover-title',copy.title);set('gw-discover-lead',copy.lead);
  set('gw-bill-start',copy.start);set('gw-language-note',copy.guide);
 });
+function openSectionFromHash(){
+ const fragment=root.location.hash.slice(1);
+ if(!fragment)return;
+ let id;try{id=decodeURIComponent(fragment)}catch{return}
+ const target=document.getElementById(id);
+ if(!target||!$('gw-discover')?.contains(target))return;
+ let node=target;
+ let nested=false;
+ while(node&&node!==document.body){
+  if(node.tagName==='DETAILS'){node.open=true;nested=true}
+  node=node.parentElement;
+ }
+ if(nested)requestAnimationFrame(()=>target.scrollIntoView({block:'start',behavior:'auto'}));
+}
+root.addEventListener('hashchange',openSectionFromHash);
+openSectionFromHash();
 function updateTrackerPreview(){
  try{
   const rows=JSON.parse(storage?.getItem('gharwatt:monthly-electricity-v2')||'[]');
