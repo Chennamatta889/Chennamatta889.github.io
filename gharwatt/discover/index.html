@@ -31,6 +31,22 @@
    <div class="gw-ai-bill-buttons"><button type="button" id="gw-ai-bill-submit" class="gw-ai-copy" disabled>Analyze this bill with AI</button><button type="button" id="gw-ai-bill-clear" class="gw-ai-clear">Clear bill</button></div>
    <p id="gw-ai-bill-status" class="gw-ai-bill-status" role="status" aria-live="polite">Choose a photo or PDF. No file is sent until you agree and press Analyze.</p>
    <div id="gw-ai-bill-answer" class="gw-ai-bill-answer" role="region" aria-label="Gemini AI bill explanation" hidden></div>
+   <section id="gw-ai-bill-review" class="gw-ai-bill-review" aria-label="Compare what is best after bill analysis" hidden>
+    <h3>What should I do next: save energy, upgrade or explore solar?</h3>
+    <p><strong>Review the numbers on your bill first.</strong> Gemini may misread the bill, so these fields are deliberately not automatically trusted. Confirm what you can read from your bill. The recommendation runs only in this browser and uses no additional AI request.</p>
+    <div class="gw-ai-bill-facts">
+     <label>Bill amount payable (₹)<input id="gw-ai-fact-amount" type="number" min="0" max="500000" step=".01" inputmode="decimal" placeholder="Check your bill"></label>
+     <label>Units consumed (kWh)<input id="gw-ai-fact-units" type="number" min="0" max="100000" step=".01" inputmode="decimal" placeholder="Check your bill"></label>
+     <label>Old unpaid dues (₹)<input id="gw-ai-fact-arrears" type="number" min="0" max="500000" step=".01" inputmode="decimal" placeholder="Blank if unknown"></label>
+     <label>Billing period<select id="gw-ai-fact-period"><option value="unknown">Not confirmed</option><option value="monthly">Approximately one month</option></select></label>
+     <label>Home status<select id="gw-ai-fact-home"><option value="unknown">Not confirmed</option><option value="own">I own the property</option><option value="rent">I rent</option></select></label>
+     <label>Roof access<select id="gw-ai-fact-roof"><option value="unknown">Not assessed</option><option value="yes">Possibly available, needs assessment</option><option value="no">Not available / no permission</option></select></label>
+    </div>
+    <button type="button" id="gw-ai-bill-review-button" class="gw-ai-copy">Show my recommended next step</button>
+    <div id="gw-ai-bill-advice-result" class="gw-ai-bill-advice-result" aria-live="polite" hidden></div>
+    <p class="gw-ai-bill-small">Solar screening is not a purchase recommendation. A real roof assessment, written installation quote, expected generation, local tariff and applicable subsidy rules are needed to compare payback.</p>
+    <div class="gw-ai-bill-next-links"><a href="../solar-finance/">Solar finance calculator</a><a href="https://pmsuryaghar.gov.in/" target="_blank" rel="noopener noreferrer">Official PM Surya Ghar information</a></div>
+   </section>
    <p class="gw-ai-bill-small">AI may misread printed numbers and cannot verify your electricity provider's tariff or confirm official subsidy eligibility. Check everything against the original bill. A bill analysis uses one of your five daily browser requests and counts toward the shared 400/day, 10/minute limits.</p>
   </div>
  </details>
