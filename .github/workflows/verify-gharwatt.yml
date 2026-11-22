@@ -61,6 +61,13 @@ jobs:
           home=(root/'index.html').read_text(encoding='utf-8')
           assert 'href="discover/"' in home and 'class="gw-home-discover"' in home, 'homepage journey missing'
           assert 'applianceContext' in (root/'assets'/'discover.js').read_text(encoding='utf-8'), 'appliance bill reconciliation missing'
+          for fold in ['detective','challenge','explore-more','continue','languages']:
+              assert f'<details class="gw-explore-fold" id="gw-fold-{fold}"' in discover, f'missing compact mobile fold: {fold}'
+          assert 'class="gw-discover-jump"' in discover, 'short mobile navigation missing'
+          assert discover.count('class="gw-explore-fold"') == 5, 'unexpected expanded feature sections'
+          script_discover=(root/'assets'/'discover.js').read_text(encoding='utf-8')
+          assert 'function openSectionFromHash' in script_discover and 'gw-usage-details' in script_discover, 'deep-link and compact appliance controls missing'
+
           assert 'https://chennamatta889.github.io/gharwatt/discover/' in (root/'sitemap.xml').read_text(encoding='utf-8'), 'Discover sitemap missing'
           for name in ['energy-tools','bill-reader','appliance-planner','bill-change','savings-goal','monthly-tracker','cooling-costs','solar-finance','roof-planner','appliance-star-compare','solar-vs-saving','smart-meter-csv','electricity-basics-telugu','electricity-basics-hindi']:
               assert (root/name/'index.html').exists(), f'missing page {name}'
