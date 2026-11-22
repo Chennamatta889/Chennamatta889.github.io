@@ -583,3 +583,84 @@ export function remainingCourseTemplates(existing=[]){
  const known=new Set(existing.map(x=>normalize(x.slug||x.title)));
  return courseTemplates.filter(t=>!known.has(normalize(t.slug)));
 }
+
+/** Suggested *unpublished* website FAQ drafts. Review before publishing. */
+export const faqTemplates=Object.freeze([
+  {
+    "question": "How do I submit an enquiry to Ctech Academy?",
+    "answer": "Open the Enquiry section, sign in with a verified Google account, read the privacy notice, complete the form and confirm consent. A successful submission displays a reference number. Staff review enquiries in their private dashboard.",
+    "published": false,
+    "course_id": null,
+    "source_url": null,
+    "reviewed_at": null,
+    "source": "CTECH_EDITORIAL_PROPOSAL"
+  },
+  {
+    "question": "Where can I find course prices?",
+    "answer": "Only fees explicitly published on a course page should be treated as quoted. When a fee is not available, contact Ctech Academy using the enquiry form for confirmation before enrolling or paying.",
+    "published": false,
+    "course_id": null,
+    "source_url": null,
+    "reviewed_at": null,
+    "source": "CTECH_EDITORIAL_PROPOSAL"
+  },
+  {
+    "question": "Where are upcoming batches shown?",
+    "answer": "Only schedules approved and published by Ctech Academy appear in Upcoming batches. If none appear for a course, ask staff about potential future availability. An enquiry is not a seat reservation.",
+    "published": false,
+    "course_id": null,
+    "source_url": null,
+    "reviewed_at": null,
+    "source": "CTECH_EDITORIAL_PROPOSAL"
+  },
+  {
+    "question": "Are classes online or in-person?",
+    "answer": "The learning format for each course is shown only after Ctech Academy has confirmed and published it. Ask staff about delivery options if the course page does not specify a mode.",
+    "published": false,
+    "course_id": null,
+    "source_url": null,
+    "reviewed_at": null,
+    "source": "CTECH_EDITORIAL_PROPOSAL"
+  },
+  {
+    "question": "Does submitting an enquiry mean I am enrolled?",
+    "answer": "No. Submitting an enquiry sends your request to authorized staff; it does not reserve a seat, confirm admission, or initiate a payment.",
+    "published": false,
+    "course_id": null,
+    "source_url": null,
+    "reviewed_at": null,
+    "source": "CTECH_EDITORIAL_PROPOSAL"
+  },
+  {
+    "question": "Does Ctech Academy guarantee employment or placement?",
+    "answer": "This website does not promise placement, employment, interviews, or a particular salary. Ask institute staff for any documented career-support policy before making an enrolment decision.",
+    "published": false,
+    "course_id": null,
+    "source_url": null,
+    "reviewed_at": null,
+    "source": "CTECH_EDITORIAL_PROPOSAL"
+  },
+  {
+    "question": "Does a course include a certificate?",
+    "answer": "Certificate arrangements have not been confirmed on this website. Ask institute staff whether a specific course includes a certificate, assessment requirements, and any conditions before registering.",
+    "published": false,
+    "course_id": null,
+    "source_url": null,
+    "reviewed_at": null,
+    "source": "CTECH_EDITORIAL_PROPOSAL"
+  },
+  {
+    "question": "How do I request correction or deletion of my enquiry?",
+    "answer": "Review the website's Privacy and deletion requests page and contact the institute's published privacy email. Only authorized staff can access private enquiries; automatic deletion is not currently configured.",
+    "published": false,
+    "course_id": null,
+    "source_url": null,
+    "reviewed_at": null,
+    "source": "CTECH_EDITORIAL_PROPOSAL"
+  }
+]);
+export function remainingFaqTemplates(existing=[]){
+ const normalize=x=>String(x||'').trim().toLowerCase().replace(/\s+/g,' ');
+ const known=new Set(existing.map(x=>normalize(x.question)));
+ return faqTemplates.filter(t=>!known.has(normalize(t.question)));
+}
