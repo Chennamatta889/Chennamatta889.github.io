@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "products": {
+    "energy-meter": {
+      "product_name": "",
+      "profit_link": ""
+    },
+    "smart-plug": {
+      "product_name": "",
+      "profit_link": ""
+    },
+    "solar-cleaning": {
+      "product_name": "",
+      "profit_link": ""
+    }
+  }
+}
