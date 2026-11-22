@@ -128,6 +128,18 @@ jobs:
             -e "s|?v=20261121-mobile-nav-v1|?v=$GITHUB_RUN_ID|g" \
             -e "s|?v=20261121-india-portals-v1|?v=$GITHUB_RUN_ID|g" \
             -e "s|?v=20261121-india-scope-v1|?v=$GITHUB_RUN_ID|g" site/index.html
+          # Embed the same CSS as a local fallback: the UI remains styled even if
+          # mobile browsers request a stale or blocked external stylesheet.
+          python3 - <<'PY'
+          from pathlib import Path
+          html=Path("site/index.html")
+          css=Path("site/styles.css").read_text(encoding="utf-8")
+          page=html.read_text(encoding="utf-8")
+          assert "</head>" in page and "rel=\"stylesheet\"" in page
+          assert "</style" not in css.lower(), "Unsafe CSS style terminator"
+          page=page.replace("</head>", '<style id="careerops-css-fallback">\\n'+css+'\\n</style>\\n</head>', 1)
+          html.write_text(page,encoding="utf-8")
+          PY
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.worker.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/mammoth/mammoth.browser.min.js" site/vendor/
@@ -158,6 +170,7 @@ jobs:
           done
           ! grep -q '<base href="/career-ops-cloud/">' site/index.html
           cmp -s site/style.css site/styles.css
+          grep -Fq 'id="careerops-css-fallback"' site/index.html
           grep -Eq 'href="\\./styles\\.css\\?v=[0-9]+"' site/index.html
           grep -q 'id="page-discover"' site/index.html
           grep -q 'id="loadMoreJobs"' site/index.html
