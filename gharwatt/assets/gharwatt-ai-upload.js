@@ -68,13 +68,51 @@ async function prepareBill(file){
  return {mimeType:"application/pdf",data:bytesToBase64(buffer),byteCount:buffer.byteLength};
 }
 root.GharWattBillAI=Object.freeze({detectKind,validateSelection,MAX_BILL_BYTES,MAX_IMAGE_SOURCE_BYTES});
+
+// Qualitative triage only: never label solar a financially proven "best" choice
+// from a bill amount or Gemini narrative. Values must be confirmed by the user.
+function recommendOptions(raw, verdictEngine){
+ if(typeof verdictEngine!=="function")return null;
+ const val=id=>{
+  const v=raw&&raw[id];
+  return v===undefined||v===null||String(v).trim()===""?null:v;
+ };
+ const input={amount:val("amount"),units:val("units"),arrears:val("arrears"),
+  period:raw?.period==="monthly"?"monthly":"unknown",
+  home:raw?.home==="own"?"own":raw?.home==="rent"?"rent":"unknown",
+  roof:raw?.roof==="yes"?"yes":raw?.roof==="no"?"no":"unknown"};
+ const result=verdictEngine(input);
+ const units=input.units===null?null:Number(input.units);
+ const validUnits=Number.isFinite(units)&&units>=0&&units<=100000?units:null;
+ let solar="Confirm monthly consumption and roof access before discussing solar.";
+ if(input.period==="monthly"&&validUnits!==null){
+  if(validUnits<=60)
+   solar="At the stated low monthly units, expensive solar may take a long time to pay back. Check free changes first.";
+  else if(input.home==="rent"||input.roof==="no")
+   solar="Without property permission and a suitable roof, rooftop solar is not the default next step.";
+  else if(input.home==="own"&&input.roof==="yes"&&validUnits>200)
+   solar="Solar is worth comparing using written quotes, roof assessment and real tariffs; it is NOT proven the best investment yet.";
+  else
+   solar="Solar remains an option to investigate after confirming roof permissions, local tariffs and a written quote.";
+ }
+ return {key:result.key,title:result.title,reason:result.reason,
+  steps:result.steps,caution:result.caution,confidence:result.confidence,
+  alternatives:[
+   "Free habits: reduce avoidable use and check the next bill's consumption.",
+   "Appliance upgrade: identify actual high-use appliances; compare replacement price and payback before buying.",
+   "Solar screening: "+solar,
+  ]};
+}
+root.GharWattBillAIAdvice=Object.freeze({recommendOptions});
+
 const panel=$("gw-ai-upload-panel");
 if(!panel)return;
 const input=$("gw-ai-bill-file"),question=$("gw-ai-bill-question"),
  consent=$("gw-ai-bill-consent"),submit=$("gw-ai-bill-submit"),
  clear=$("gw-ai-bill-clear"),status=$("gw-ai-bill-status"),
  preview=$("gw-ai-bill-preview"),fileLabel=$("gw-ai-bill-selection"),
- answer=$("gw-ai-bill-answer");
+ answer=$("gw-ai-bill-answer"),review=$("gw-ai-bill-review"),
+ reviewResult=$("gw-ai-bill-advice-result"),reviewButton=$("gw-ai-bill-review-button");
 let ready=false,busy=false,checked=false,previewUrl=null;
 function tell(message){status.textContent=message;}
 function selection(){return input.files&&input.files[0]||null;}
@@ -84,6 +122,7 @@ function showSelection(){
  preview.hidden=true;preview.removeAttribute("src");
  const file=selection();const validation=validateSelection(file);
  answer.hidden=true;answer.replaceChildren();
+ review.hidden=true;reviewResult.hidden=true;reviewResult.replaceChildren();
  if(!file){fileLabel.textContent="Nothing selected. Your bill stays on your device.";tell("Choose a photo or PDF. No file is sent until you agree and press Analyze.");}
  else if(!validation.ok){fileLabel.textContent=file.name||"Selected file";tell(validation.error);}
  else{
@@ -158,12 +197,55 @@ submit.addEventListener("click",async()=>{
   const title=root.document.createElement("h4");title.textContent="AI explanation — verify against your original bill";
   const content=root.document.createElement("p");content.textContent=data.answer.slice(0,2600);
   answer.append(title,content);
+  // Model-extracted numbers are NOT auto-trusted. The visitor reviews values
+  // in an editable form using the original bill, then chooses to compare.
+  for(const id of ["gw-ai-fact-amount","gw-ai-fact-units","gw-ai-fact-arrears"]){$(id).value="";}
+  $("gw-ai-fact-period").value="unknown";
+  $("gw-ai-fact-home").value="unknown";$("gw-ai-fact-roof").value="unknown";
+  reviewResult.hidden=true;reviewResult.replaceChildren();review.hidden=false;
   tell("Analysis finished. Check every amount and unit against your bill. "+
     (typeof data.remainingToday==="number"?data.remainingToday+" AI requests remain for this browser today.":""));
  }catch(err){
   tell(err instanceof Error?err.message:"Unable to analyze this file. Your existing bill tools still work.");
  }finally{setBusy(false);}
 });
+
+function reviewedInput(){
+ const get=id=>$(id)?.value||"";
+ return {amount:get("gw-ai-fact-amount"),units:get("gw-ai-fact-units"),
+  arrears:get("gw-ai-fact-arrears"),period:get("gw-ai-fact-period"),
+  home:get("gw-ai-fact-home"),roof:get("gw-ai-fact-roof")};
+}
+function showRecommendedOptions(){
+ const evaluated=recommendOptions(reviewedInput(),root.GharWattVerdict?.verdict);
+ reviewResult.replaceChildren();
+ if(!evaluated){
+  const p=root.document.createElement("p");p.textContent="The comparison is unavailable. Your AI explanation and the basic bill calculator still work.";
+  reviewResult.append(p);reviewResult.hidden=false;return;
+ }
+ const title=root.document.createElement("h4");title.textContent="Recommended next step: "+evaluated.title;
+ const reason=root.document.createElement("p");reason.textContent=evaluated.reason;
+ reviewResult.append(title,reason);
+ const actions=root.document.createElement("ol");
+ for(const step of evaluated.steps){
+  const item=root.document.createElement("li");item.textContent=step;actions.append(item);
+ }
+ reviewResult.append(actions);
+ const alternativeTitle=root.document.createElement("h5");alternativeTitle.textContent="Other options to consider";
+ const alternatives=root.document.createElement("ul");
+ for(const option of evaluated.alternatives){
+  const item=root.document.createElement("li");item.textContent=option;alternatives.append(item);
+ }
+ reviewResult.append(alternativeTitle,alternatives);
+ const note=root.document.createElement("p");
+ note.textContent="Preliminary screening only. "+evaluated.caution+
+  " The financially best option cannot be established without real tariffs, device prices and/or a verified solar quote.";
+ reviewResult.append(note);
+ reviewResult.hidden=false;
+}
+reviewButton.addEventListener("click",showRecommendedOptions);
+review.addEventListener("input",()=>{reviewResult.hidden=true;});
+review.addEventListener("change",()=>{reviewResult.hidden=true;});
 clear.addEventListener("click",()=>{
  input.value="";question.value="";consent.checked=false;
  showSelection();tell("File and AI explanation cleared from this page. The anonymous usage counter is unchanged.");
