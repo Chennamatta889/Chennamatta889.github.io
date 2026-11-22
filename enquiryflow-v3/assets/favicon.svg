@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="title">
+  <title id="title">Ctech Academy</title>
+  <rect width="64" height="64" rx="15" fill="#0D2F3E"/>
+  <path d="M44 18 C32 10 17 17 17 32 C17 47 32 54 44 46" fill="none" stroke="#F6FBFA" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="47" cy="16" r="5" fill="#43D5B7"/>
+</svg>
