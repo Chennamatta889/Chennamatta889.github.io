@@ -31,6 +31,8 @@ function parseCharges(raw){
 function explainBill(bill,charges={}){
  if(!bill||!numeric(bill.amount,0,500000)||!numeric(bill.days,1,120))return null;
  const amount=Number(bill.amount),days=Number(bill.days);
+ const currentCharges=numeric(bill.currentCharges,0,500000)?Number(bill.currentCharges):null;
+ const arrears=numeric(bill.arrears,0,500000)?Number(bill.arrears):null;
  const units=numeric(bill.units,0.01,100000)?Number(bill.units):null;
  const found=chargeTypes.filter(t=>numeric(charges[t.id],0,500000));
  let explained=null,remainder=null;
@@ -38,9 +40,26 @@ function explainBill(bill,charges={}){
   explained=found.reduce((acc,t)=>acc+Number(charges[t.id])*(t.id==='rebate'?-1:1),0);
   remainder=round(amount-explained);
  }
- return {amount,days,units,amountDaily:round(amount/days),unitsDaily:units===null?null:round(units/days),
+ return {amount,days,units,currentCharges,arrears,amountDaily:round(amount/days),unitsDaily:units===null?null:round(units/days),
   allInclusivePerUnit:units===null?null:round(amount/units),explained:explained===null?null:round(explained),
   remainder,breakdown:found.map(t=>({id:t.id,label:t.label,amount:Number(charges[t.id]),explain:t.explain}))};
+}
+function arrearsInsight(bill){
+ if(!bill||!numeric(bill.amount,1,500000))return null;
+ const due=Number(bill.amount);
+ const arrears=numeric(bill.arrears,0,500000)?Number(bill.arrears):null;
+ const current=numeric(bill.currentCharges,0,500000)?Number(bill.currentCharges):null;
+ if(arrears!==null&&arrears>=due*.3){
+  const pct=Math.round(arrears/due*100);
+  return {dominant:true,percentage:pct,message:'Previous dues make up about '+pct+'% of the payable amount. This does not mean you used '+money(due)+' worth of electricity this period. Do NOT use total payable to calculate your electricity tariff, solar size, or potential savings. Use verified units and current charges instead.'};
+ }
+ if(current!==null&&due>current*1.5){
+  return {dominant:true,percentage:null,message:'The payable amount is much higher than the current charges. Check arrears, interest and adjustments before estimating electricity usage or solar needs.'};
+ }
+ if(arrears!==null&&arrears>0){
+  return {dominant:false,percentage:Math.round(arrears/due*100),message:'This bill includes previous dues. Consumption costs and arrears should be evaluated separately.'};
+ }
+ return null;
 }
 function comparePeriods(prev,curr){
  if(!prev||!curr||![prev.amount,curr.amount].every(x=>numeric(x,0,500000))||![prev.days,curr.days].every(x=>numeric(x,1,120)))return null;
@@ -91,6 +110,9 @@ function buildReport(bill,comparison,plan,goal,charges){
   lines.push('VERIFIED BILL: '+money(bill.amount)+' over '+bill.days+' days');
   lines.push('Electricity units: '+(bill.units===null?'Not provided':nfmt(bill.units)+' kWh'));
   lines.push('Bill per day: '+money(bill.amountDaily));
+  if(bill.currentCharges!==null)lines.push('Current charges before old dues: '+money(bill.currentCharges));
+  if(bill.arrears!==null)lines.push('Total previous dues / arrears: '+money(bill.arrears));
+  const insight=arrearsInsight(bill);if(insight)lines.push('IMPORTANT: '+insight.message);
   if(bill.allInclusivePerUnit!==null)lines.push('All-inclusive amount / unit: '+money(bill.allInclusivePerUnit)+' (NOT your tariff)');
   if(charges?.length){lines.push('Charge details (user checked):');charges.forEach(x=>lines.push(' - '+x.label+': '+money(x.amount)));}
   if(bill.remainder!==null)lines.push('Remaining amount not explained by selected line items: '+money(bill.remainder));
@@ -104,7 +126,7 @@ function buildReport(bill,comparison,plan,goal,charges){
  lines.push('','ESTIMATE ONLY — not a guarantee or official tariff. Electricity use and costs vary by appliance cycling, actual power draw, slabs, fixed charges, time and household habits.','Do not reduce essential cooling, safety equipment or necessary consumption.','https://chennamatta889.github.io/gharwatt/bill-reader/');
  return lines.join('\n');
 }
-root.GharWattAdvisor=Object.freeze({parseCharges,explainBill,comparePeriods,scenario,presets,buildReport});
+root.GharWattAdvisor=Object.freeze({parseCharges,explainBill,arrearsInsight,comparePeriods,scenario,presets,buildReport});
 if(typeof document==='undefined'||!$('gw-advisor'))return;
 let verified=null,comparison=null,plan=null;
 const status=$('gw-advisor-status'),reportNode=$('gw-advisor-report'),actions=$('gw-advisor-actions');
@@ -126,6 +148,8 @@ function renderBill(){
  text('gw-units-per-day',checked.unitsDaily===null?'Unknown':nfmt(checked.unitsDaily)+' units');
  text('gw-all-in-rate',checked.allInclusivePerUnit===null?'Unknown':money(checked.allInclusivePerUnit)+'/unit');
  text('gw-remainder',checked.remainder===null?'Add line items to check':money(checked.remainder));
+ const insight=arrearsInsight(checked);
+ const warning=$('gw-arrears-warning');if(warning){warning.hidden=!insight;warning.textContent=insight?insight.message:'';}
  $('gw-advisor-content').hidden=false;actions.hidden=false;updateReport();
 }
 function renderComparison(){
@@ -177,11 +201,12 @@ for(const t of chargeTypes){
 window.addEventListener('gharwatt:bill-confirmed',event=>{
  const detail=event.detail||{};
  const oldDays=detail.days;
- const data={amount:detail.amount,units:detail.units,days:oldDays};
+ const data={amount:detail.amount,units:detail.units,days:oldDays,currentCharges:detail.currentCharges,arrears:detail.arrears};
  verified=explainBill(data,{});
  if(!verified){msg('Confirm an amount and valid billing days first.');return;}
  for(const t of chargeTypes){$('gw-charge-'+t.id).value='';delete $('gw-charge-'+t.id).dataset.edited;}
  showBreakdown();
+ if(verified.arrears!==null&&$('gw-charge-arrears'))$('gw-charge-arrears').value=verified.arrears;
  renderBill();renderComparison();
  msg('Your bill details are verified for this session. Review optional charge fields, compare bills, then build a personal plan.');
  $('gw-advisor').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
@@ -203,6 +228,6 @@ $('gw-advisor-reset').addEventListener('click',()=>{
  verified=null;comparison=null;plan=null;['gw-prev-amount','gw-prev-units'].forEach(id=>$(id).value='');
  for(const t of chargeTypes){$('gw-charge-'+t.id).value='';delete $('gw-charge-'+t.id).dataset.edited;}
  for(const c of applianceBox.children)c.querySelector('[data-field=count]').value='0';
- $('gw-advisor-content').hidden=true;actions.hidden=true;text('gw-plan-result','Choose how many appliances you use, then build a scenario.');msg('Advisor cleared. The page does not save your bill information.');
+ $('gw-advisor-content').hidden=true;actions.hidden=true;if($('gw-arrears-warning'))$('gw-arrears-warning').hidden=true;text('gw-plan-result','Choose how many appliances you use, then build a scenario.');msg('Advisor cleared. The page does not save your bill information.');
 });
 })(window);
