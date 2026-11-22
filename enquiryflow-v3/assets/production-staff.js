@@ -1,9 +1,9 @@
-import {isDemo,staffData,session,signIn,signOut,saveRecord,queueImport,approveImport,resetDemo,olderEnquiries,deleteRealEnquiry} from './production-adapter.js?v=4.0';
+import {isDemo,staffData,session,signIn,signOut,saveRecord,queueImport,approveImport,resetDemo,olderEnquiries,deleteRealEnquiry,installCtechCatalogueDrafts} from './production-adapter.js?v=5.2-catalogue';
 import {$,$$,esc,money,shortDate,str,slug,parseCsv} from './utils.js';
 import {filterEnquiries,buildEnquiriesCsv,filterUpcomingBatches,todayIndia} from './discovery.js';
 import {staffFormPayload} from './staff-form.js';
-import {courseTemplates,remainingCourseTemplates,faqTemplates,remainingFaqTemplates} from './ctech-catalogue.js?v=1.0';
-let catalogueImporting=false;
+import {courseTemplates,remainingCourseTemplates,faqTemplates,remainingFaqTemplates} from './ctech-catalogue.js?v=1.1';
+let catalogueImporting=false,catalogueAutoStarted=false;
 let state=null,tab=(new URLSearchParams(location.search).get('view')==='enquiries'?'enquiries':'overview'),selected=null,loadedEnquiries=0,leadQuery='',leadStatus='All';const app=$('#app');
 const editorRole=()=>['owner','admin','editor'].includes(state?.role);const publisher=()=>['owner','admin'].includes(state?.role);
 const alertText=message=>{const el=$('#toast');if(el){el.textContent=message;el.hidden=false;el.scrollIntoView({block:'nearest',behavior:'smooth'});setTimeout(()=>el.hidden=true,6500)}};
@@ -92,7 +92,28 @@ function importsView(){return `<div class="surface"><div class="surface-head"><d
 function instituteView(){const i=state.institute;return `<div class="surface"><div class="surface-head"><div><h3>Institution profile</h3><p>Changes to approved profile fields appear on the public website.</p></div></div>${publisher()?`<form id="recordForm" data-entity="institute" class="editor-form"><div class="form-grid">${formPart('Institute name','name',i.name,'text','required')}${formPart('City','city',i.city)}${formPart('Contact email','email',i.email,'email')}${formPart('Phone','phone',i.phone)}${formPart('Address','address',i.address)}${formPart('Official website','website_url',i.website_url,'url')}</div>${formPart('Tagline','tagline',i.tagline)}<label>About the institute<textarea name="about" rows="5">${esc(i.about)}</textarea></label><label class="checkboxline"><input type="checkbox" name="published" ${i.published?'checked':''}> Publish institute profile</label><div class="form-feedback" role="alert" aria-live="polite" data-form-feedback hidden></div><button class="button primary" type="submit">Save institute details</button></form>`:'<p class="empty">Only institute owners and administrators can edit this profile.</p>'}</div>`}
 function render(){const labels={overview:'Overview',courses:'Courses & fees',batches:'Batches',enquiries:'Enquiries',knowledge:'AI knowledge',imports:'Imports',institute:'Institute profile'};$('#pageTitle').textContent=labels[tab];$$('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));const views={overview,batches:batchesView,courses:coursesView,enquiries:enquiriesView,knowledge:knowledgeView,imports:importsView,institute:instituteView};$('#pageBody').innerHTML=views[tab]();if(tab==='enquiries')renderEnquiryRows();}
 function openEditor(entity,id){const record=entity==='institute'?state.institute:state[entity].find(r=>r.id===id);if(!record&&id)throw Error('Record not found');selected={entity,record};const editor={courses:courseEdit,batches:batchEdit,faqs:faqEdit,enquiries:enquiryEdit,institute:()=>''};const panel=document.createElement('div');panel.className='drawer-overlay';panel.id='editorOverlay';panel.innerHTML=`<div class="drawer"><div class="surface-head"><h3>${record?'Edit':'Add'} ${esc(entity)}</h3><button data-cancel aria-label="Close editor">✕</button></div>${editor[entity](record)}</div>`;app.appendChild(panel);}
-async function refresh(){try{state=await staffData();shell();render()}catch(err){loginScreen(err.message)}}
+async function autoPopulateCtechCatalogue(){
+ if(catalogueAutoStarted||catalogueImporting||state?.role!=='owner')return;
+ catalogueAutoStarted=true;
+ const courses=remainingCourseTemplates(state.courses),faqs=remainingFaqTemplates(state.faqs);
+ if(!courses.length&&!faqs.length)return;
+ catalogueImporting=true;
+ alertText('Installing the requested Ctech Academy curriculum as private drafts. Existing records are preserved.');
+ try{
+  // The current Firebase owner's session is required. No password/token is exposed.
+  const result=await installCtechCatalogueDrafts(courses,faqs);
+  const fresh=await staffData();
+  state=fresh;shell();render();
+  const outstanding=remainingCourseTemplates(fresh.courses).length+remainingFaqTemplates(fresh.faqs).length;
+  if(outstanding)throw Error(outstanding+' drafts still missing after verification');
+  alertText('Catalogue synced to Firebase: '+result.courses+' course drafts, '+result.faqs+' FAQ drafts. None published; verify actual availability, fees and timing before publishing.');
+ }catch(error){
+  try{const latest=await staffData();state=latest;shell();render()}catch(_){}
+  alertText('Catalogue draft sync was incomplete: '+String(error.message||error)+'. Existing records remain safe. No public course offerings were changed.');
+ }finally{catalogueImporting=false}
+}
+
+async function refresh(){try{state=await staffData();shell();render();if(state?.role==='owner')void autoPopulateCtechCatalogue()}catch(err){loginScreen(err.message)}}
 function bindEvents(){
  app.addEventListener('input',e=>{if(e.target.id==='leadSearch'){leadQuery=e.target.value;renderEnquiryRows()}});
  app.addEventListener('change',e=>{if(e.target.id==='leadStatus'){leadStatus=e.target.value;renderEnquiryRows()}});
