@@ -85,3 +85,12 @@
  .v2-scan-options{grid-template-columns:1fr}
  .v2-crop-canvas{max-height:none}
 }
+
+
+/* Optional guided focus controls; targets are illustrations of two-column bills. */
+.v2-focus-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.v2-focus-btn{min-height:46px;min-width:0;background:#29213e;color:#fff;border:1px solid #56426f;border-radius:11px;padding:10px 12px;font-weight:760;line-height:1.3;font-size:.86rem;white-space:normal}
+.v2-focus-btn:hover{background:#49346c}
+.v2-focus-btn:focus-visible{outline:3px solid #ffc88c;outline-offset:2px}
+.v2-focus-note{font-size:.81rem;color:#63566d;line-height:1.55;margin:8px 0 14px}
+@media(max-width:400px){.v2-focus-shortcuts{grid-template-columns:1fr}}
