@@ -26,6 +26,9 @@ export function staffFormPayload(fd,entity,{canPublish=false,forcePublish=false}
   record.slug=slug(record.title);
   if(!record.slug)throw Error('Course title must include letters or numbers.');
   record.curriculum=(record.curriculum||'').split(/\r?\n/).map(str).filter(Boolean);
+  record.outcomes=(record.outcomes||'').split(/\r?\n/).map(str).filter(Boolean).slice(0,20);
+  record.projects=(record.projects||'').split(/\r?\n/).map(str).filter(Boolean).slice(0,15);
+  if((record.level||'').length>100||(record.prerequisites||'').length>500||(record.audience||'').length>500)throw Error('Course level, prerequisites or audience details are too long.');
   record.delivery_modes=(record.delivery_modes||'').split(',').map(str).filter(Boolean);
   record.source_url=record.source_url||null;
   record.published=shouldPublish;
