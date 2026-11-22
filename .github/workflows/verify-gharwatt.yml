@@ -70,6 +70,13 @@ jobs:
               if name!='energy-tools':
                   assert 'class="gw-tool-page"' in html, name
                   assert 'aria-label="Breadcrumb"' in html, name
+          # OCR reliability controls must exist in the deployed bill-reader markup.
+          photo_page=(root/'bill-reader'/'index.html').read_text(encoding='utf-8')
+          for control in ['v2-photo','v2-read-photo','v2-ocr-cancel','v2-ocr-progress','v2-ocr-status','v2-manual-entry','v2-confirm-amount','v2-confirm-units']:
+              assert f'id="{control}"' in photo_page, f'missing OCR control: {control}'
+          assert 'href="#v2-manual-entry"' in photo_page, 'manual fallback unavailable'
+          script=(root/'assets'/'energy-v2.js').read_text(encoding='utf-8')
+          assert 'ocrResizePlan' in script and 'function stopReading' in script, 'OCR optimization/cancellation missing'
           assert (root/'assets'/'ui-refresh.css').exists(), 'missing UI design stylesheet'
           assert 'href="assets/ui-refresh.css"' in (root/'index.html').read_text(encoding='utf-8')
           print('Validated',len(htmls),'HTML pages, clean links and old redirects')
