@@ -135,7 +135,8 @@ function initReader(){
  function getWorker(){
   if(sharedWorker)return Promise.resolve(sharedWorker);
   if(workerLoad)return workerLoad;
-  workerLoad=window.Tesseract.createWorker('eng',1,{logger:e=>{
+  let started;
+  const initializing=window.Tesseract.createWorker('eng',1,{logger:e=>{
    const job=currentJob;
    if(!job||job.cancelled||!e)return;
    if(e.status==='recognizing text'&&Number.isFinite(e.progress)){
@@ -148,8 +149,18 @@ function initReader(){
    }else if(e.status&&/loading language|loading tesseract|initializing|core/i.test(e.status)){
     updateProgress('Preparing the text reader: '+String(e.status).slice(0,65)+'…');
    }
-  }}).then(w=>{sharedWorker=w;return w}).catch(e=>{workerLoad=null;throw e});
-  return workerLoad;
+  }});
+  // A cancelled initialisation must not resurrect a terminated worker during the next attempt.
+  started=initializing.then(w=>{
+   if(workerLoad!==started){
+    try{Promise.resolve(w.terminate()).catch(()=>{})}catch{}
+    throw new Error('OCR initialization cancelled');
+   }
+   sharedWorker=w;
+   return w;
+  }).catch(e=>{if(workerLoad===started)workerLoad=null;throw e});
+  workerLoad=started;
+  return started;
  }
  async function preparedPhoto(file){
   let bitmap=null,image=null,objectURL=null;
