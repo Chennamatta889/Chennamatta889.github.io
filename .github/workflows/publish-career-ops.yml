@@ -98,6 +98,8 @@ jobs:
              career-ops-source/app.js career-ops-source/resume-parser.js \
              career-ops-source/ai-studio.js career-ops-source/private-workspace.js \
              career-ops-source/health-check.js site/
+          # Support old root HTML cached by browsers that requests singular style.css.
+          cp career-ops-source/styles.css site/style.css
           cp career-ops-source/about.html career-ops-source/contact.html \
              career-ops-source/privacy.html career-ops-source/terms.html \
              career-ops-source/resource-styles.css career-ops-source/ads.txt \
@@ -144,7 +146,7 @@ jobs:
         run: |
           set -euo pipefail
           for asset in index.html app.js ai-studio.js careerops-config.js \
-            private-workspace.js job-text.js job-search.js india-jobs.js external-job-search.js enterprise-careers.js application-email.js health-check.js \
+            private-workspace.js job-text.js job-search.js india-jobs.js external-job-search.js enterprise-careers.js application-email.js health-check.js style.css styles.css \
             vendor/pdf.min.mjs vendor/pdf.worker.min.mjs \
             vendor/mammoth.browser.min.js data/jobs.json data/coverage-evidence.json data/enterprise-careers.json \
             portfolio/index.html portfolio/styles.css portfolio/script.js \
@@ -155,6 +157,8 @@ jobs:
               test -s "site/$asset"
           done
           ! grep -q '<base href="/career-ops-cloud/">' site/index.html
+          cmp -s site/style.css site/styles.css
+          grep -Eq 'href="\\./styles\\.css\\?v=[0-9]+"' site/index.html
           grep -q 'id="page-discover"' site/index.html
           grep -q 'id="loadMoreJobs"' site/index.html
           grep -q 'id="feedFreshness"' site/index.html
