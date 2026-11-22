@@ -74,7 +74,7 @@ jobs:
           ai_client=(root/'assets'/'gharwatt-ai.js').read_text(encoding='utf-8')
           ai_backend=(root/'backend'/'gharwatt-ai'/'index.ts').read_text(encoding='utf-8')
           assert 'getOrCreateBrowserId' in ai_client and 'visitorId,' in ai_client, 'per-browser identity missing'
-          assert 'const quota=await reserve(visitorId)' in ai_backend and 'GLOBAL_PER_DAY = 20' in ai_backend, 'per-browser backend quota missing'
+          assert 'const quota=await reserve(visitorId)' in ai_backend and 'GLOBAL_PER_DAY = 400' in ai_backend, 'per-browser backend quota missing'
           assert 'href="../privacy/"' in discover and 'random anonymous ID' in discover, 'quota disclosure missing'
           assert '5 attempts per UTC day' in discover and '400 requests per UTC day' in discover, 'new browser/site limits not disclosed'
           assert 'GLOBAL_PER_MINUTE = 10' in ai_backend and 'GLOBAL_PER_DAY = 400' in ai_backend, 'server-side request caps mismatch'
