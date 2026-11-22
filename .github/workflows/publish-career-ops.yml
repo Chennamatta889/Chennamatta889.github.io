@@ -195,7 +195,7 @@ jobs:
           grep -q 'id="dialogExperience"' site/index.html
           grep -Fq "./job-text.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./app.js" site/index.html
-          grep -Fq "./job-search.js?v=20261122-role-relevance-fix-v2" site/index.html
+          grep -Fq "./job-search.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./india-jobs.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./external-job-search.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./enterprise-careers.js?v=$GITHUB_RUN_ID" site/index.html
