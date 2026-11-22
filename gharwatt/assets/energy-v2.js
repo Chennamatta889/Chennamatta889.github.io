@@ -107,7 +107,7 @@ function initReader(){
  $('v2-confirm').addEventListener('click',()=>{
   const a=read('v2-confirm-amount'),u=read('v2-confirm-units');
   if(!valid(a,0,500000)){set('v2-ocr-status','Please enter a valid amount in rupees.');return;}
-  set('v2-ocr-status','Confirmed: '+money(Number(a))+(valid(u,0,100000)?' and '+number(Number(u))+' units. This page does not save your photo or values. Use the comparison or appliance tools to investigate savings.'));
+  set('v2-ocr-status','Confirmed: '+money(Number(a))+(valid(u,0,100000)?' and '+number(Number(u))+' units':'')+'. This page does not save your photo or values. Use the comparison or appliance tools to investigate savings.');
  });
 }
 function initAppliances(){
