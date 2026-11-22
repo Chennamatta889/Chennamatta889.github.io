@@ -102,3 +102,47 @@ test('namespaced PostgreSQL limiter uses an atomic rolling 60-second window',()=
  assert.match(sql,/revoke all on function public.gharwatt_ai_reserve_request/);
  assert.match(sql,/to service_role/);
 });
+
+test('bill uploader rejects unsupported, oversized and empty files without sending',()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../assets/gharwatt-ai-upload.js'),'utf8');
+ const sandbox={window:{}};
+ vm.runInNewContext(source,sandbox);
+ const upload=sandbox.window.GharWattBillAI;
+ assert.equal(upload.detectKind({type:'image/png',name:'bill.png'}),'image');
+ assert.equal(upload.detectKind({type:'application/pdf',name:'bill.pdf'}),'pdf');
+ assert.equal(upload.validateSelection({name:'bill.txt',type:'text/plain',size:2500}).ok,false);
+ assert.equal(upload.validateSelection({name:'bill.pdf',type:'application/pdf',size:upload.MAX_BILL_BYTES+1}).ok,false);
+ assert.equal(upload.validateSelection({name:'bill.jpg',type:'image/jpeg',size:upload.MAX_IMAGE_SOURCE_BYTES+1}).ok,false);
+ assert.equal(upload.validateSelection({name:'empty.pdf',type:'application/pdf',size:0}).ok,false);
+ assert.equal(upload.validateSelection({name:'bill.pdf',type:'application/pdf',size:2048}).ok,true);
+ assert.equal(upload.validateSelection({name:'bill.webp',type:'image/webp',size:5000}).ok,true);
+ assert.match(source,/consent\.checked/);
+ assert.match(source,/billConsent:true/);
+ assert.match(source,/root\.fetch\(ENDPOINT,\{/);
+ assert.match(source,/X-GharWatt-Bill-Upload/);
+ assert.match(source,/canvas\.toBlob/);
+ assert.match(source,/file\.arrayBuffer\(\)/);
+ assert.doesNotMatch(source,/GEMINI_API_KEY|SUPABASE_SERVICE_ROLE_KEY/);
+ assert.match(source,/content\.textContent=data\.answer/);
+});
+test('backend keeps bill uploads bounded, opt-in and inside existing quotas',()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../backend/gharwatt-ai/index.ts'),'utf8');
+ assert.match(source,/const MAX_BODY = 4000/);
+ assert.match(source,/MAX_BILL_BODY = 4_300_000/);
+ assert.match(source,/readBodyLimited\(req,maxBody\)/);
+ assert.match(source,/billConsent!==true/);
+ assert.match(source,/if\(hasBill&&!bill\)/);
+ assert.match(source,/validateBill\(body\.bill\)/);
+ assert.match(source,/billUpload&&!hasBill/);
+ assert.match(source,/mimeType!=="application\/pdf"&&mimeType!=="image\/jpeg"/);
+ assert.match(source,/data\.startsWith\("JVBERi0"\)/);
+ assert.match(source,/data\.startsWith\("\/9j\/"\)/);
+ assert.match(source,/inlineData:\{mimeType:bill!\.mimeType,data:bill!\.data\}/);
+ assert.ok(source.indexOf('const bill=hasBill?validateBill(body.bill):null;')<
+   source.indexOf('const quota=await reserve(visitorId)'));
+ assert.ok(source.indexOf('const quota=await reserve(visitorId)')<
+   source.indexOf('const api=await fetch("https://generativelanguage.googleapis.com'));
+ assert.match(source,/GLOBAL_PER_DAY = 400/);
+ assert.match(source,/PER_VISITOR_PER_DAY = 5/);
+ assert.match(source,/GLOBAL_PER_MINUTE = 10/);
+});

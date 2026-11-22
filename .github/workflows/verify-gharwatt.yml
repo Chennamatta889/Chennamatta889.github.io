@@ -36,6 +36,7 @@ jobs:
           node --check gharwatt/assets/discover.js
           node --check gharwatt/assets/verdict.js
           node --check gharwatt/assets/gharwatt-ai.js
+          node --check gharwatt/assets/gharwatt-ai-upload.js
           python3 -m json.tool gharwatt/assets/affiliate-links.json > /dev/null
           node --test gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs gharwatt/tests/energy-v2.test.cjs gharwatt/tests/energy-v2-extra.test.cjs gharwatt/tests/toolkit-ui.test.cjs gharwatt/tests/bill-advisor.test.cjs gharwatt/tests/simple-bill.test.cjs gharwatt/tests/discover.test.cjs gharwatt/tests/verdict.test.cjs gharwatt/tests/gharwatt-ai.test.cjs
       - name: Validate local page references
@@ -78,6 +79,11 @@ jobs:
           assert 'href="../privacy/"' in discover and 'random anonymous ID' in discover, 'quota disclosure missing'
           assert '5 attempts per UTC day' in discover and '400 requests per UTC day' in discover, 'new browser/site limits not disclosed'
           assert 'GLOBAL_PER_MINUTE = 10' in ai_backend and 'GLOBAL_PER_DAY = 400' in ai_backend, 'server-side request caps mismatch'
+          assert 'id="gw-ai-bill-upload"' in discover and 'id="gw-ai-bill-file"' in discover and 'id="gw-ai-bill-consent"' in discover, 'independent consented bill upload UI missing'
+          assert 'id="gw-ai-bill-answer"' in discover, 'uploaded bill analysis result missing'
+          assert re.search(r'src="\.\./assets/gharwatt-ai-upload\.js(?:\?[^"]*)?"',discover), 'optional bill AI uploader script missing'
+          assert 'readBodyLimited(req,maxBody)' in ai_backend and 'billConsent!==true' in ai_backend, 'secure bill upload backend missing'
+          assert 'an AI option' in (root/'bill-reader'/'index.html').read_text(encoding='utf-8'), 'bill-only OCR and AI routes not distinguished'
           assert (root/'backend'/'gharwatt-ai'/'quota-400-5-10.sql').exists(), 'GharWatt atomic sliding-window SQL source missing'
           assert 'id="gw-ai-question"' in discover and 'id="gw-ai-copy"' in discover, 'reviewed AI handoff missing'
           assert 'href="https://chatgpt.com/"' in discover, 'external AI option missing'

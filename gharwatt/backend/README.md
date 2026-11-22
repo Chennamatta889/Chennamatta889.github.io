@@ -31,9 +31,14 @@ Do not place any secret in GitHub Pages HTML/JavaScript, in the repository, or i
 - These three limits count reservations before contacting Gemini, including failed provider attempts. They do not limit other apps using the same Google project or guarantee free provider availability. If the dashboard quota is 500 RPD, reserving 400 for GharWatt leaves at most 100 for other same-model uses, assuming no other traffic.
 - Canonical SQL: `gharwatt/backend/gharwatt-ai/quota-400-5-10.sql`. For rollbacks, the SQL allows lower quota arguments and stays compatible with earlier Edge Function settings.
 - Function requires `GHARWATT_AI_ENABLED=true`; no model call otherwise.
-- Only the user's question and optional whitelisted numeric bill fields are sent, after explicit consent. The client keeps conversation history in memory and does not store chats.
+- Only the user's question and optional whitelisted numeric bill fields are sent for text chat, after explicit consent. A separate bill-upload form sends one specifically selected bill photo or PDF only after an additional, document-specific consent checkbox. JPEG, PNG and WebP are converted in the browser to JPEG (up to 3 MiB, stripping photo metadata); PDFs are sent unchanged up to 3 MiB. MIME, size and PDF/JPEG magic headers are validated server-side before any quota reservation. Requests are read with a byte limit even without Content-Length. The file and AI response exist only in transient request memory and are not saved in Supabase Storage or database; Google handles submitted media under its own policies. **Photo content and PDFs are not automatically redacted**, so users are told to crop/cover private details.
+- The same authenticated-to-provider **service-side Gemini key**, explicit consent, origin check, atomic 400/day + 5/browser/day + 10/minute guard, and quota reservation apply to text and media uploads. The uploaded file is included only for the current analysis, not subsequent text chat. A failed media model call still consumes a reserved quota attempt. The client keeps chat history in memory and does not store chats.
 - Outputs are explanations, not audited tariffs or financial advice. Keep all cost calculations deterministic.
 - This function uses `verify_jwt=false` deliberately because the website is account-free. Do not remove the quota or consent gates.
+
+### Bill AI upload
+
+Open `https://chennamatta889.github.io/gharwatt/discover/#gw-ai-bill-upload` and expand the optional upload panel. A photo/PDF is only sent after a clear consent checkbox and user click. The older `bill-reader/` tool continues processing images/PDFs locally without transmitting to AI. The upload form is intentionally outside the number-based snapshot so people can start with a bill alone.
 
 ### Safe check
 
