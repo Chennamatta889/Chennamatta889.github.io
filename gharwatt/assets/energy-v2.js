@@ -121,9 +121,9 @@ function initReader(){
  function show(confidence=null){
   const r=parseBillText(read('v2-ocr-text'));
   const quality=assessBillText(read('v2-ocr-text'),r,confidence);
-  set('v2-ocr-amount',r.amount===null?'Not found — enter manually':money(r.amount));
-  set('v2-ocr-units',r.units===null?'Not found — check your bill':number(r.units)+' units');
-  set('v2-ocr-days',r.days===null?'Not found':r.days+' days');
+  set('v2-ocr-amount',!quality.readable?'Unreliable scan':r.amount===null?'Not found — enter manually':money(r.amount));
+  set('v2-ocr-units',!quality.readable?'Unreliable scan':r.units===null?'Not found — check your bill':number(r.units)+' units');
+  set('v2-ocr-days',!quality.readable?'Unreliable scan':r.days===null?'Not found':r.days+' days');
   if(quality.readable){
    if(r.amount!==null)$('v2-confirm-amount').value=r.amount;
    if(r.units!==null)$('v2-confirm-units').value=r.units;
