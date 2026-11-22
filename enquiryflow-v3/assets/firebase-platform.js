@@ -3,7 +3,7 @@
    Until production anti-abuse is added, enquiry writes accept ONLY fictitious test records. */
 import {CONFIG} from './config.js';
 import * as demo from './platform.js';
-import {validateEnquiry,searchKnowledge,uniqueId} from './utils.js';
+import {validateEnquiry,searchKnowledge,uniqueId} from './utils.js?v=3.3';
 export const isDemo = CONFIG.demoMode !== false || !CONFIG.firebase?.apiKey || !CONFIG.firebase?.projectId;
 let initialized;
 async function firebase(){
