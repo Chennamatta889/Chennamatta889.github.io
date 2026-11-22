@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Public EnquiryFlow v2 demo with scripted FAQ assistant and fictional enquiries. Do not enter real personal data. No messages sent.">
+<title>EnquiryFlow v2 · Public demo (FAQ simulation)</title>
+<style>:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17283d;background:#f5f7fb;line-height:1.45;font-synthesis:none}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}.layout{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr)}aside{background:#0e2137;color:#eaf4ff;display:flex;flex-direction:column;padding:25px 17px;gap:28px}.logo{display:flex;gap:12px;align-items:center;padding:3px 8px}.logo-icon{width:41px;height:41px;background:#27c5a1;display:grid;place-items:center;border-radius:14px;color:#09283c;font-size:25px;font-weight:900}.logo-name{font-weight:850;letter-spacing:-.5px;font-size:17px}.logo-sub{font-size:11px;color:#8eb0c7}.nav{display:grid;gap:5px}.nav button{width:100%;border:0;background:transparent;color:#b6ccdc;text-align:left;padding:12px 13px;border-radius:11px;display:flex;align-items:center;gap:10px;font-weight:600}.nav button.active,.nav button:hover{background:#213b54;color:white}.nav-symbol{font-size:20px}.aside-note{margin-top:auto;background:#1a374e;border:1px solid #32546c;padding:14px;border-radius:13px;font-size:12px;color:#c5d8e9}.aside-note strong{color:#a4f0d7}.main{min-width:0}.topbar{background:#fff;border-bottom:1px solid #e4e9f0;padding:19px 35px;display:flex;align-items:center;justify-content:space-between;gap:15px}.eyebrow{text-transform:uppercase;font-size:11px;letter-spacing:1.4px;font-weight:800;color:#708095}.topbar h1{font-size:22px;line-height:1.25;margin:3px 0 0;letter-spacing:-.6px}.chips{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.chip{border-radius:99px;background:#eff5fa;border:1px solid #dee8f1;color:#536c80;padding:6px 11px;font-size:11px;font-weight:800}.chip.green{background:#e2faef;color:#197957;border-color:#b4e9d1}.content{max-width:1350px;margin:0 auto;padding:28px 35px 55px}.banner{border-radius:15px;background:linear-gradient(110deg,#112d45 0%,#204f65 75%,#1e735e 100%);color:white;padding:24px 27px;display:flex;justify-content:space-between;align-items:center;gap:20px}.banner h2{font-size:22px;letter-spacing:-.5px;margin:0 0 5px}.banner p{margin:0;color:#cfe1e8;font-size:13px;max-width:640px}.btn{border:1px solid #d9e3eb;background:white;color:#213750;border-radius:10px;padding:10px 15px;font-weight:800;font-size:13px;display:inline-flex;justify-content:center;align-items:center;gap:7px;white-space:nowrap}.btn:hover{border-color:#60a2aa;background:#f8fcfc}.btn.primary{background:#13aa87;border-color:#13aa87;color:white}.btn.primary:hover{background:#0a8e72}.btn.dark{background:#173752;color:white;border:0}.btn.small{padding:7px 10px;font-size:12px}.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #68b7ea;outline-offset:2px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-top:20px}.stat{border:1px solid #e6eaf0;background:white;padding:20px;border-radius:14px;box-shadow:0 5px 19px rgba(18,45,73,.025)}.stat-label{font-size:12px;color:#667b90;font-weight:700}.stat-num{font-size:32px;line-height:1.35;font-weight:850;letter-spacing:-.7px;margin-top:9px}.stat-note{font-size:11px;color:#8698aa;margin-top:4px}.section-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(260px,1fr);gap:18px;margin-top:20px}.panel{border-radius:14px;border:1px solid #e6ebf1;background:white;box-shadow:0 5px 19px rgba(18,45,73,.025);min-width:0;overflow:hidden}.panel-head{padding:19px 20px;border-bottom:1px solid #eaf0f3;display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h3{font-size:15px;margin:0}.panel-head p{font-size:12px;color:#8190a0;margin:4px 0 0}.panel-body{padding:18px 20px}.muted{font-size:12px;color:#7790a4}.bar-row{margin-bottom:15px}.bar-label{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:6px}.bar-label b{font-size:12px}.bar-track{height:8px;background:#edf2f6;border-radius:100px;overflow:hidden}.bar-fill{height:100%;background:#20b795;border-radius:100px}.due-list{display:grid;gap:10px}.due-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #edf0f4;padding:10px 12px;border-radius:10px}.due-title{font-weight:750;font-size:12px}.due-sub{color:#8191a2;font-size:11px;margin-top:3px}.tag{font-size:10px;padding:5px 8px;border-radius:100px;background:#e8f1fb;color:#3b6eac;font-weight:800;white-space:nowrap}.tag.overdue{background:#fff0e7;color:#bc6232}.tag.today{background:#fff8e3;color:#9c7823}.toolbar{display:flex;gap:9px;flex-wrap:wrap;justify-content:space-between;margin:17px 0}.toolbar-start,.toolbar-end{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.field{border:1px solid #dce5ec;border-radius:9px;padding:10px 11px;background:#fff;color:#233c51;width:100%;font-size:13px;min-width:0}.toolbar input{width:min(270px,100%)}.toolbar select{width:auto;min-width:145px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:780px}th{text-transform:uppercase;letter-spacing:.9px;font-size:10px;color:#74889b;background:#f8fafc;text-align:left;padding:13px 15px}td{padding:13px 15px;border-top:1px solid #edf1f5;font-size:12px}td strong{display:block;font-size:12px}.table-sub{font-size:10px;color:#8a9bae;margin-top:3px}.status-select{padding:6px 8px;border-radius:8px;border:1px solid #d6e5ea;background:#f7fbfc;color:#385e72;font-size:11px;width:124px}.date-input{width:134px;padding:6px;border-radius:8px;border:1px solid #d6e5ea;color:#465d70;font-size:11px}.empty{padding:26px;text-align:center;color:#6b8397}.footnote{color:#8b9baf;font-size:11px;margin-top:16px}.activity{display:grid;gap:12px}.activity-item{display:flex;gap:12px;align-items:flex-start}.activity-dot{width:11px;height:11px;background:#1bb38d;border-radius:100px;margin-top:5px;box-shadow:0 0 0 4px #e5f8f2;flex:none}.activity-msg{font-size:12px;font-weight:700}.activity-time{font-size:11px;color:#8ca0ad;margin-top:3px}.view{display:none}.view.active{display:block}.intake-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(230px,.8fr);gap:18px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.form-group{display:grid;gap:6px}.form-group.full{grid-column:1/-1}.form-group label{font-weight:750;font-size:12px}.form-help{color:#73899b;font-size:11px}.consent-line{display:flex;align-items:start;gap:9px;font-size:12px;color:#4a6174}.consent-line input{margin-top:3px}.form-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:17px}.notice{background:#e9f8f2;color:#156c54;border-radius:11px;padding:12px 14px;font-size:12px}.notice.warning{background:#fff5e6;color:#966a21}.notice.error{background:#ffedeb;color:#ae463d}.how-row{border-bottom:1px solid #e7ecf0;padding:12px 0}.how-row:last-child{border-bottom:0}.how-num{display:inline-grid;place-items:center;background:#e2f4ee;color:#1a896c;border-radius:8px;width:26px;height:26px;font-size:12px;font-weight:900;margin-right:7px}.how-row b{font-size:12px}.how-row p{font-size:11px;color:#72879a;margin:5px 0 0 34px}.section-title{font-size:18px;margin:0 0 4px}.intro{font-size:13px;color:#7b8b9b;margin:0 0 18px}.activity-panel{margin-top:20px}.footer{margin-top:25px;color:#93a3b3;text-align:center;font-size:11px}@media(max-width:1100px){.layout{grid-template-columns:205px minmax(0,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.section-grid{grid-template-columns:1fr}}@media(max-width:720px){.layout{display:block}aside{padding:10px 14px;gap:8px;position:sticky;top:0;z-index:5}.logo{padding:0}.logo-icon{width:30px;height:30px;border-radius:9px;font-size:18px}.logo-name{font-size:14px}.logo-sub,.aside-note{display:none}.nav{display:flex;overflow-x:auto;gap:4px}.nav button{width:auto;white-space:nowrap;padding:8px 10px;font-size:11px}.nav-symbol{font-size:15px}.topbar{padding:15px 16px;align-items:start}.topbar h1{font-size:18px}.eyebrow{font-size:9px}.chips{justify-content:flex-end}.chip{font-size:9px;padding:5px 7px}.content{padding:17px 13px 35px}.banner{padding:18px;display:block}.banner h2{font-size:18px}.banner .btn{margin-top:14px}.stats{gap:10px;margin-top:13px}.stat{padding:14px}.stat-num{font-size:26px}.section-grid{margin-top:12px;gap:12px}.panel-head{padding:15px}.panel-body{padding:14px}.intake-layout{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}.toolbar{display:grid}.toolbar-start,.toolbar-end{width:100%}.toolbar input{width:100%;flex:1}.toolbar select{flex:1}.btn{font-size:12px}.stat-label{font-size:11px}}@media(prefers-reduced-motion:no-preference){.btn,.nav button{transition:.15s ease}}
+@media(max-width:720px){.nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;overflow:visible}.nav button{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px;font-size:10px;line-height:1.25;white-space:normal;text-align:center;gap:3px}.nav-symbol{font-size:16px}}
+/* v2: assistant + 10–30 daily enquiry scale improvements */
+.chip.amber{background:#fff1d7;color:#855411;border-color:#f5dfae}
+.banner-actions{display:flex;flex-wrap:wrap;gap:8px}
+.assistant-page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.assistant-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(265px,1fr);gap:18px}
+.assistant-side{display:grid;gap:15px;align-content:start}.assistant-side .muted{line-height:1.55;margin-top:0}
+.assistant-chat-panel{display:flex;flex-direction:column;min-height:640px}
+.assistant-messages{padding:20px;min-height:310px;max-height:430px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;background:linear-gradient(160deg,#f8fcfe,#fff 60%)}
+.chat-bubble{padding:11px 14px;border-radius:14px;font-size:13px;line-height:1.55;max-width:92%;overflow-wrap:anywhere;white-space:pre-wrap}
+.chat-bubble.user{background:#15334b;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.chat-bubble.bot{background:#e9f5f1;color:#183d40;align-self:flex-start;border-bottom-left-radius:4px}
+.chat-bubble .meta{font-size:10px;letter-spacing:.2px;font-weight:800;margin-bottom:5px;color:#4b7d7a}
+.chat-bubble.user .meta{color:#b5dadd}
+.assistant-bottom{border-top:1px solid #e7edf2;padding:15px 20px;display:grid;gap:11px;margin-top:auto}
+.chat-disclaimer{font-size:11px;line-height:1.45;color:#6d8396;margin:0}
+.prompt-chips{display:flex;flex-wrap:wrap;gap:7px}.prompt-chip{border:1px solid #b4dbd3;color:#176755;background:#eefaf6;border-radius:999px;padding:6px 10px;font-weight:750;font-size:11px}
+.prompt-chip:hover{background:#def3eb}.assistant-compose{display:flex;align-items:stretch;gap:8px}.assistant-compose .field{min-width:0;flex:1}
+.handoff-btn{width:100%}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.pager{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:13px 17px;border-top:1px solid #e7edf2}.pager button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:1070px){.assistant-grid{grid-template-columns:1fr}.assistant-side{grid-template-columns:repeat(2,minmax(0,1fr))}.assistant-side .notice{grid-column:1/-1;grid-row:1}}
+@media(max-width:720px){.nav{grid-template-columns:repeat(5,minmax(0,1fr))}.nav button{font-size:9px}.assistant-side{grid-template-columns:1fr}.assistant-side .notice{grid-column:auto;grid-row:auto}.assistant-chat-panel{min-height:560px}.assistant-messages{min-height:270px;max-height:370px;padding:13px}.assistant-bottom{padding:13px}.chat-bubble{max-width:97%;font-size:12px}.banner-actions{margin-top:12px}.banner-actions .btn{margin-top:0}.assistant-compose .btn{padding:10px}}
+</style>
+<meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="logo"><div class="logo-icon" aria-hidden="true">↗</div><div><div class="logo-name">EnquiryFlow</div><div class="logo-sub">Smart Enquiry Manager</div></div></div>
+  <nav class="nav" aria-label="Main navigation">
+    <button type="button" data-view="overview" class="active"><span class="nav-symbol">▦</span> Overview</button>
+    <button type="button" data-view="assistant"><span class="nav-symbol">✦</span> Assistant preview</button>
+    <button type="button" data-view="leads"><span class="nav-symbol">☷</span> Enquiries</button>
+    <button type="button" data-view="intake"><span class="nav-symbol">＋</span> Intake demo</button>
+    <button type="button" data-view="automation"><span class="nav-symbol">◷</span> Activity log</button>
+  </nav>
+  <div class="aside-note"><strong>PRIVATE INTERNAL PROTOTYPE</strong><p>Not a public website. Initial data is fictional. No actual WhatsApp or email messages are dispatched from this browser demo.</p></div>
+</aside>
+<main class="main">
+  <header class="topbar"><div><div class="eyebrow">Training institute · Internal review</div><h1 id="pageTitle">Overview</h1></div><div class="chips"><span class="chip green">PRIVATE v2</span><span class="chip" id="mode">OFFLINE DEMO</span></div></header>
+  <div class="content">
+    <div role="status" aria-live="polite" id="toast" class="notice" hidden style="margin-bottom:15px"></div>
+    <section class="view active" id="view-overview" aria-label="Overview">
+      <div class="banner"><div><h2>Answer student questions. Capture the right enquiries.</h2><p>Preview a safe, scripted FAQ assistant for website visitors, then manage enquiries and follow-ups. Offline data stays in this browser; optional private Sheets mode is not deployed.</p></div><div class="banner-actions"><button class="btn primary" type="button" data-jump="assistant">✦ Try assistant</button><button class="btn dark" type="button" data-jump="intake">＋ New enquiry</button></div></div>
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Total enquiries</div><div class="stat-num" id="statTotal">—</div><div class="stat-note">All recorded</div></div>
+        <div class="stat"><div class="stat-label">New enquiries</div><div class="stat-num" id="statNew">—</div><div class="stat-note" id="statOpenText">Awaiting action</div></div>
+        <div class="stat"><div class="stat-label">Demo classes booked</div><div class="stat-num" id="statBooked">—</div><div class="stat-note">Not paid enrollments</div></div>
+        <div class="stat"><div class="stat-label">Follow-ups due</div><div class="stat-num" id="statDue">—</div><div class="stat-note">Due today or overdue</div></div>
+      </div>
+      <div class="section-grid">
+        <div class="panel"><div class="panel-head"><div><h3>Popular course interests</h3><p>Sample course distribution</p></div><span class="tag">LIVE COUNT</span></div><div class="panel-body" id="interestBars"></div></div>
+        <div class="panel"><div class="panel-head"><div><h3>Needs follow-up</h3><p>Open enquiries due for action</p></div><button class="btn small" type="button" id="previewBtn">Simulate</button></div><div class="panel-body due-list" id="dueList"></div></div>
+      </div>
+      <div class="panel activity-panel"><div class="panel-head"><div><h3>Recent activity</h3><p>Audit trail for demo changes</p></div><button class="btn small" data-jump="automation" type="button">View all</button></div><div class="panel-body activity" id="activityList"></div></div>
+    </section>
+    <section class="view" id="view-assistant" aria-label="Student website assistant preview">
+      <div class="assistant-page-header">
+        <div><h2 class="section-title">Student-facing assistant preview</h2><p class="intro">Test common questions a website visitor might ask before submitting an enquiry. No real AI API is connected.</p></div>
+        <span class="chip amber">SCRIPTED FAQ · NOT GENERATIVE AI</span>
+      </div>
+      <div class="assistant-grid">
+        <div class="panel assistant-chat-panel">
+          <div class="panel-head"><div><h3>Website assistant — fictitious institute</h3><p>Private browser simulation · no network calls · no messages sent</p></div><button class="btn small" type="button" id="assistantReset">Reset chat</button></div>
+          <div id="assistantMessages" class="assistant-messages" aria-live="polite" aria-label="Example assistant conversation"></div>
+          <div class="assistant-bottom">
+            <p class="chat-disclaimer">Do not enter personal details. This simulator uses a fixed FAQ decision tree; it cannot retrieve actual institute fees, batch schedules or staff availability.</p>
+            <div class="prompt-chips"><button type="button" class="prompt-chip" data-question="What courses are available?">Courses</button><button type="button" class="prompt-chip" data-question="What are the fees for DevOps?">Fees</button><button type="button" class="prompt-chip" data-question="Do you have weekend batches for Python?">Batches</button><button type="button" class="prompt-chip" data-question="Can I book a demo class?">Demo class</button></div>
+            <form id="assistantForm" class="assistant-compose"><label class="sr-only" for="assistantInput">Ask the demo assistant</label><input id="assistantInput" class="field" maxlength="500" placeholder="Ask about courses, fees, batches..." autocomplete="off" required><button type="submit" class="btn primary" id="assistantSend">Ask</button></form>
+            <button type="button" id="assistantHandoff" class="btn handoff-btn">Request staff follow-up →</button>
+          </div>
+        </div>
+        <div class="assistant-side">
+          <div class="panel"><div class="panel-head"><h3>What this demonstrates</h3></div><div class="panel-body">
+            <div class="how-row"><span class="how-num">1</span><b>Instant FAQ response</b><p>Classifies a typed question and retrieves a reviewed answer.</p></div>
+            <div class="how-row"><span class="how-num">2</span><b>No made-up facts</b><p>Fees, batches and placement promises need verified staff-supplied data.</p></div>
+            <div class="how-row"><span class="how-num">3</span><b>Qualified handoff</b><p>Prefills the existing website intake with selected course and question topic.</p></div>
+            <div class="how-row"><span class="how-num">4</span><b>Human confirmation</b><p>Demo bookings are requests, never automatically confirmed.</p></div>
+          </div></div>
+          <div class="notice warning"><b>Demo integrity:</b> This is deterministic FAQ simulation, not a connected large language model. A real AI release needs a server-side API integration, verified institute knowledge base, privacy controls, costs and quality testing.</div>
+          <div class="panel"><div class="panel-head"><h3>Example knowledge base</h3></div><div class="panel-body"><p class="muted">Fictional course categories: Python, Java Full Stack, Cloud &amp; DevOps, Data Analytics.</p><p class="muted">Not supplied: fees, schedules, course syllabi, trainer identities, address, admissions policy or placement guarantees. All are escalated to staff.</p></div></div>
+        </div>
+      </div>
+    </section>
+    <section class="view" id="view-leads" aria-label="Enquiries">
+      <h2 class="section-title">Enquiry pipeline</h2><p class="intro">Search, change pipeline stages, and set next follow-up dates. Your changes update the dashboard.</p>
+      <div class="toolbar"><div class="toolbar-start"><input class="field" type="search" id="search" placeholder="Search name, email, course..." aria-label="Search enquiries"><select class="field" id="statusFilter" aria-label="Filter enquiries"><option>All</option><option>New</option><option>Contacted</option><option>Demo Booked</option><option>Enrolled</option><option>Not Interested</option></select></div><div class="toolbar-end"><button class="btn" id="csvBtn" type="button">↓ Export CSV</button><button class="btn primary" type="button" data-jump="intake">＋ New enquiry</button></div></div>
+      <div class="panel"><div class="panel-head"><h3>All enquiries</h3><span class="muted" id="visibleCount">0 enquiries</span></div><div class="table-wrap"><table><thead><tr><th>Name / ID</th><th>Email</th><th>Course</th><th>Source</th><th>Status</th><th>Next follow-up</th><th>Created</th></tr></thead><tbody id="leadsBody"></tbody></table></div><div class="pager"><button class="btn small" type="button" id="prevPage">← Previous</button><span id="pageInfo" class="muted" role="status">Page 1</span><button class="btn small" type="button" id="nextPage">Next →</button></div></div>
+      <p class="footnote">Enquiries in this browser demo are fictional. Changing a status does not send any notifications.</p>
+    </section>
+    <section class="view" id="view-intake" aria-label="Enquiry intake">
+      <h2 class="section-title">Try the website intake form</h2><p class="intro">Submit an example enquiry to see exactly what gets recorded. Use test names and example.com email addresses.</p>
+      <div class="intake-layout">
+        <div class="panel"><div class="panel-head"><div><h3>New student enquiry</h3><p>Demo-only, no outgoing emails</p></div><span class="tag">TEST</span></div><div class="panel-body">
+          <form id="enquiryForm"><div class="form-grid">
+            <div class="form-group"><label for="name">Student name *</label><input class="field" id="name" name="name" required minlength="2" maxlength="80" placeholder="e.g. Demo Learner F"></div>
+            <div class="form-group"><label for="email">Contact email *</label><input class="field" id="email" name="email" type="email" required maxlength="200" placeholder="demo@example.com"></div>
+            <div class="form-group"><label for="interest">Interested course *</label><select class="field" name="interest" id="interest" required><option value="">Choose a course</option><option>Python</option><option>Java Full Stack</option><option>Cloud &amp; DevOps</option><option>Data Analytics</option><option>Other</option></select></div>
+            <div class="form-group"><label for="source">Enquiry source *</label><select class="field" name="source" id="source" required><option value="">Choose a source</option><option>Website</option><option>Walk-in</option><option>Referral</option><option>Instagram</option><option>Other</option></select></div>
+            <div class="form-group full"><label for="notes">Notes (optional)</label><textarea class="field" id="notes" name="notes" rows="3" maxlength="500" placeholder="Interested in weekend classes"></textarea></div>
+            <div class="form-group full"><label class="consent-line"><input type="checkbox" value="yes" name="consent" required> I confirm that all submitted information is fictional test data. Do not enter actual student information.</label><span class="form-help">Do not enter real personal information during internal testing.</span></div>
+          </div><div class="form-actions"><button class="btn primary" id="addBtn" type="submit">Save enquiry</button><button class="btn" type="reset">Clear form</button></div></form>
+        </div></div>
+        <div><div class="panel"><div class="panel-head"><h3>What happens after submit?</h3></div><div class="panel-body"><div class="how-row"><span class="how-num">1</span><b>Saved</b><p>New enquiry appears in the pipeline.</p></div><div class="how-row"><span class="how-num">2</span><b>Follow-up created</b><p>A callback reminder is set for tomorrow.</p></div><div class="how-row"><span class="how-num">3</span><b>Owner alert simulated</b><p>The activity log records the notification that a production workflow could send. Nothing is actually sent.</p></div><div class="how-row"><span class="how-num">4</span><b>Dashboard refreshed</b><p>Metrics and course-interest counts are recalculated instantly.</p></div></div></div><div class="notice warning" style="margin-top:12px">For a real client, use client-owned Google Sheets and restrict all dashboard access. Customer-facing email and WhatsApp are not included in this prototype.</div></div>
+      </div>
+    </section>
+    <section class="view" id="view-automation" aria-label="Automation activity">
+      <h2 class="section-title">Automation activity</h2><p class="intro">Review what the system records, and simulate the daily reminder check without sending messages.</p>
+      <div class="toolbar"><div class="toolbar-start"><button class="btn primary" type="button" id="previewBtn2">◷ Simulate daily follow-ups</button></div><div class="toolbar-end"><button class="btn" id="resetBtn" type="button">Reset sample data</button></div></div>
+      <div class="panel"><div class="panel-head"><div><h3>Recent activity events</h3><p>Saved locally in the browser (or in the private Google Sheet after authorized deployment)</p></div></div><div class="panel-body activity"><div id="activityListFull"></div><div class="notice" style="margin-top:18px">No messages are dispatched by this activity viewer. Simulation and actual delivery are kept separate.</div></div></div>
+    </section>
+    <footer class="footer">EnquiryFlow v2 · Public demo · FAQ simulation is not generative AI · Use fictional data only</footer>
+  </div>
+</main>
+</div>
+<script>(function (root, factory) {
+  const api = factory();
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  root.EnquiryCore = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const STATUSES = ['New', 'Contacted', 'Demo Booked', 'Enrolled', 'Not Interested'];
+  const INTERESTS = ['Python', 'Java Full Stack', 'Cloud & DevOps', 'Data Analytics', 'Other'];
+  const SOURCES = ['Website', 'Walk-in', 'Referral', 'Instagram', 'Other'];
+  const CLOSED = ['Enrolled', 'Not Interested'];
+  function dateKey(value) {
+    const d = value ? new Date(value) : new Date();
+    if (Number.isNaN(d.getTime())) return '';
+    const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  }
+  function offsetDate(days, from) {
+    const d = from ? new Date(from) : new Date();
+    d.setHours(12,0,0,0); d.setDate(d.getDate()+days); return dateKey(d);
+  }
+  function clean(s) { return String(s == null ? '' : s).trim(); }
+  function isValidEmail(s) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(s)); }
+  function validateLead(raw) {
+    const value = raw || {};
+    const errors = [];
+    if (clean(value.name).length < 2 || clean(value.name).length > 80) errors.push('Enter a name between 2 and 80 characters.');
+    if (!isValidEmail(value.email)) errors.push('Enter a valid contact email.');
+    if (!INTERESTS.includes(value.interest)) errors.push('Choose a valid course.');
+    if (!SOURCES.includes(value.source)) errors.push('Choose a valid lead source.');
+    if (!value.consent) errors.push('Confirm permission to store the enquiry for this demo.');
+    if (clean(value.notes).length > 500) errors.push('Notes must be under 500 characters.');
+    return errors;
+  }
+  function isDue(lead, today) {
+    return !!lead.nextFollowUp && !CLOSED.includes(lead.status) && lead.nextFollowUp <= (today || dateKey());
+  }
+  function summary(leads, today) {
+    const all=Array.isArray(leads)? leads:[];
+    return {total:all.length, new:all.filter(x=>x.status==='New').length,
+      open:all.filter(x=>!CLOSED.includes(x.status)).length,
+      booked:all.filter(x=>x.status==='Demo Booked').length,
+      enrolled:all.filter(x=>x.status==='Enrolled').length,
+      due:all.filter(x=>isDue(x,today)).length};
+  }
+  function escapeHTML(value) {
+    return clean(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function csvCell(value) {
+    let str=String(value==null?'':value);
+    if (/^[\s]*[=+@\-\t\r]/.test(str)) str="'"+str; // protect spreadsheet formula injection
+    return '"'+str.replace(/"/g,'""')+'"';
+  }
+  function toCsv(leads) {
+    const fields=['id','createdAt','name','email','interest','source','status','nextFollowUp','notes'];
+    return [fields.map(csvCell).join(','),...(leads||[]).map(lead=>fields.map(k=>csvCell(lead[k])).join(','))].join('\r\n');
+  }
+  function makeSamples() {
+    const samples=[
+      ['DEMO-101','Demo Learner A','learner-a@example.com','Cloud & DevOps','Website','New',-1],
+      ['DEMO-102','Demo Learner B','learner-b@example.com','Python','Referral','Contacted',0],
+      ['DEMO-103','Demo Learner C','learner-c@example.com','Java Full Stack','Instagram','Demo Booked',2],
+      ['DEMO-104','Demo Learner D','learner-d@example.com','Data Analytics','Walk-in','Enrolled',-2],
+      ['DEMO-105','Demo Learner E','learner-e@example.com','Cloud & DevOps','Website','New',1],
+      ['DEMO-106','Demo Learner F','learner-f@example.com','Python','Referral','Not Interested',-3]
+    ];
+    return samples.map((s,i)=>({id:s[0],name:s[1],email:s[2],interest:s[3],source:s[4],status:s[5],nextFollowUp:offsetDate(s[6]),notes:'Synthetic demo enquiry; not a real person.',createdAt:new Date(Date.now()-(i+1)*3600*1000*6).toISOString(),consent:true,lastReminderAt:''}));
+  }
+  return {STATUSES,INTERESTS,SOURCES,CLOSED,dateKey,offsetDate,clean,isValidEmail,validateLead,isDue,summary,escapeHTML,csvCell,toCsv,makeSamples};
+});
+</script>
+<script>/*
+ * EnquiryFlow v2 — client-side, deterministic FAQ assistant simulator.
+ * This is NOT a generative AI model. It has zero network dependencies and
+ * intentionally refuses to invent prices, schedules, certification or placements.
+ * Use only synthetic data in the private demonstration.
+ */
+(function(root,factory){
+  const api=factory();
+  if(typeof module!=='undefined' && module.exports)module.exports=api;
+  root.EnquiryAssistant=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+  'use strict';
+  const COURSES=['Python','Java Full Stack','Cloud & DevOps','Data Analytics'];
+  const CLUES=[
+    {course:'Cloud & DevOps',re:/\b(devops|aws|azure|cloud|docker|kubernetes|jenkins|terraform|sre)\b/i},
+    {course:'Java Full Stack',re:/\b(java|spring boot|full stack|fullstack)\b/i},
+    {course:'Python',re:/\b(python|django|flask)\b/i},
+    {course:'Data Analytics',re:/\b(analytics|power bi|data analysis|sql|tableau)\b/i},
+  ];
+  const TERMS=[
+    {name:'fees',re:/\b(fees?|prices?|pricing|cost|charges?|amount|payment|installments?|emi|scholarship|discount|rupees|₹)\b/i},
+    {name:'batches',re:/\b(batch|batches|timing|time table|timetable|schedule|weekend|weekday|evening|morning|online|offline|duration|hours?|days?|start date|next class)\b/i},
+    {name:'demo',re:/\b(demo|trial|sample class|orientation|free class|attend a class|book a class)\b/i},
+    {name:'placements',re:/\b(placement|job guarantee|guarantee|career support|job assistance|interview|recruiters?)\b/i},
+    {name:'syllabus',re:/\b(syllabus|curriculum|topics|learn|modules|course content|prerequisite|beginner|experience)\b/i},
+    {name:'location',re:/\b(address|location|where are you|located|campus|branch|directions|map)\b/i},
+    {name:'enroll',re:/\b(enroll|enrol|admission|registration|register|join|apply|sign up|contact|callback|call me)\b/i},
+    {name:'courses',re:/\b(course|courses|program|programs|training|offer|subjects|available)\b/i},
+    {name:'greeting',re:/^\s*(hi|hello|hey|good morning|good evening|namaste|help)[.!\s]*$/i}
+  ];
+  const MAX_INPUT=500;
+  function detectCourse(input){
+    const matches=CLUES.filter(x=>x.re.test(input));
+    return matches.length===1?matches[0].course:null;
+  }
+  function answer(question,context){
+    const q=String(question||'').trim();
+    if(!q)return {intent:'empty',course:null,needsStaff:false,answer:'Please type a question about the example training institute.',matched:false};
+    if(q.length>MAX_INPUT)return {intent:'too_long',course:null,needsStaff:false,answer:'Please keep questions under 500 characters.',matched:false};
+    const course=detectCourse(q)||(context&&COURSES.includes(context.course)?context.course:null);
+    const term=TERMS.find(x=>x.re.test(q));
+    const intent=term?term.name:'unknown';
+    const topic=course?` for ${course}`:'';
+    let reply='',needsStaff=false;
+    switch(intent){
+      case 'greeting':reply='Hello! I can explain the example courses and help you request a callback or demo class. Try asking about fees, batches, or course options.';break;
+      case 'courses':reply='This fictional institute demonstration lists Python, Java Full Stack, Cloud & DevOps, and Data Analytics. These are sample categories, not a verified real institute catalogue. Which one interests you?';break;
+      case 'fees':reply=`I don’t have verified course fees${topic}. I won’t guess a price. You can request a callback through the enquiry form, and a staff member can confirm the current fee and payment options.`;needsStaff=true;break;
+      case 'batches':reply=`I can’t verify the current batch times, weekend availability, delivery mode, or duration${topic}. Please send an enquiry, and staff can confirm the schedule before you make plans.`;needsStaff=true;break;
+      case 'demo':reply=`You can request a demo class${topic} through the enquiry form. This is only a request; a staff member must confirm the actual date and availability.`;needsStaff=true;break;
+      case 'placements':reply=`Placement assistance or job outcomes${topic} have not been verified for this fictional institute. I cannot promise placements or a job guarantee. Ask a staff member for the written placement policy.`;needsStaff=true;break;
+      case 'syllabus':reply=`The demo includes ${course||'several'} course interest categories, but the detailed syllabus, teaching format and prerequisites are not confirmed. Please request the latest official course outline from staff.`;needsStaff=true;break;
+      case 'location':reply='The address and branch details are not verified in this demo. Staff would need to confirm the location and classroom options.';needsStaff=true;break;
+      case 'enroll':reply=`You can submit an enquiry${topic} using the “Try intake form” button. It does not register you, charge you, or book a seat. Staff would follow up manually.`;needsStaff=true;break;
+      default:reply='I don’t have a verified answer to that question in this sample knowledge base. Please request a callback so a staff member can help. I won’t invent details.';needsStaff=true;
+    }
+    return {intent,course,needsStaff,answer:reply,matched:intent!=='unknown',source:'fictional-demo-faq'};
+  }
+  return {COURSES,TERMS,MAX_INPUT,detectCourse,answer};
+});
+</script>
+<script>(function(){
+  'use strict';
+  const C = window.EnquiryCore;
+  const A = window.EnquiryAssistant;
+  const LIVE = !!(window.google && window.google.script && window.google.script.run);
+  const STORAGE = 'smart-enquiry-manager-demo-v2';
+  const DEFAULT = () => ({leads:C.makeSamples(),events:[{at:new Date().toISOString(),kind:'DEMO_STARTED',detail:'Six fictional leads loaded for private review.'}]});
+  const PAGE_SIZE=25;
+  let state=DEFAULT(), view='overview', filter='All', search='', page=1;
+  let assistantContext={course:null,lastIntent:null};
+  function $(id){return document.getElementById(id)}
+  function safe(value){return C.escapeHTML(value)}
+  function localRead(){try{const raw=localStorage.getItem(STORAGE);if(!raw)return DEFAULT();const data=JSON.parse(raw);if(!Array.isArray(data.leads)||!Array.isArray(data.events))return DEFAULT();return data;}catch(e){return DEFAULT();}}
+  function persist(){if(LIVE)return;try{localStorage.setItem(STORAGE,JSON.stringify(state));}catch(e){toast('Local storage unavailable; changes may not persist.','warning')}}
+  function record(kind,detail){state.events.unshift({at:new Date().toISOString(),kind,detail});state.events=state.events.slice(0,80);persist()}
+  function toast(message,type){const el=$('toast');el.className='notice '+(type||'');el.textContent=message;el.hidden=false;window.clearTimeout(window.__toastTimeout);window.__toastTimeout=window.setTimeout(()=>{el.hidden=true},6200)}
+  function timefmt(value){const d=new Date(value);return Number.isNaN(d.valueOf())?'—':d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}
+  function datefmt(value){if(!value)return'Not set';const d=new Date(value+'T12:00:00');return Number.isNaN(d.valueOf())?String(value):d.toLocaleDateString(undefined,{day:'numeric',month:'short'})}
+  function eligibleEvents(){return state.events.slice(0,12)}
+  function future(s){return String(s||'').slice(0,80)}
+  function backend(name,...args){return new Promise((resolve,reject)=>{try{window.google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e&&e.message?e.message:String(e))))[name](...args)}catch(e){reject(e)}})}
+  async function refreshLive(){try{const data=await backend('getDashboardData');state={leads:data.leads||[],events:data.events||[]};$('mode').textContent='PRIVATE GOOGLE SHEETS MODE';$('mode').className='chip green';$('resetBtn').hidden=true;render()}catch(e){toast('Could not load Google Sheets: '+e.message,'error')}}
+  function render(){
+    const s=C.summary(state.leads);$('statTotal').textContent=s.total;$('statNew').textContent=s.new;$('statBooked').textContent=s.booked;$('statDue').textContent=s.due;
+    $('statOpenText').textContent=`${s.open} still active`;
+    const interests=C.INTERESTS.map(label=>({label,n:state.leads.filter(l=>l.interest===label).length})).filter(x=>x.n>0);
+    $('interestBars').innerHTML=interests.length?interests.map(x=>`<div class="bar-row"><div class="bar-label"><span>${safe(x.label)}</span><b>${x.n}</b></div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(x.n/Math.max(s.total,1)*100)}%"></div></div></div>`).join(''):'<div class="empty">No enquiries yet.</div>';
+    const due=state.leads.filter(l=>C.isDue(l)).sort((a,b)=>a.nextFollowUp.localeCompare(b.nextFollowUp));
+    $('dueList').innerHTML=due.length?due.slice(0,5).map(l=>`<div class="due-item"><div><div class="due-title">${safe(l.name)}</div><div class="due-sub">${safe(l.interest)} · ${safe(datefmt(l.nextFollowUp))}</div></div><span class="tag ${l.nextFollowUp<C.dateKey()?'overdue':'today'}">${l.nextFollowUp<C.dateKey()?'Overdue':'Due today'}</span></div>`).join(''):'<div class="empty">No follow-ups currently due.</div>';
+    const records=state.leads.filter(l=>(filter==='All'||l.status===filter)&&[l.name,l.email,l.interest,l.source,l.id].some(x=>String(x||'').toLowerCase().includes(search.toLowerCase()))).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+    const maxPages=Math.max(1,Math.ceil(records.length/PAGE_SIZE));
+    page=Math.max(1,Math.min(page,maxPages));
+    $('visibleCount').textContent=`${records.length} of ${state.leads.length} enquiries`;
+    $('pageInfo').textContent=`Page ${page} of ${maxPages} · ${records.length} matching`;
+    $('prevPage').disabled=page<=1; $('nextPage').disabled=page>=maxPages;
+    const visible=records.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);
+    $('leadsBody').innerHTML=visible.length?visible.map(l=>`<tr>
+      <td><strong>${safe(l.name)}</strong><div class="table-sub">${safe(l.id)}</div></td>
+      <td>${safe(l.email)}</td><td>${safe(l.interest)}</td><td>${safe(l.source)}</td>
+      <td><select class="status-select" aria-label="Status for ${safe(l.name)}" data-status-id="${safe(l.id)}">${C.STATUSES.map(x=>`<option ${l.status===x?'selected':''}>${safe(x)}</option>`).join('')}</select></td>
+      <td><input type="date" class="date-input" aria-label="Next follow-up for ${safe(l.name)}" data-date-id="${safe(l.id)}" value="${safe(l.nextFollowUp||'')}"></td>
+      <td>${safe(timefmt(l.createdAt))}</td></tr>`).join(''):'<tr><td colspan="7"><div class="empty">No enquiries match your filters.</div></td></tr>';
+    const activityMarkup=(arr)=>arr.length?arr.map(e=>`<div class="activity-item"><span class="activity-dot"></span><div><div class="activity-msg">${safe(e.detail)}</div><div class="activity-time">${safe(timefmt(e.at))} · ${safe(e.kind)}</div></div></div>`).join(''):'<div class="empty">No activity yet.</div>';
+    $('activityList').innerHTML=activityMarkup(eligibleEvents());
+    $('activityListFull').innerHTML=activityMarkup(state.events.slice(0,40));
+  }
+  function switchView(name){view=name;document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));$('pageTitle').textContent=({overview:'Overview',assistant:'Assistant preview',leads:'Enquiries',intake:'Website intake demo',automation:'Automation log'})[name]||'Dashboard';render();window.scrollTo({top:0,behavior:'instant'})}
+  function addChatMessage(role, body, label){
+    const container=$('assistantMessages');
+    const bubble=document.createElement('div');
+    bubble.className='chat-bubble '+role;
+    const meta=document.createElement('div');meta.className='meta';meta.textContent=label;
+    const content=document.createElement('div');content.textContent=body;
+    bubble.append(meta,content);container.appendChild(bubble);container.scrollTop=container.scrollHeight;
+  }
+  function resetAssistant(){
+    assistantContext={course:null,lastIntent:null};
+    $('assistantMessages').replaceChildren();
+    addChatMessage('bot','Hello! I can show how an institute might answer common website questions. My answers use sample FAQ rules, not a connected AI model. Ask about courses, fees, batches or a demo class.','FAQ simulator');
+    $('assistantInput').value='';
+  }
+  function askAssistant(input){
+    const q=String(input||'').trim();if(!q)return;
+    if(q.length>A.MAX_INPUT){toast('Questions must be 500 characters or fewer.','error');return;}
+    addChatMessage('user',q,'Visitor (test)');
+    const result=A.answer(q,assistantContext);
+    if(result.course)assistantContext.course=result.course;
+    assistantContext.lastIntent=result.intent;
+    addChatMessage('bot',result.answer,result.needsStaff?'FAQ simulator · Staff confirmation needed':'FAQ simulator · Example answer');
+    $('assistantHandoff').textContent=result.needsStaff?'Request staff follow-up →':'Create example enquiry →';
+    $('assistantInput').value='';
+  }
+  function assistantHandoff(){
+    if(assistantContext.course){$('interest').value=assistantContext.course;}
+    $('source').value='Website';
+    const topic=assistantContext.lastIntent;
+    $('notes').value=topic&&topic!=='unknown'?'Website FAQ topic: '+topic+' (fictional demo; no chat transcript saved).':'';
+    switchView('intake');
+    toast('Website enquiry form prepared. Enter fictional details and check the consent box to test handoff.');
+  }
+  function newId(){return 'DEMO-'+Math.random().toString(36).slice(2,8).toUpperCase()}
+  async function onSubmit(event){event.preventDefault();const data=new FormData(event.target);const lead={name:C.clean(data.get('name')),email:C.clean(data.get('email')).toLowerCase(),interest:data.get('interest'),source:data.get('source'),notes:C.clean(data.get('notes')),consent:data.get('consent')==='yes'};
+    const errors=C.validateLead(lead);if(errors.length){toast(errors.join(' '),'error');return}
+    $('addBtn').disabled=true;
+    try{
+      if(LIVE){await backend('createLead',lead);await refreshLive()}else{lead.id=newId();lead.createdAt=new Date().toISOString();lead.status='New';lead.nextFollowUp=C.offsetDate(1);lead.lastReminderAt='';state.leads.unshift(lead);record('LEAD_CREATED',`New enquiry: ${lead.name} (${lead.interest}).`);record('OWNER_ALERT_SIMULATED',`Owner notification simulated for ${lead.name}; no message sent.`);render()}
+      event.target.reset();toast(LIVE?'Enquiry saved to your private Google Sheet.':'Enquiry saved in your browser. Email alert simulated; nothing was sent.');switchView('leads');
+    }catch(e){toast('Could not save the enquiry: '+e.message,'error')}finally{$('addBtn').disabled=false}
+  }
+  async function editLead(id,change){const lead=state.leads.find(x=>x.id===id);if(!lead)return;const key=Object.keys(change)[0],old=lead[key];if(old===change[key])return;
+    if(key==='status'&&!C.STATUSES.includes(change[key])){toast('Invalid status','error');render();return}
+    if(key==='nextFollowUp'&&change[key]&&!/^\d{4}-\d{2}-\d{2}$/.test(change[key])){toast('Invalid date','error');render();return}
+    try{if(LIVE){await backend('updateLead',id,change);await refreshLive()}else{lead[key]=change[key];record('LEAD_UPDATED',`${lead.name}: ${key==='status'?'status':'follow-up date'} changed to ${change[key]||'none'}.`);render()}toast('Enquiry updated.')}catch(e){toast('Update failed: '+e.message,'error');render()}
+  }
+  async function reminders(){const due=state.leads.filter(x=>C.isDue(x));if(LIVE){try{const res=await backend('previewFollowups');toast(`Preview only: ${res.count} follow-ups due. No emails sent.`)}catch(e){toast('Preview failed: '+e.message,'error')}}else{record('FOLLOWUP_SIMULATION',`${due.length} follow-up(s) found as due. No emails or WhatsApp messages sent.`);render();toast(`${due.length} follow-up(s) due. This was a simulation; no messages sent.`)}switchView('automation')}
+  function exportCsv(){const csv='\ufeff'+C.toCsv(state.leads);const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='smart-enquiries-demo.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('CSV exported. Keep customer data private if using live mode.')}
+  function resetDemo(){if(LIVE)return;if(!window.confirm('Reset all browser-local demo data?'))return;state=DEFAULT();persist();render();toast('Fictional demo data restored.')}
+  function init(){state=LIVE?{leads:[],events:[]}:localRead();$('mode').textContent=LIVE?'LOADING PRIVATE DATA':'OFFLINE DEMO · NO EMAILS SENT';$('mode').className='chip '+(LIVE?'green':'');if(LIVE){$('resetBtn').hidden=true;refreshLive()}
+    document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
+    document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.jump)));
+    $('enquiryForm').addEventListener('submit',onSubmit);
+    $('search').addEventListener('input',e=>{search=e.target.value;page=1;render()});$('statusFilter').addEventListener('change',e=>{filter=e.target.value;page=1;render()});
+    $('prevPage').addEventListener('click',()=>{if(page>1){page--;render()}});
+    $('nextPage').addEventListener('click',()=>{page++;render()});
+    $('assistantForm').addEventListener('submit',e=>{e.preventDefault();askAssistant($('assistantInput').value)});
+    $('assistantReset').addEventListener('click',resetAssistant);
+    $('assistantHandoff').addEventListener('click',assistantHandoff);
+    document.querySelectorAll('[data-question]').forEach(b=>b.addEventListener('click',()=>askAssistant(b.dataset.question)));
+    resetAssistant();
+    $('leadsBody').addEventListener('change',e=>{const id=e.target.dataset.statusId, dt=e.target.dataset.dateId;if(id)editLead(id,{status:e.target.value});else if(dt)editLead(dt,{nextFollowUp:e.target.value})});
+    $('previewBtn').addEventListener('click',reminders);$('previewBtn2').addEventListener('click',reminders);
+    $('csvBtn').addEventListener('click',exportCsv);$('resetBtn').addEventListener('click',resetDemo);
+    render();
+  }
+  document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+</body>
+</html>
