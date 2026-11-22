@@ -83,3 +83,27 @@ test('gibberish from a two-column printed bill is rejected even when Tesseract r
  assert.equal(parsed.units,null);
  assert.equal(m.assessBillText(text,parsed,87).readable,false);
 });
+
+
+test('photo plan reduces large uploads below a tighter mobile processing budget',()=>{
+ const p=m.ocrResizePlan(6000,8000);
+ assert.ok(p.width<=1800);
+ assert.ok(p.height<=1800);
+ assert.ok(p.width*p.height<=2000000);
+});
+test('optional contrast processing does not throw or invent detail for a flat image',()=>{
+ const pixels=new Uint8ClampedArray(16*16*4);
+ for(let i=0;i<pixels.length;i+=4){pixels[i]=220;pixels[i+1]=220;pixels[i+2]=220;pixels[i+3]=255;}
+ const changed=m.enhanceBillPixels(pixels,16,16);
+ assert.equal(changed,false);
+ assert.equal(pixels[0],220);
+});
+test('optional contrast processing preserves alpha and stretches low-contrast ink',()=>{
+ const pixels=new Uint8ClampedArray(16*16*4);
+ for(let i=0;i<pixels.length;i+=4){const k=(i/4)%16;pixels[i]=pixels[i+1]=pixels[i+2]=k<8?90:220;pixels[i+3]=255;}
+ const changed=m.enhanceBillPixels(pixels,16,16);
+ assert.equal(changed,true);
+ assert.equal(pixels[3],255);
+ assert.equal(pixels[0],0);
+ assert.equal(pixels[8*4],255);
+});
