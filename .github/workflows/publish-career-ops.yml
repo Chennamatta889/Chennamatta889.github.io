@@ -329,6 +329,16 @@ jobs:
           grep -Fq 'GharWattToolkitUI' /tmp/gharwatt-live-ui.js
           grep -Fq 'gw-home-toolkit-highlight' /tmp/gharwatt-live.html
           echo "GharWatt UI refresh: live searchable dashboard, styling and navigation verified."
+          # OCR performance regression: verify that progress, Stop, manual fallback and resizing are live.
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/bill-reader/?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-live-bill-reader.html
+          grep -Fq 'id="v2-ocr-progress"' /tmp/gharwatt-live-bill-reader.html
+          grep -Fq 'id="v2-ocr-cancel"' /tmp/gharwatt-live-bill-reader.html
+          grep -Fq 'href="#v2-manual-entry"' /tmp/gharwatt-live-bill-reader.html
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/assets/energy-v2.js?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-live-energy-v2.js
+          grep -Fq 'ocrResizePlan' /tmp/gharwatt-live-energy-v2.js
+          grep -Fq 'function stopReading' /tmp/gharwatt-live-energy-v2.js
+          echo "GharWatt OCR: optimized photo resizing, progress and stop controls verified live."
+
 
 
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/" -o /tmp/enquiryflow-v3-student.html
