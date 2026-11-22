@@ -266,3 +266,20 @@
 .gw-ai-bill-answer h4{margin:0 0 8px;font-size:.92rem}
 .gw-ai-bill-answer p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;font-size:.84rem;margin:0}
 @media(max-width:620px){.gw-ai-bill-upload{padding:12px;margin-top:10px}.gw-ai-bill-inner{padding:11px}.gw-ai-bill-heading h2{font-size:1.15rem}.gw-ai-bill-buttons{flex-direction:column}.gw-ai-bill-buttons button{width:100%}}
+
+
+/* Bill upload decision review: no new AI request, based on confirmed numbers. */
+.gw-ai-bill-review{border:1px solid #cbb8db;background:#fcf9ff;border-radius:12px;padding:14px}
+.gw-ai-bill-review h3{margin:2px 0 7px;font-size:1.05rem;color:#3c2b55}
+.gw-ai-bill-review>p{font-size:.82rem;line-height:1.6;color:#5b5068;margin:6px 0 13px}
+.gw-ai-bill-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:11px 0}
+.gw-ai-bill-facts label{display:flex;flex-direction:column;gap:6px;font-size:.77rem;font-weight:750;color:#51415e}
+.gw-ai-bill-facts input,.gw-ai-bill-facts select{width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid #c9b8d6;color:#332340;font:inherit;min-height:43px;background:#fff}
+.gw-ai-bill-advice-result{border-left:4px solid #9b78bc;background:#fff;border-radius:0 10px 10px 0;padding:12px 14px;margin-top:14px}
+.gw-ai-bill-advice-result h4{font-size:.98rem;color:#3b2857;margin:0 0 7px}
+.gw-ai-bill-advice-result h5{font-size:.88rem;margin:12px 0 4px;color:#51406c}
+.gw-ai-bill-advice-result p,.gw-ai-bill-advice-result li{font-size:.8rem;line-height:1.65;color:#584e60}
+.gw-ai-bill-advice-result ol,.gw-ai-bill-advice-result ul{margin:8px 0;padding-left:21px}
+.gw-ai-bill-next-links{display:flex;flex-wrap:wrap;gap:14px;padding-top:8px}
+.gw-ai-bill-next-links a{font-size:.81rem}
+@media(max-width:620px){.gw-ai-bill-facts{grid-template-columns:1fr}}
