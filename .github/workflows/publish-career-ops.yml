@@ -17,8 +17,6 @@ on:
       - "ads.txt"
       - "google*.html"
       - "robots.txt"
-  schedule:
-    - cron: "15 5 * * *"
 
 permissions:
   contents: read
