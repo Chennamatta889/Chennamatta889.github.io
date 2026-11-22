@@ -72,3 +72,41 @@ test('challenge progress tracks completed days without pretending energy was sav
  assert.equal(m.challengeCount([true,false,true,false,false,false,false]),2);
  assert.equal(m.challengeCount([]),0);
 });
+
+
+test('screenshot case: dominant AC is highlighted rather than treated as measured consumption',()=>{
+ const selected=[
+  {id:'fan',count:1,usage:'long',watts:65},
+  {id:'led',count:1,usage:'normal',watts:9},
+  {id:'tv',count:1,usage:'normal',watts:80},
+  {id:'pump',count:1,usage:'normal',watts:900},
+  {id:'ac',count:1,usage:'normal',watts:1500}
+ ];
+ const result=m.applianceContext(selected,m.billSnapshot(500,40,'monthly'));
+ assert.equal(result.summary.units,221.55);
+ assert.equal(result.dominant.name,'Air conditioner');
+ assert.equal(result.dominant.units,180);
+ assert.ok(result.dominantShare>=81);
+ assert.equal(result.status,'mismatch');
+ assert.match(result.message,/40 billed units/);
+ assert.match(result.message,/not evidence of an incorrect electricity bill/i);
+});
+test('40-unit bill is known, but no comparison is made until billing period is confirmed',()=>{
+ const selected=[{id:'ac',count:1,usage:'normal',watts:1500}];
+ const result=m.applianceContext(selected,m.billSnapshot(500,40,'unknown'));
+ assert.equal(result.units,40);
+ assert.equal(result.status,'period-unknown');
+ assert.match(result.message,/bill shows 40 units/i);
+ assert.equal(result.summary.billedUnits,null);
+});
+test('without bill units, comparison stays explicitly unverified',()=>{
+ const result=m.applianceContext([{id:'fan',count:1,usage:'normal',watts:null}],m.billSnapshot(500,'','unknown'));
+ assert.equal(result.status,'unverified');
+ assert.equal(result.summary.billedUnits,null);
+ assert.match(result.message,/not entered/i);
+});
+test('small selected appliance estimate is not called full household consumption',()=>{
+ const result=m.applianceContext([{id:'fan',count:1,usage:'normal',watts:null}],m.billSnapshot(500,40,'monthly'));
+ assert.equal(result.status,'partial');
+ assert.match(result.message,/partial estimate/i);
+});
