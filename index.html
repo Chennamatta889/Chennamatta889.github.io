@@ -738,6 +738,16 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
         </details>
         <p class="feed-freshness-warning" id="feedFreshness" role="status" hidden></p><p class="discover-feed-status" id="discoverFeedStatus" role="status" hidden></p><button class="btn btn-outline" id="retryDiscoverFeed" type="button" hidden>Reload jobs</button>
         <div class="results-line"><strong id="resultsCount" hidden aria-hidden="true"></strong><span class="sample-tag" id="dataModeTag">Sample data</span><button class="btn btn-outline discover-reset" id="resetDiscoverFilters" type="button" hidden>Reset search &amp; filters</button></div>
+        <div id="dotnetEmployerSources" hidden style="margin:16px 0;padding:16px;border:1px solid #31506a;border-radius:12px;background:#10253a;color:#e3edf7">
+<strong>Additional .NET employer openings (external career boards)</strong>
+<p style="margin:8px 0">These are employer-board leads, not verified jobs in the 30-day Career-Ops feed. Check each employer's posting date and experience requirements before applying.</p>
+<ul style="padding-left:20px;line-height:1.9">
+<li><a href="https://job-boards.greenhouse.io/techholding" target="_blank" rel="noopener noreferrer">Tech Holding — C# / .NET roles, Ahmedabad and Pune</a></li>
+<li><a href="https://job-boards.greenhouse.io/zenoti" target="_blank" rel="noopener noreferrer">Zenoti — .NET + AI roles, Hyderabad</a></li>
+<li><a href="https://jobs.lever.co/mapsted/595ff56c-976e-4a24-b0a4-7862edda997a" target="_blank" rel="noopener noreferrer">Mapsted — Software Developer (.NET), remote India, 3+ years</a></li>
+<li><a href="https://jobs.lever.co/coupa?department=Development" target="_blank" rel="noopener noreferrer">Coupa — .NET engineering roles, India</a></li>
+<li><a href="https://jobs.lever.co/reply?location=Kochi%2C+Kerala" target="_blank" rel="noopener noreferrer">Reply — .NET Full Stack, Kochi</a></li>
+</ul></div>
         <div class="job-grid" id="jobsGrid"></div>
         <div class="discover-pagination"><button class="btn btn-outline" id="loadMoreJobs" type="button" hidden>Show more jobs</button></div>
         <div class="empty-state" id="emptyJobs" hidden><div class="empty-icon">⌕</div><h3>No jobs found</h3><p id="emptyJobsHint">No India-based openings match these filters. Try a wider India location, or add a job from an employer portal.</p><button class="btn btn-outline" id="clearFilters">Clear filters</button></div>
@@ -977,6 +987,18 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
     const page=document.getElementById("page-"+initial);
     if(page && !page.classList.contains("active"))activate(initial);
   },50);
+})();
+</script>
+<script id="dotnet-employer-sources">
+(function(){
+  const search=document.getElementById("jobSearch"),panel=document.getElementById("dotnetEmployerSources");
+  if(!search||!panel)return;
+  function refresh(){panel.hidden=!/(?:\\.net|dotnet|asp\\s*\\.?net|c#)/i.test(search.value);}
+  search.addEventListener("input",refresh);
+  document.querySelectorAll("#clearFilters,#resetDiscoverFilters,#quickResetFilters").forEach(function(b){
+    b.addEventListener("click",function(){setTimeout(refresh,0);});
+  });
+  refresh();
 })();
 </script>
 </body>
