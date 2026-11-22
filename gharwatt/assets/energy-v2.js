@@ -74,7 +74,7 @@ function ocrResizePlan(width,height,maxEdge=2400,maxPixels=3600000){
 function initReader(){
  if(!$('v2-reader'))return;
  const status=$('v2-ocr-status'),button=$('v2-read-photo'),cancel=$('v2-ocr-cancel'),progress=$('v2-ocr-progress');
- let scriptLoad=null,sharedWorker=null,workerLoad=null,currentJob=null;
+ let scriptLoad=null,pdfScriptLoad=null,sharedWorker=null,workerLoad=null,currentJob=null;
  function show(){
   const r=parseBillText(read('v2-ocr-text'));
   set('v2-ocr-amount',r.amount===null?'Not found — enter manually':money(r.amount));
@@ -82,6 +82,7 @@ function initReader(){
   set('v2-ocr-days',r.days===null?'Not found':r.days+' days');
   if(r.amount!==null)$('v2-confirm-amount').value=r.amount;
   if(r.units!==null)$('v2-confirm-units').value=r.units;
+  if(r.days!==null&&$('v2-confirm-days'))$('v2-confirm-days').value=r.days;
   set('v2-ocr-status','Review every value against the original bill. Reading errors are possible.');
  }
  $('v2-extract').addEventListener('click',show);
@@ -162,6 +163,53 @@ function initReader(){
   workerLoad=started;
   return started;
  }
+ async function pdfReader(){
+  if(window.pdfjsLib?.getDocument)return;
+  if(pdfScriptLoad)return pdfScriptLoad;
+  pdfScriptLoad=new Promise((resolve,reject)=>{
+   const js=document.createElement('script');
+   js.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+   js.referrerPolicy='no-referrer';
+   js.onload=()=>window.pdfjsLib?.getDocument?resolve():reject(new Error('PDF text reader unavailable'));
+   js.onerror=()=>reject(new Error('PDF text reader download blocked'));
+   document.head.appendChild(js);
+  }).catch(e=>{pdfScriptLoad=null;throw e});
+  return pdfScriptLoad;
+ }
+ async function extractPdf(file,job){
+  updateProgress('Downloading the PDF text reader on your device…');
+  await limit(pdfReader(),30000,'PDF reader download was too slow',job);
+  if(job.cancelled)return '';
+  // Only text-based PDFs are processed: scanned PDFs should use a photo/manual entry.
+  const pdfjs=window.pdfjsLib;
+  pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const data=new Uint8Array(await file.arrayBuffer());
+  const task=pdfjs.getDocument({data,isEvalSupported:false});
+  let pdf;
+  try{
+   pdf=await limit(task.promise,45000,'PDF decoding was too slow',job);
+   const blocks=[];
+   for(let index=1;index<=Math.min(5,pdf.numPages);index++){
+    if(job.cancelled)return '';
+    updateProgress('Reading selectable text from PDF page '+index+' of '+Math.min(pdf.numPages,5)+'…',Math.round((index-1)/Math.min(pdf.numPages,5)*100));
+    const page=await limit(pdf.getPage(index),18000,'PDF page timed out',job);
+    const txt=await limit(page.getTextContent(),18000,'PDF text extraction timed out',job);
+    const lines=new Map();
+    for(const item of txt.items||[]){
+     const fragment=String(item.str||'').trim();
+     if(!fragment)continue;
+     const transform=item.transform||[];
+     const y=Math.round((Number(transform[5])||0)/3)*3;
+     const x=Number(transform[4])||0;
+     if(!lines.has(y))lines.set(y,[]);
+     lines.get(y).push({x,fragment});
+    }
+    blocks.push([...lines.entries()].sort((a,b)=>b[0]-a[0]).map(([,items])=>items.sort((a,b)=>a.x-b.x).map(item=>item.fragment).join(' ')).join('\n'));
+    page.cleanup?.();
+   }
+   return blocks.join('\n').slice(0,16000);
+  }finally{try{await pdf?.destroy?.()}catch{}}
+ }
  async function preparedPhoto(file){
   let bitmap=null,image=null,objectURL=null;
   try{
@@ -199,14 +247,24 @@ function initReader(){
   if(currentJob)return;
   const file=$('v2-photo').files?.[0];
   if(!file){set('v2-ocr-status','Choose a photo, or enter the amount and units manually below.');return;}
-  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>9*1024*1024){
-   set('v2-ocr-status','Use a JPG, PNG or WebP photo smaller than 9 MB. PDFs are not supported.');return;
+  const isPdf=file.type==='application/pdf'||/\\.pdf$/i.test(file.name);
+  if((isPdf&&file.size>12*1024*1024)||(!isPdf&&(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>9*1024*1024))){
+   set('v2-ocr-status','Use a PDF smaller than 12 MB or a JPG, PNG or WebP photo smaller than 9 MB.');return;
   }
   let rejectCancel;
   const job={cancelled:false,lastReported:-10,cancelPromise:new Promise((_,reject)=>{rejectCancel=reject})};
   job.rejectCancel=rejectCancel;currentJob=job;
   button.disabled=true;if(cancel)cancel.hidden=false;
   try{
+   if(isPdf){
+    const extracted=await limit(extractPdf(file,job),100000,'PDF reading was too slow',job);
+    if(job.cancelled)return;
+    if(!extracted.trim()){set('v2-ocr-status','This PDF contains no selectable text (it may be a scan). Try an image of the relevant bill area or enter details manually.');return;}
+    $('v2-ocr-text').value=extracted;
+    show();
+    set('v2-ocr-status','PDF text extracted locally. Verify every amount and unit, especially if the original has tables.');
+    return;
+   }
    updateProgress('Optimizing the photo so it is faster to read…',undefined);
    const image=await limit(preparedPhoto(file),20000,'Photo preparation took too long',job);
    if(job.cancelled)return;
@@ -236,19 +294,24 @@ function initReader(){
  });
  $('v2-photo').addEventListener('change',()=>{
   if(currentJob)stopReading('Photo selection changed; choose Read photo to start again.');
-  else set('v2-ocr-status','Photo selected. We will resize it on your device before reading. Or type bill numbers manually.');
+  else set('v2-ocr-status','File selected. PDFs with selectable text are read without OCR; photos use local OCR. Or enter the amount manually.');
  });
  $('v2-clear').addEventListener('click',()=>{
   if(currentJob)stopReading('Photo reading stopped and cleared.');
   ['v2-ocr-text','v2-confirm-amount','v2-confirm-units'].forEach(id=>$(id).value='');
+  if($('v2-confirm-days'))$('v2-confirm-days').value='30';
   $('v2-photo').value='';
   ['v2-ocr-amount','v2-ocr-units','v2-ocr-days'].forEach(id=>set(id,'—'));
-  set('v2-ocr-status','Photo and recognized text cleared from this page.');
+  set('v2-ocr-status','Photo, PDF and recognized text cleared from this page.');
+  window.dispatchEvent(new CustomEvent('gharwatt:bill-clear'));
  });
  $('v2-confirm').addEventListener('click',()=>{
-  const a=read('v2-confirm-amount'),u=read('v2-confirm-units');
+  const a=read('v2-confirm-amount'),u=read('v2-confirm-units'),d=read('v2-confirm-days');
   if(!valid(a,0,500000)){set('v2-ocr-status','Please enter a valid amount in rupees.');return;}
-  set('v2-ocr-status','Confirmed: '+money(Number(a))+(valid(u,0,100000)?' and '+number(Number(u))+' units':'')+'. Nothing is uploaded or saved by GharWatt.');
+  if(!valid(d,1,120)||!Number.isInteger(Number(d))){set('v2-ocr-status','Please check the billing period. Enter a whole number from 1 to 120 days.');return;}
+  if(String(u).trim()!==''&&!valid(u,0,100000)){set('v2-ocr-status','Please correct the optional units consumed field.');return;}
+  set('v2-ocr-status','Verified for analysis: '+money(Number(a))+(String(u).trim()!==''?' and '+number(Number(u))+' units':'')+' across '+d+' days. Nothing has been uploaded or saved by GharWatt.');
+  window.dispatchEvent(new CustomEvent('gharwatt:bill-confirmed',{detail:{amount:Number(a),units:String(u).trim()===''?null:Number(u),days:Number(d)}}));
  });
  window.addEventListener('pagehide',()=>{if(currentJob)stopReading();else discardWorker()},{once:true});
 }
