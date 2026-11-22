@@ -127,7 +127,7 @@ jobs:
             -e "s|?v=20261121-phase10b-v1|?v=$GITHUB_RUN_ID|g" \
             -e "s|?v=20261121-mobile-nav-v1|?v=$GITHUB_RUN_ID|g" \
             -e "s|?v=20261121-india-portals-v1|?v=$GITHUB_RUN_ID|g" \
-            -e "s|?v=20261121-india-scope-v1|?v=$GITHUB_RUN_ID|g" \\
+            -e "s|?v=20261121-india-scope-v1|?v=$GITHUB_RUN_ID|g" \
             -e "s|?v=20261122-root-nav-repair|?v=$GITHUB_RUN_ID|g" site/index.html
           # Embed the same CSS as a local fallback: the UI remains styled even if
           # mobile browsers request a stale or blocked external stylesheet.
