@@ -169,7 +169,7 @@ jobs:
           ! grep -q '<base href="/career-ops-cloud/">' site/index.html
           cmp -s site/style.css site/styles.css
           grep -Fq 'id="careerops-css-fallback"' site/index.html
-          grep -Eq 'href="\\./styles\\.css\\?v=[0-9]+"' site/index.html
+          grep -Fq "./styles.css?v=$GITHUB_RUN_ID" site/index.html
           grep -q 'id="page-discover"' site/index.html
           grep -q 'id="loadMoreJobs"' site/index.html
           grep -q 'id="feedFreshness"' site/index.html
