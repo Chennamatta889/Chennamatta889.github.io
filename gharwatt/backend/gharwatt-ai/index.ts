@@ -14,8 +14,9 @@
  */
 const ORIGIN = "https://chennamatta889.github.io";
 const MAX_BODY = 4000;
-const PER_VISITOR_PER_DAY = 3;
-const GLOBAL_PER_DAY = 20;
+const PER_VISITOR_PER_DAY = 5;
+const GLOBAL_PER_DAY = 400;
+const GLOBAL_PER_MINUTE = 10;
 const DEFAULT_MODEL = "gemini-3.5-flash-lite";
 const MAX_ANSWER = 1700;
 const fetchDeadline = (ms:number) => AbortSignal.timeout(ms);
@@ -63,9 +64,10 @@ function allowedModel() {
   return /^gemini-[a-zA-Z0-9._-]{4,55}$/.test(model)?model:DEFAULT_MODEL;
 }
 // Browser-scoped anonymous quota: two users sharing a network must not share
-// a three-message allowance. UUIDv4 provides 122 random bits without a login.
-// A new browser/storage reset may create another ID; GLOBAL_PER_DAY=20 remains
-// a hard shared cost ceiling. For stronger abuse controls, add CAPTCHA/auth.
+// a five-message allowance. UUIDv4 provides 122 random bits without a login.
+// A new browser/storage reset may create another ID; GLOBAL_PER_DAY=400 remains
+// a hard shared cost ceiling; a rolling 10-in-60-seconds cap also prevents
+// brief request bursts. For stronger abuse controls, add CAPTCHA/auth.
 const UUID_V4=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 async function hashedVisitor(visitorId:string,secret:string) {
   if(!UUID_V4.test(visitorId))throw new Error("INVALID_VISITOR_ID");
@@ -88,7 +90,7 @@ async function reserve(visitorId:string) {
   if(!result.ok)throw new Error("QUOTA_UNAVAILABLE");
   const data=await result.json();
   if(!data||typeof data.ok!=="boolean")throw new Error("QUOTA_UNAVAILABLE");
-  return data as {ok:boolean;code?:string;remaining?:number};
+  return data as {ok:boolean;code?:string;remaining?:number;retry_after_seconds?:number};
 }
 function instructions(context:ReturnType<typeof pickContext>) {
   return [
@@ -112,7 +114,7 @@ Deno.serve(async(req:Request)=>{
   // (e.g. URL previews/monitors). Restrict OPTIONS and billable POST as before.
   if(req.method==="GET"&&(origin===null||origin===ORIGIN))return response(origin,200,{
     ok:true,ready:configured(),mode:"consent_only",dailyLimit:PER_VISITOR_PER_DAY,
-    globalDailyLimit:GLOBAL_PER_DAY,limitScope:"anonymous_browser",
+    globalDailyLimit:GLOBAL_PER_DAY,globalPerMinuteLimit:GLOBAL_PER_MINUTE,limitScope:"anonymous_browser",
     message:configured()?"GharWatt AI is available. Only submit what you choose.":
       "GharWatt AI provider activation is pending. Existing calculators are available."
   });
@@ -142,12 +144,18 @@ Deno.serve(async(req:Request)=>{
     return message?[{role:x.role,parts:[{text:message}]}]:[];
   });
   try{
-    // Durable per-browser quota reserve BEFORE provider call; the shared 20/day
-    // ceiling prevents unlimited paid traffic if visitors rotate browser IDs.
+    // Atomic quotas reserved BEFORE provider call. Shared 400/day and 10-in-60s
+    // limits cap costs and burst traffic even if visitors rotate browser IDs.
     const quota=await reserve(visitorId);
-    if(!quota.ok)return response(origin,429,{ok:false,code:quota.code||"QUOTA_EXCEEDED",
-      error:quota.code==="GLOBAL_LIMIT"?"GharWatt has reached its shared 20 AI requests today. All visitors can use AI again after 00:00 UTC (5:30 AM India time). Other calculators remain available.":
-        "This browser has reached its three AI requests today. Your allowance resets after 00:00 UTC (5:30 AM India time). Other browsers have separate allowances until the site-wide cap is reached."});
+    if(!quota.ok)return response(origin,429,{
+      ok:false,code:quota.code||"QUOTA_EXCEEDED",
+      retryAfterSeconds:quota.code==="MINUTE_LIMIT"?quota.retry_after_seconds:undefined,
+      error:quota.code==="MINUTE_LIMIT"
+        ?"GharWatt AI is briefly busy (10 requests in any 60 seconds). Try again in "+(quota.retry_after_seconds||60)+" seconds. Your daily allowance was not used."
+        :quota.code==="GLOBAL_LIMIT"
+        ?"GharWatt has reached its shared 400 AI requests today. Everyone can try again after 00:00 UTC (5:30 AM India time). Other calculators remain available."
+        :"This browser has reached its five AI requests today. Your allowance resets after 00:00 UTC (5:30 AM India time). Other browsers have separate allowances until the website-wide cap is reached."
+    });
     const model=allowedModel();
     const api=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent",{
       method:"POST",

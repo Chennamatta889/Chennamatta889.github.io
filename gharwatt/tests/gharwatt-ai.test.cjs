@@ -43,8 +43,8 @@ test('backend has default-off switch, durable quota, and no message storage',()=
  const ts=fs.readFileSync(path.join(__dirname,'../backend/gharwatt-ai/index.ts'),'utf8');
  assert.match(ts,/GHARWATT_AI_ENABLED/);
  assert.match(ts,/gharwatt_ai_reserve_request/);
- assert.match(ts,/GLOBAL_PER_DAY = 20/);
- assert.match(ts,/PER_VISITOR_PER_DAY = 3/);
+ assert.match(ts,/GLOBAL_PER_DAY = 400/);
+ assert.match(ts,/PER_VISITOR_PER_DAY = 5/);
  assert.match(ts,/origin!==ORIGIN/);
  assert.match(ts,/if\(body\.consent!==true\)/);
  assert.match(ts,/shareBill===true\?pickContext\(body\.context\):pickContext\(null\)/);
@@ -77,6 +77,28 @@ test('backend keys per-visitor limit by random browser ID rather than shared IP'
  assert.match(ts,/const quota=await reserve\(visitorId\)/);
  assert.match(ts,/hash(?:ed)?Visitor\(visitorId:string,secret:string\)/);
  assert.doesNotMatch(ts,/req\.headers\.get\("x-real-ip"\)|req\.headers\.get\("x-forwarded-for"\)/);
- assert.match(ts,/GLOBAL_PER_DAY = 20/);
+ assert.match(ts,/GLOBAL_PER_DAY = 400/);
  assert.match(ts,/BROWSER_ID_REQUIRED/);
+});
+
+test('rate caps include 10 requests in a rolling minute and no provider call on rejection',()=>{
+ const ts=fs.readFileSync(path.join(__dirname,'../backend/gharwatt-ai/index.ts'),'utf8');
+ assert.match(ts,/GLOBAL_PER_MINUTE = 10/);
+ assert.match(ts,/globalPerMinuteLimit:GLOBAL_PER_MINUTE/);
+ assert.match(ts,/quota.code==="MINUTE_LIMIT"/);
+ assert.match(ts,/retryAfterSeconds/);
+ assert.match(ts,/daily allowance was not used/);
+ assert.ok(ts.indexOf('const quota=await reserve(visitorId)')<ts.indexOf('const api=await fetch("https://generativelanguage.googleapis.com'));
+});
+test('namespaced PostgreSQL limiter uses an atomic rolling 60-second window',()=>{
+ const sql=fs.readFileSync(path.join(__dirname,'../backend/gharwatt-ai/quota-400-5-10.sql'),'utf8');
+ assert.match(sql,/pg_advisory_xact_lock/);
+ assert.match(sql,/interval '60 seconds'/);
+ assert.match(sql,/recent_count >= 10/);
+ assert.match(sql,/p_per_visitor not between 1 and 5/);
+ assert.match(sql,/p_global not between 1 and 400/);
+ assert.match(sql,/jsonb_build_object\('ok',false,'code','MINUTE_LIMIT'/);
+ assert.ok(sql.indexOf('if recent_count >= 10')<sql.indexOf("insert into public.gharwatt_ai_request_quota"));
+ assert.match(sql,/revoke all on function public.gharwatt_ai_reserve_request/);
+ assert.match(sql,/to service_role/);
 });
