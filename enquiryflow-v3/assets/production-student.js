@@ -152,8 +152,11 @@ function bind(){
 async function updateVerifiedIdentity(){
  const u=await studentIdentity();const button=$('#enquiryForm button[type="submit"]');const email=$('#enquiryForm input[name="email"]');
  const note=$('#productionReadiness');
- note.textContent=productionReady?'Enquiry intake is enabled for this institute. Google sign-in and consent are required.':'Enquiry intake is NOT ACTIVE. The owner must publish real institute contact details and approve privacy handling first.';
- button.disabled=!productionReady;$('#googleStudentLogin').disabled=!productionReady;
+ note.textContent=productionReady?'Enquiry intake is enabled for this institute. Google sign-in and consent are required.':'Enquiry intake is NOT ACTIVE. You can test Google sign-in, but submissions remain disabled until the owner publishes real institute contact details and approves privacy handling.';
+ button.disabled=!productionReady;
+ // Identity verification can be tested before opening real enquiry intake.
+ // Keep the SUBMIT button gated by institute approval, not Google sign-in.
+ $('#googleStudentLogin').disabled=false;
  if(u?.verified&&u?.google){$('#verifiedGoogle').textContent='Verified: '+u.email;email.value=u.email;email.readOnly=true;$('#googleStudentLogout').hidden=false;$('#googleStudentLogin').hidden=true}
  else{$('#verifiedGoogle').textContent='Google verification required.';email.readOnly=false;email.value='';$('#googleStudentLogout').hidden=true;$('#googleStudentLogin').hidden=false}
 }
