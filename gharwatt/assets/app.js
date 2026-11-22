@@ -36,7 +36,52 @@
   function report(){const quotes=quoteData();return ['GHARWATT INDIA — SOLAR INSTALLER QUOTE COMPARISON','Independent worksheet; no vendor verification or endorsement.','Created: '+new Date().toLocaleDateString('en-IN'),'','Costs and warranty terms (as entered by visitor):',...quotes.map(q=>['',q.name,'Total quoted: '+INR.format(q.cost),'System: '+q.capacity+' kW','Quoted price/kW: '+INR.format(q.cost/q.capacity),'Panel warranty: '+q.panel+' years','Inverter warranty: '+q.inverter+' years','Inclusions / extras: '+(q.extras||'Not entered')].join('\n')),'','CHECKLIST: GST | panel make/model | inverter | mounting | earthing | surge protection | DISCOM/net metering | warranty terms | workmanship | maintenance | subsidy eligibility','Rates and subsidy are not confirmed in this worksheet. For verified vendor applications visit https://pmsuryaghar.gov.in/'].join('\n')}
   function wireQuotes(){if(!$('quote-tool'))return;document.querySelectorAll('#quote-tool input,#quote-tool select').forEach(el=>el.addEventListener('input',renderQuotes));renderQuotes();$('download-report').addEventListener('click',()=>{const blob=new Blob([report()],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='gharwatt-solar-quote-comparison.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)});$('copy-report').addEventListener('click',async()=>{const button=$('copy-report');try{await navigator.clipboard.writeText(report());button.textContent='Copied ✓';setTimeout(()=>button.textContent='Copy comparison',1700)}catch{button.textContent='Use download instead';setTimeout(()=>button.textContent='Copy comparison',2500)}})}
   function wireMenu(){const b=$('menu-toggle'),nav=$('main-nav');if(!b||!nav)return;b.addEventListener('click',()=>{const open=!nav.classList.contains('open');nav.classList.toggle('open',open);b.setAttribute('aria-expanded',String(open));b.textContent=open?'Close':'Menu'});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu'}))}
-  wireMenu();wireSolar();wireQuotes();
+  // Mobile-only quick navigation. URLs are based on this script path so subpages work.
+  function wireMobileDock(){
+    const script=document.currentScript;
+    if(!script?.src||document.querySelector('.gw-mobile-dock'))return;
+    const root=new URL('../',script.src);
+    const links=[
+      {id:'home',href:'',label:'Home',icon:'⌂',description:'GharWatt home'},
+      {id:'bill',href:'electricity-bill/',label:'My bill',icon:'₹',description:'Electricity bill calculator'},
+      {id:'photo',href:'bill-reader/',label:'Photo',icon:'▣',description:'Read electricity bill photo'},
+      {id:'solar',href:'#calculator',label:'Solar',icon:'☀',description:'Solar savings calculator'},
+      {id:'tools',href:'energy-tools/',label:'Tools',icon:'▦',description:'Browse all energy tools'}
+    ];
+    const dock=document.createElement('nav');
+    dock.className='gw-mobile-dock';
+    dock.setAttribute('aria-label','Mobile quick navigation');
+    const anchors=[];
+    for(const item of links){
+      const a=document.createElement('a');
+      a.href=new URL(item.href,root).href;
+      a.setAttribute('aria-label',item.description);
+      a.dataset.gwDock=item.id;
+      const symbol=document.createElement('span');
+      symbol.className='gw-dock-icon';
+      symbol.setAttribute('aria-hidden','true');
+      symbol.textContent=item.icon;
+      const label=document.createElement('span');
+      label.textContent=item.label;
+      a.append(symbol,label);dock.appendChild(a);anchors.push(a);
+    }
+    document.body.appendChild(dock);
+    function markCurrent(){
+      const path=window.location.pathname.replace(/index\.html$/,'');
+      const rootPath=root.pathname;
+      let selected='tools';
+      if(path===rootPath)selected=window.location.hash==='#calculator'?'solar':'home';
+      else if(path.startsWith(rootPath+'electricity-bill/'))selected='bill';
+      else if(path.startsWith(rootPath+'bill-reader/'))selected='photo';
+      for(const a of anchors){
+        if(a.dataset.gwDock===selected)a.setAttribute('aria-current','page');
+        else a.removeAttribute('aria-current');
+      }
+    }
+    markCurrent();
+    window.addEventListener('hashchange',markCurrent);
+  }
+  wireMenu();wireSolar();wireQuotes();wireMobileDock();
   window.GharWattMath=Object.freeze({centralSubsidy,specialStates});
   // Lazy-load the small GharWatt offer after existing calculator/menu setup.
   // Product link and dismiss frequency are handled independently.
