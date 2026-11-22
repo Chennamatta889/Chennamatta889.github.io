@@ -62,8 +62,6 @@ jobs:
           node --check job-search.js
           node --check india-jobs.js
           node --check external-job-search.js
-          node --check scripts/phase12-role-coverage.cjs
-          node --check scripts/report-published-coverage.mjs
           node --check enterprise-careers.js
           node --check enterprise-connector-policy.cjs
           node --check application-email.js
@@ -153,7 +151,6 @@ jobs:
         run: |
           FEED_OUTPUT="$GITHUB_WORKSPACE/site/data/jobs.json" node scripts/universal-job-scan.mjs
           node scripts/guard-public-feed.mjs "$GITHUB_WORKSPACE/site/data/jobs.json"
-          COVERAGE_OUTPUT="$GITHUB_WORKSPACE/site/data/coverage-evidence.json" node scripts/report-published-coverage.mjs "$GITHUB_WORKSPACE/site/data/jobs.json"
 
       - name: Verify output and preserved portfolio
         shell: bash
@@ -162,7 +159,7 @@ jobs:
           for asset in index.html app.js ai-studio.js careerops-config.js \
             private-workspace.js job-text.js job-search.js india-jobs.js external-job-search.js enterprise-careers.js application-email.js health-check.js style.css styles.css \
             vendor/pdf.min.mjs vendor/pdf.worker.min.mjs \
-            vendor/mammoth.browser.min.js data/jobs.json data/coverage-evidence.json data/enterprise-careers.json \
+            vendor/mammoth.browser.min.js data/jobs.json data/enterprise-careers.json \
             portfolio/index.html portfolio/styles.css portfolio/script.js \
             portfolio/profile.jpg draftflowai/index.html \
             privacy.html about.html contact.html terms.html \
