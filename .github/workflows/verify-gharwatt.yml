@@ -23,7 +23,8 @@ jobs:
         run: |
           node --check gharwatt/assets/app.js
           node --check gharwatt/assets/decision-tools.js
-          node --test gharwatt/tests/decision-tools.test.cjs
+          node --check gharwatt/assets/bill-only.js
+          node --test gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs
       - name: Validate local page references
         run: |
           python3 - <<'PY'
