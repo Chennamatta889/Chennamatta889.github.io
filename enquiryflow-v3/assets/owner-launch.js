@@ -79,7 +79,9 @@ $('#loginForm').addEventListener('submit',async event=>{
  try{
   const f=await client();await f.authMod.signInWithEmailAndPassword(f.auth,$('#email').value.trim(),password);
   await assertOwner();verified=true;$('#email').value='';await refresh();
-  status('Owner verified. Review the public institute profile and save it. Your real intake remains closed until explicitly activated.','ok');
+  status(docData?.production_ready===true
+    ?'Owner verified. Real enquiry intake is ACTIVE in Firebase. Test a genuine Google-verified submission from the student website and confirm its reference in the staff inbox.'
+    :'Owner verified. Real enquiry intake is CLOSED. Review and save the profile, then activate only after approving the privacy and course information.','ok');
  }catch(e){verified=false;$('#setup').hidden=true;$('#launchSection').hidden=true;status('Sign-in or owner check failed: '+String(e.code||e.message||e),'err');if(fb?.auth.currentUser)await fb.authMod.signOut(fb.auth);}finally{mode(false)}
 });
 $('#profileForm').addEventListener('submit',async e=>{
