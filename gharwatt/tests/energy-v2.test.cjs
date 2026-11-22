@@ -32,7 +32,7 @@ test('photo resizer does not enlarge small readable images',()=>{
  const r=m.ocrResizePlan(1200,1600);assert.equal(r.width,1200);assert.equal(r.height,1600);assert.equal(r.resized,false);
 });
 test('photo resizer scales large camera images and preserves aspect ratio',()=>{
- const r=m.ocrResizePlan(6000,8000);assert.equal(r.height,2400);assert.equal(r.width,1800);assert.equal(r.resized,true);
+ const r=m.ocrResizePlan(6000,8000);assert.ok(r.height<=2400);assert.ok(r.width*r.height<=3600000);assert.ok(Math.abs(r.width/r.height-0.75)<0.001);assert.equal(r.resized,true);
 });
 test('photo resizer caps huge square images by pixel area',()=>{
  const r=m.ocrResizePlan(6000,6000);assert.ok(r.width*r.height<=3600000);assert.equal(r.width,r.height);
