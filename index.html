@@ -738,6 +738,12 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
         </details>
         <p class="feed-freshness-warning" id="feedFreshness" role="status" hidden></p><p class="discover-feed-status" id="discoverFeedStatus" role="status" hidden></p><button class="btn btn-outline" id="retryDiscoverFeed" type="button" hidden>Reload jobs</button>
         <div class="results-line"><strong id="resultsCount" hidden aria-hidden="true"></strong><span class="sample-tag" id="dataModeTag">Sample data</span><button class="btn btn-outline discover-reset" id="resetDiscoverFilters" type="button" hidden>Reset search &amp; filters</button></div>
+        <section id="careeropsSearchV1" aria-label="Expanded external job discovery" style="margin:14px 0 20px;padding:16px;border:1px solid #31506a;border-radius:14px;background:#102238;color:#e8f1fb">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><strong>Expanded job discovery · v1</strong><span style="font-size:12px;opacity:.8">External employer searches · No automatic applications</span></div>
+  <p style="margin:8px 0 12px;font-size:13px">Search verified employer career portals and major job sites using your current keyword. These links are live searches, not confirmed vacancies in Career-Ops. Check each posting's date, India location and eligibility.</p>
+  <div id="careeropsSearchV1Links" style="display:flex;flex-wrap:wrap;gap:9px"></div>
+  <div id="careeropsDotnetV1" hidden style="margin-top:12px"><strong style="font-size:13px">.NET employer pages to check</strong><div id="careeropsDotnetV1Links" style="display:flex;flex-wrap:wrap;gap:9px;margin-top:8px"></div><p style="font-size:12px;opacity:.8;margin:8px 0 0">Employer pages are discovery leads, not individually verified current job postings.</p></div>
+</section>
         <div class="job-grid" id="jobsGrid"></div>
         <div class="discover-pagination"><button class="btn btn-outline" id="loadMoreJobs" type="button" hidden>Show more jobs</button></div>
         <div class="empty-state" id="emptyJobs" hidden><div class="empty-icon">⌕</div><h3>No jobs found</h3><p id="emptyJobsHint">No India-based openings match these filters. Try a wider India location, or add a job from an employer portal.</p><button class="btn btn-outline" id="clearFilters">Clear filters</button></div>
@@ -915,5 +921,43 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
   <p class="application-followup-note">Your confirmation is stored in My applications; employer verification is not implied.</p>
 </section>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script id="careerops-search-expansion-v1">
+(function(){
+"use strict";
+if(new URLSearchParams(location.search).get("jobSearchV")==="off")return;
+const field=document.getElementById("jobSearch"),links=document.getElementById("careeropsSearchV1Links"),dotnet=document.getElementById("careeropsDotnetV1"),dotnetLinks=document.getElementById("careeropsDotnetV1Links");
+if(!field||!links||!dotnet||!dotnetLinks)return;
+const sources=[
+ ["Google Jobs",q=>"https://www.google.com/search?"+new URLSearchParams({q:q+" jobs India last 30 days",ibp:"htl;jobs"})],
+ ["LinkedIn Jobs",q=>"https://www.linkedin.com/jobs/search/?"+new URLSearchParams({keywords:q,location:"India",f_TPR:"r2592000"})],
+ ["Indeed India",q=>"https://in.indeed.com/jobs?"+new URLSearchParams({q:q,l:"India",fromage:"30"})],
+ ["Naukri",q=>"https://www.naukri.com/"+encodeURIComponent(q.trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""))+"-jobs"],
+ ["Google employer sites",q=>"https://www.google.com/search?"+new URLSearchParams({q:q+" India site:careers.wipro.com OR site:careers.caterpillar.com OR site:jobs.lever.co OR site:job-boards.greenhouse.io"})]
+];
+const dotnetSources=[
+ ["Caterpillar careers","https://careers.caterpillar.com/en/jobs/r0000403955/it-analyst-net-full-stack-developer/"],
+ ["Wipro careers","https://careers.wipro.com/job/Pune-AWS-_Net-Full-Stack-IND-411005/213604-en_US/"],
+ ["Zensar careers","https://fa-etvl-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/jobs?keyword=.Net+Developer&mode=location"],
+ ["Tech Holding","https://job-boards.greenhouse.io/techholding"],
+ ["Zenoti","https://job-boards.greenhouse.io/zenoti"],
+ ["Coupa","https://jobs.lever.co/coupa?department=Development"]
+];
+function addLink(parent,label,url){
+ const a=document.createElement("a");a.textContent=label+" ↗";a.href=url;a.target="_blank";a.rel="noopener noreferrer";a.style.cssText="display:inline-block;padding:8px 10px;border:1px solid #43637c;border-radius:8px;color:#b7e9ed;font-size:13px;text-decoration:none";parent.appendChild(a);
+}
+function render(){
+ const q=field.value.trim()||"software developer";
+ links.replaceChildren();
+ for(const [label,fn] of sources)addLink(links,label,fn(q));
+ const isDotnet=/(?:\\.net|dotnet|asp\\s*\\.?net|c#)/i.test(q);
+ dotnet.hidden=!isDotnet;
+ dotnetLinks.replaceChildren();
+ if(isDotnet)for(const [label,url] of dotnetSources)addLink(dotnetLinks,label,url);
+}
+field.addEventListener("input",render);
+for(const id of ["resetDiscoverFilters","clearFilters","quickResetFilters"]){const b=document.getElementById(id);if(b)b.addEventListener("click",()=>setTimeout(render,0));}
+render();
+})();
+</script>
 </body>
 </html>
