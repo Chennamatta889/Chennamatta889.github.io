@@ -91,6 +91,9 @@ function ocrResizePlan(width,height,maxEdge=1800,maxPixels=2000000){
  const scale=Math.min(1,Number(maxEdge)/Math.max(w,h),Math.sqrt(Number(maxPixels)/(w*h)));
  return Object.freeze({width:Math.max(1,Math.floor(w*scale)),height:Math.max(1,Math.floor(h*scale)),resized:scale<0.999});
 }
+function ocrScanPlan(width,height,detail=false){
+ return ocrResizePlan(width,height,detail?2400:1800,detail?3600000:2000000);
+}
 /* Optional lightweight automatic contrast normalization, applied only to small resized images.
    This does not recover detail missing from the original photo. */
 function enhanceBillPixels(bytes,width,height){
@@ -279,10 +282,12 @@ function initReader(){
    const sx=focus?Math.floor(w*focus.x):0,sy=focus?Math.floor(h*focus.y):0;
    const sw=focus?Math.max(1,Math.min(w-sx,Math.round(w*focus.width))):w;
    const sh=focus?Math.max(1,Math.min(h-sy,Math.round(h*focus.height))):h;
-   const basePlan=ocrResizePlan(sw,sh);
+   const detailed=Boolean($('v2-detail-mode')?.checked);
+   const basePlan=ocrScanPlan(sw,sh,detailed);
    if(!basePlan)throw new Error('Invalid image dimensions');
    const improve=Boolean($('v2-improve-contrast')?.checked);
-   const scale=focus?Math.min(2,1800/Math.max(sw,sh),Math.sqrt(2000000/(sw*sh))):1;
+   const maxEdge=detailed?2400:1800,maxPixels=detailed?3600000:2000000;
+   const scale=focus?Math.min(2,maxEdge/Math.max(sw,sh),Math.sqrt(maxPixels/(sw*sh))):1;
    const plan=focus?{width:Math.max(1,Math.floor(sw*scale)),height:Math.max(1,Math.floor(sh*scale)),resized:true}:basePlan;
    if(!focus&&!improve&&!plan.resized&&file.size<=2000000)return {blob:file,compressed:false,plan};
    const canvas=document.createElement('canvas');canvas.width=plan.width;canvas.height=plan.height;
@@ -344,7 +349,7 @@ function initReader(){
     preserve_interword_spaces:'1'
    }),10000,'OCR layout setup took too long',job);
    if(job.cancelled)return;
-   const result=await limit(worker.recognize(image.blob),30000,'Reading the photo took too long',job);
+   const result=await limit(worker.recognize(image.blob),$('v2-detail-mode')?.checked?48000:30000,'Reading the photo took too long',job);
    if(job.cancelled)return;
    const fresh=String(result?.data?.text||'').trim();
    const append=Boolean($('v2-ocr-add-mode')?.checked);
@@ -542,5 +547,5 @@ function initWhatsApp(){
  wire('v2-change-whatsapp',()=> 'My GharWatt electricity bill comparison: '+$('v2-change-rupees').textContent+'. '+$('v2-change-explain').textContent+' https://chennamatta889.github.io/gharwatt/bill-change/');
 }
 initReader();initAppliances();initComparison();initGoal();initTracker();initFinance();initRoof();initCooling();initWhatsApp();
-window.GharWattV2=Object.freeze({parseBillText,assessBillText,ocrPageSegMode,enhanceBillPixels,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances,ocrResizePlan});
+window.GharWattV2=Object.freeze({parseBillText,assessBillText,ocrPageSegMode,enhanceBillPixels,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances,ocrResizePlan,ocrScanPlan});
 })();
