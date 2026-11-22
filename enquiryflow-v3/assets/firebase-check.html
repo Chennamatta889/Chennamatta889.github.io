@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>EnquiryFlow Firebase Connection Check</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#e8efff;background:#0a1224;color-scheme:dark}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top right,#243f72 0,#0a1224 60%)}
+    main{max-width:820px;margin:auto;padding:36px 20px 60px}header{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}
+    h1{font-size:clamp(1.9rem,5vw,2.6rem);line-height:1.14;margin:16px 0 8px}h2{font-size:1.12rem;margin:0 0 12px}
+    p{line-height:1.55;color:#b7c7e8}.eyebrow{color:#7fd3e8;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+    section{background:#14223b;border:1px solid #344969;border-radius:16px;padding:20px;margin-top:20px}
+    label{display:block;margin:12px 0;font-size:.9rem;color:#bdd3f2}input{display:block;margin-top:5px;width:100%;background:#08152a;border:1px solid #49658a;border-radius:9px;color:white;padding:11px;font-size:1rem}
+    input:focus{outline:2px solid #65b5eb}button,.link{display:inline-flex;align-items:center;justify-content:center;background:#65bae9;color:#05233d;border:0;border-radius:9px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;min-height:43px}
+    button:disabled{opacity:.6;cursor:wait}.secondary{background:#283c5c;color:#d6e6ff}.actions{display:flex;gap:12px;flex-wrap:wrap}
+    ul{padding-left:22px}.results{list-style:none;padding:0;display:grid;gap:8px}.results li{padding:11px;background:#0d1b32;border:1px solid #344969;border-radius:9px;line-height:1.4}
+    .ok{border-left:4px solid #47dbac!important}.bad{border-left:4px solid #ff7f91!important}.note{border-left:4px solid #ffd180!important}
+    .info{font-size:.92rem}.small{font-size:.82rem}.status{color:#fbd49a}#authProgress{min-height:26px;white-space:pre-wrap}
+  </style>
+</head>
+<body>
+<main>
+  <header><span class="eyebrow">ENQUIRYFLOW · FIREBASE PILOT</span><a class="link secondary" href="../staff/">Staff demo ↗</a></header>
+  <h1>Check your Firebase connection safely.</h1>
+  <p>This isolated diagnostic page checks the Firestore rules you just published. It does <strong>not</strong> collect student enquiries, publish courses, or change your existing websites.</p>
+  <section>
+    <h2>1. Public access and privacy</h2>
+    <p class="info">Checks whether the fictional public institute profile is readable and whether anonymous visitors are blocked from private enquiries and staff records. No private records are displayed.</p>
+    <button id="publicCheck" type="button">Run public security checks</button>
+    <ul id="publicResults" class="results" aria-live="polite"></ul>
+  </section>
+  <section>
+    <h2>2. Verify authorized owner access</h2>
+    <p class="info">Use the Firebase Email/Password user you created. The password is sent to <strong>Firebase Authentication only</strong>, never stored by this page or sent to EnquiryFlow. Verify this page is on <strong>chennamatta889.github.io</strong> before entering credentials.</p>
+    <form id="loginForm">
+      <label>Firebase owner email<input type="email" id="ownerEmail" autocomplete="username" required maxlength="180"></label>
+      <label>Firebase owner password<input type="password" id="ownerPassword" autocomplete="current-password" required></label>
+      <div class="actions"><button id="loginButton" type="submit">Verify owner account</button><button id="logoutButton" class="secondary" type="button" disabled>Sign out</button></div>
+    </form>
+    <p id="authProgress" class="status" aria-live="polite">Not signed in for this diagnostic.</p>
+    <ul id="ownerResults" class="results" aria-live="polite"></ul>
+  </section>
+  <section>
+    <h2>What results should I see?</h2>
+    <p class="info">Public institute access: <b>PASS</b>. Anonymous access to private collections: <b>DENIED (PASS)</b>. Owner role: <b>owner / active / demo-tech-academy</b>. Authorized enquiry list access: <b>PASS</b> (even if there are zero enquiries).</p>
+    <p class="small">This checks read permissions only. It doesn't establish that real student submissions, spam protection, or email notifications are ready. Keep the live portal in demo mode until test writes and security review are completed.</p>
+  </section>
+</main>
+<script type="module" src="./firebase-check.js"></script>
+</body>
+</html>
