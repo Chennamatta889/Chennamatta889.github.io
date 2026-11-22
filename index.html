@@ -613,6 +613,26 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
   .filter-chevron{transition:none}
 }
 
+/* Live employer source transparency and compact phone layout. */
+.live-discovery-card{padding:14px;border:1px solid #31506a;border-radius:12px;background:#122a40;min-width:0;overflow-wrap:anywhere}
+.live-discovery-card a{color:#a5f3ed;text-decoration:underline;font-size:12px}
+.live-discovery-errors{grid-column:1/-1;border:1px solid #52647e;border-radius:10px;padding:11px 14px;background:#1b2d3d;font-size:12px;overflow-wrap:anywhere}
+.live-discovery-errors summary{cursor:pointer;color:#e8d5a0;font-weight:700}
+.live-discovery-errors ul{margin:9px 0 2px;padding-left:22px;color:#c9d7e6;line-height:1.8}
+#liveDiscoveryV2Results>p{grid-column:1/-1}
+#liveDiscoveryV2[aria-busy="true"]{border-color:#5ecbab!important}
+@media(max-width:760px){
+  html,body{max-width:100%;overflow-x:clip}
+  #app,.app-shell,.main-shell,.page-content,.page,.toolbar{min-width:0;max-width:100%}
+  #page-discover>*{min-width:0;max-width:100%}
+  #page-discover>#liveDiscoveryV2{order:2}
+  #page-discover>#careeropsSearchV1{order:3}
+  #page-discover>.india-portal-search,#page-discover>.india-employer-directory,
+  #page-discover>.enterprise-directory{order:4}
+  #liveDiscoveryV2,#careeropsSearchV1{padding:14px!important}
+  #liveDiscoveryV2Results{grid-template-columns:1fr!important}
+}
+
 </style>
 </head>
 <body>
@@ -692,6 +712,24 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
           <button class="btn btn-outline mobile-reset-filter" id="quickResetFilters" type="button" hidden>Clear filters</button>
         </div>
         <div class="search-scope"><button class="btn btn-outline fresher-shortcut" id="showFresherJobs" type="button">Find fresher & internship jobs</button><span>Search job titles, employers and skills</span><label for="searchDescriptions"><input type="checkbox" id="searchDescriptions"> Include job descriptions</label><span class="search-scope-tip">Enable this only to see broader matches, including jobs that merely mention a tool.</span></div>
+        <p class="feed-freshness-warning" id="feedFreshness" role="status" hidden></p><p class="discover-feed-status" id="discoverFeedStatus" role="status" hidden></p><button class="btn btn-outline" id="retryDiscoverFeed" type="button" hidden>Reload jobs</button>
+        <div class="results-line"><strong id="resultsCount" hidden aria-hidden="true"></strong><span class="sample-tag" id="dataModeTag">Sample data</span><button class="btn btn-outline discover-reset" id="resetDiscoverFilters" type="button" hidden>Reset search &amp; filters</button></div>
+        <div class="job-grid" id="jobsGrid"></div>
+        <div class="discover-pagination"><button class="btn btn-outline" id="loadMoreJobs" type="button" hidden>Show more jobs</button></div>
+        <div class="empty-state" id="emptyJobs" hidden><div class="empty-icon">⌕</div><h3>No jobs found</h3><p id="emptyJobsHint">No India-based openings match these filters. Try a wider India location, or add a job from an employer portal.</p><button class="btn btn-outline" id="clearFilters">Clear filters</button></div>
+        <section id="liveDiscoveryV2" aria-label="Live employer job search" style="margin:14px 0;padding:16px;border:1px solid #2c7a79;border-radius:14px;background:#102a36;color:#e8f1fb">
+ <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px"><strong>Live employer job search · v2.1</strong><span style="font-size:12px;opacity:.8">Experimental · Read-only · 30 days</span></div>
+ <p style="font-size:13px;margin:10px 0">Fetch matching jobs directly from public employer boards using the role typed above. Only India-based roles updated within 30 days are shown. Live search uses the title and location above; experience and advanced filters apply only to published vacancies. Updated dates may not be original posting dates.</p>
+ <button id="liveDiscoveryV2Run" type="button" class="btn btn-primary" style="margin:5px 0 12px">Find live employer jobs</button>
+ <p id="liveDiscoveryV2Status" role="status" aria-live="polite" style="font-size:13px">Enter a job title above, then select Find live employer jobs.</p>
+ <div id="liveDiscoveryV2Results" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px"></div>
+</section>
+<section id="careeropsSearchV1" aria-label="Expanded external job discovery" style="margin:14px 0 20px;padding:16px;border:1px solid #31506a;border-radius:14px;background:#102238;color:#e8f1fb">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><strong>Expanded job discovery · v1</strong><span style="font-size:12px;opacity:.8">External employer searches · No automatic applications</span></div>
+  <p style="margin:8px 0 12px;font-size:13px">Search verified employer career portals and major job sites using your current keyword. These links are live searches, not confirmed vacancies in Career-Ops. Check each posting's date, India location and eligibility.</p>
+  <div id="careeropsSearchV1Links" style="display:flex;flex-wrap:wrap;gap:9px"></div>
+  <div id="careeropsDotnetV1" hidden style="margin-top:12px"><strong style="font-size:13px">.NET employer pages to check</strong><div id="careeropsDotnetV1Links" style="display:flex;flex-wrap:wrap;gap:9px;margin-top:8px"></div><p style="font-size:12px;opacity:.8;margin:8px 0 0">Employer pages are discovery leads, not individually verified current job postings.</p></div>
+</section>
         <section class="india-portal-search" aria-label="Search India's major job portals">
           <div><h2>Search Indian job portals directly</h2><p>Use your role keyword and selected location to search Naukri and Indeed. Open LinkedIn's homepage to search Jobs directly there. These are third-party links, not imported listings; other Career-Ops filters do not transfer.</p></div>
           <div class="india-portal-links">
@@ -736,24 +774,6 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
           <p id="enterpriseCareerStatus" role="status" aria-live="polite">Loading verified official career links…</p>
           <div class="enterprise-career-grid" id="enterpriseCareerCards"></div>
         </details>
-        <p class="feed-freshness-warning" id="feedFreshness" role="status" hidden></p><p class="discover-feed-status" id="discoverFeedStatus" role="status" hidden></p><button class="btn btn-outline" id="retryDiscoverFeed" type="button" hidden>Reload jobs</button>
-        <div class="results-line"><strong id="resultsCount" hidden aria-hidden="true"></strong><span class="sample-tag" id="dataModeTag">Sample data</span><button class="btn btn-outline discover-reset" id="resetDiscoverFilters" type="button" hidden>Reset search &amp; filters</button></div>
-        <section id="liveDiscoveryV2" aria-label="Live employer job search" style="margin:14px 0;padding:16px;border:1px solid #2c7a79;border-radius:14px;background:#102a36;color:#e8f1fb">
- <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px"><strong>Live employer job search · v2</strong><span style="font-size:12px;opacity:.8">Experimental · Read-only · 30 days</span></div>
- <p style="font-size:13px;margin:10px 0">Fetch matching jobs directly from public employer boards using the role typed above. Only India-based roles updated within 30 days are shown. Results depend on employer API access; updated date is not necessarily original posting date.</p>
- <button id="liveDiscoveryV2Run" type="button" class="btn btn-primary" style="margin:5px 0 12px">Find live employer jobs</button>
- <p id="liveDiscoveryV2Status" role="status" aria-live="polite" style="font-size:13px">Enter a job title above, then select Find live employer jobs.</p>
- <div id="liveDiscoveryV2Results" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px"></div>
-</section>
-<section id="careeropsSearchV1" aria-label="Expanded external job discovery" style="margin:14px 0 20px;padding:16px;border:1px solid #31506a;border-radius:14px;background:#102238;color:#e8f1fb">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><strong>Expanded job discovery · v1</strong><span style="font-size:12px;opacity:.8">External employer searches · No automatic applications</span></div>
-  <p style="margin:8px 0 12px;font-size:13px">Search verified employer career portals and major job sites using your current keyword. These links are live searches, not confirmed vacancies in Career-Ops. Check each posting's date, India location and eligibility.</p>
-  <div id="careeropsSearchV1Links" style="display:flex;flex-wrap:wrap;gap:9px"></div>
-  <div id="careeropsDotnetV1" hidden style="margin-top:12px"><strong style="font-size:13px">.NET employer pages to check</strong><div id="careeropsDotnetV1Links" style="display:flex;flex-wrap:wrap;gap:9px;margin-top:8px"></div><p style="font-size:12px;opacity:.8;margin:8px 0 0">Employer pages are discovery leads, not individually verified current job postings.</p></div>
-</section>
-        <div class="job-grid" id="jobsGrid"></div>
-        <div class="discover-pagination"><button class="btn btn-outline" id="loadMoreJobs" type="button" hidden>Show more jobs</button></div>
-        <div class="empty-state" id="emptyJobs" hidden><div class="empty-icon">⌕</div><h3>No jobs found</h3><p id="emptyJobsHint">No India-based openings match these filters. Try a wider India location, or add a job from an employer portal.</p><button class="btn btn-outline" id="clearFilters">Clear filters</button></div>
       </section>
       <section class="page" id="page-applications">
         <div class="page-heading"><div><div class="eyebrow">TRACK</div><h1>Your application <span>pipeline.</span></h1><p>Move jobs through your own workflow. No applications are submitted from this UI.</p></div><button class="btn btn-outline" data-nav="discover">Browse jobs ↗</button></div>
@@ -966,6 +986,6 @@ for(const id of ["resetDiscoverFilters","clearFilters","quickResetFilters"]){con
 render();
 })();
 </script>
-<script defer src="./live-job-discovery-v2.js?v=20261122-v2"></script>
+<script defer src="./live-job-discovery-v2.js?v=20261122-v2-1-fixed"></script>
 </body>
 </html>
