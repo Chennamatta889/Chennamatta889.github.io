@@ -169,3 +169,33 @@
  .gw-explore-fold>.gw-two-column .gw-discover-tile{padding:14px}
  .gw-appliance-options{padding:7px 10px 10px}
 }
+
+
+/* GharWatt Verdict and three-path comparison — concise mobile-first decision UI. */
+.gw-verdict{margin:16px 0 7px;padding:clamp(14px,2.8vw,22px);border-radius:16px;border:1px solid #e5d1ad;background:#fffdf5;box-shadow:0 7px 28px #34210b0b}
+.gw-verdict-eyebrow{font-weight:880;font-size:.72rem;color:#83552a;letter-spacing:.08em;line-height:1.5}
+.gw-verdict h4{margin:7px 0 7px;font-size:clamp(1.1rem,2.9vw,1.4rem);line-height:1.27;color:#322143}
+.gw-verdict>p{line-height:1.6;font-size:.87rem;color:#574d63}
+.gw-verdict ol{padding-left:23px;margin:10px 0;font-size:.86rem;color:#3b2c4b;line-height:1.6}
+.gw-verdict li{padding-left:2px;margin:6px 0}
+.gw-verdict-caution{padding:10px 12px;border-radius:10px;border-left:3px solid #c7944d;background:#fff6e7;color:#563d2d!important}
+.gw-verdict>small{font-size:.74rem;color:#776782;display:block;margin:9px 0}
+.gw-verdict-action{display:inline-flex;align-items:center;justify-content:center;min-height:43px;border-radius:10px;padding:10px 13px;background:#3b2854;color:#fff!important;font-size:.82rem;font-weight:780;line-height:1.45;text-align:center;text-decoration:none}
+.gw-decision-fold{border-color:#cbb6da}
+.gw-decision-fold>summary{background:linear-gradient(120deg,#f7ecff,#fff6eb)}
+.gw-decision-section{min-width:0}
+.gw-decision-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0 12px}
+.gw-decision-card{border:1px solid #e3d5e8;border-radius:14px;padding:15px;background:#fffdfd;display:flex;flex-direction:column;gap:9px;min-width:0}
+.gw-decision-card:nth-child(1){background:#fbf9ff}
+.gw-decision-index{font-size:.69rem;letter-spacing:.07em;font-weight:850;color:#77539d}
+.gw-decision-card strong{font-size:1rem;color:#322143;line-height:1.45;display:block}
+.gw-decision-card p{font-size:.81rem;color:#584b63;line-height:1.6;margin:8px 0}
+.gw-decision-card>a{margin-top:auto;font-size:.78rem;font-weight:780;text-underline-offset:3px;color:#63418f}
+.gw-decision-adjust{margin:10px 0;background:#fefcff}
+.gw-decision-adjust>summary{font-size:.87rem;min-height:45px}
+.gw-adjust-intro{font-size:.84rem;color:#62566c;line-height:1.6;padding:0 15px;margin:0 0 11px}
+.gw-decision-adjust .gw-entry-grid{margin:10px 15px 16px}
+.gw-decision-disclaimer{border-left:4px solid #c99e64;padding:13px;background:#fffaec;color:#4f3e29;font-size:.84rem;line-height:1.65;border-radius:0 10px 10px 0}
+.gw-decision-trust{font-size:.78rem;color:#776d7f;line-height:1.65;margin:15px 0 0}
+@media(max-width:850px){.gw-decision-cards{grid-template-columns:1fr}.gw-decision-card{padding:13px}}
+@media(max-width:620px){.gw-verdict{padding:13px;border-radius:12px}.gw-verdict-action{width:100%}.gw-decision-cards{gap:9px}.gw-decision-card{gap:6px}.gw-decision-adjust .gw-entry-grid{margin:8px 12px 12px}}
