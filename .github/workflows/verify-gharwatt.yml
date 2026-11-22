@@ -31,6 +31,7 @@ jobs:
           node --check gharwatt/assets/energy-v2-extra.js
           node --check gharwatt/assets/toolkit-ui.js
           node --check gharwatt/assets/bill-advisor.js
+          node --check gharwatt/assets/bill-crop.js
           python3 -m json.tool gharwatt/assets/affiliate-links.json > /dev/null
           node --test gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs gharwatt/tests/energy-v2.test.cjs gharwatt/tests/energy-v2-extra.test.cjs gharwatt/tests/toolkit-ui.test.cjs gharwatt/tests/bill-advisor.test.cjs
       - name: Validate local page references
@@ -79,7 +80,11 @@ jobs:
           script=(root/'assets'/'energy-v2.js').read_text(encoding='utf-8')
           assert 'ocrResizePlan' in script and 'function stopReading' in script, 'OCR optimization/cancellation missing'
           assert 'extractPdf' in script and 'application/pdf' in script, 'PDF support missing'
+          assert 'assessBillText' in script, 'unreliable OCR guard missing'
           assert 'id="gw-advisor"' in photo_page, 'bill advisor missing'
+          assert 'id="v2-crop-canvas"' in photo_page, 'photo crop UI missing'
+          assert 'id="v2-confirm-arrears"' in photo_page, 'bill arrears input missing'
+          assert 'src="../assets/bill-crop.js?v=20261122-ocr-fix"' in photo_page, 'photo crop script not loaded'
           assert 'id="gw-appliance-rows"' in photo_page, 'appliance plan missing'
           assert 'id="gw-confirm"' not in photo_page, 'obsolete confirmation control'
           assert 'src="../assets/bill-advisor.js?v=20261122-advisor-v1"' in photo_page, 'advisor script not loaded'
