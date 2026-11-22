@@ -50,3 +50,29 @@ test('Student detail modal only opens a record from approved public courses',()=
  assert.match(app,/id="courseDetailsDialog"/);
  assert.match(app,/esc\(c\.title\)/);
 });
+
+test('Public sample curriculum guides include details and truthful availability language',()=>{
+ const student=read('../assets/production-student.js');
+ assert.match(student,/import \{courseTemplates,faqTemplates\}/);
+ assert.match(student,/id="guideGrid"/);
+ assert.match(student,/function renderCurriculumGuides\(\)/);
+ assert.match(student,/data-guide-enquire/);
+ assert.match(student,/View complete syllabus and projects/);
+ assert.match(student,/not confirmed Ctech Academy course offerings/);
+ assert.match(student,/Not confirmed/);
+ assert.match(student,/selectedCourse='';renderSelects\(\)/);
+ assert.match(student,/id="generalHelpList"/);
+ assert.match(student,/button.disabled=!\(productionReady&&identity\?\.verified&&identity\?\.google\)/);
+});
+test('Only authorized owner session can install idempotent private drafts',()=>{
+ const adapter=read('../assets/production-adapter.js');
+ const staff=read('../assets/production-staff.js');
+ assert.match(adapter,/export async function installCtechCatalogueDrafts\(/);
+ assert.match(adapter,/verifiedRole\(\)\)!=='owner'/);
+ assert.match(adapter,/runTransaction/);
+ assert.match(adapter,/if\(existing.exists\(\)\)return false/);
+ assert.match(adapter,/institute_id:institutionId\(\),published:false/);
+ assert.match(adapter,/record.fee_inr=null;record.duration_weeks=null/);
+ assert.match(staff,/if\(state\?\.role==='owner'\)void autoPopulateCtechCatalogue\(\)/);
+ assert.match(staff,/installCtechCatalogueDrafts\(courses,faqs\)/);
+});
