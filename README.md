@@ -1,15 +1,21 @@
-# Career-Ops at chennamatta889.github.io
+# Career-Ops — primary website
 
-The account homepage now displays Career-Ops at [https://chennamatta889.github.io/](https://chennamatta889.github.io/).
+**Only supported public deployment:** https://chennamatta889.github.io/#discover
 
-The root `index.html` is the original Career-Ops page with a same-origin HTML `<base href="/career-ops-cloud/">` reference. Scripts, styles, the published public job feed, and browser-only PDF/DOCX assets are served by the existing [career-ops-cloud](https://github.com/Chennamatta889/career-ops-cloud) GitHub Pages deployment. This keeps the main URL at the root and avoids duplicated assets and a second independent job scanner. **The site is not a redirect or an iframe.**
+The account homepage repository publishes the latest Career-Ops source from
+`Chennamatta889/career-ops-cloud` as a full root-level GitHub Pages artifact.
+The root workflow builds its own anonymous India-only employer feed, checks
+freshness and deduplication, and publishes `/data/jobs.json` plus
+`/data/coverage-evidence.json`. The project repository remains the source of
+code, **not a second production Pages destination**. Project-site deployments
+are disabled in its `deploy-ui.yml` workflow.
 
-Existing content remains available:
-- [Personal portfolio](https://chennamatta889.github.io/portfolio/) (saved copy of the previous homepage, CSS, JS and portrait).
-- [DraftflowAI](https://chennamatta889.github.io/draftflowai/) (original directory retained).
+The old `/career-ops-cloud/` GitHub Pages address may remain publicly reachable
+until GitHub Pages is disabled in that repository's Settings → Pages. Do not
+link to or rely on that old site.
 
-The optional `.github/workflows/publish-career-ops.yml` is a full stand-alone artifact build if GitHub Pages is ever switched to GitHub Actions as publishing source. It is manually triggered only, to avoid duplicate scheduled scans.
+Preserved root paths: `/portfolio/`, `/draftflowai/`, Google Search Console
+verification files, `/ads.txt`, legal pages and resources.
 
-For Google authentication, Career-Ops uses the original allowed Supabase callback at `/career-ops-cloud/` and then forwards the verified session to `/#ai` on the same origin without putting tokens in the destination URL.
-
-When the source page's HTML layout changes, refresh this root `index.html` from the source repository, preserving the root `<base>` tag. JS/CSS/feed updates automatically load from the source path.
+GitHub OAuth callback settings may still reference the legacy project path;
+update approved callback URLs only after confirming the root login flow.
