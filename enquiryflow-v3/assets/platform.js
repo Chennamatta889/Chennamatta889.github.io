@@ -59,7 +59,7 @@ function allowedToEdit(role,table,published){if(table==='enquiries')return ['own
 export async function saveRecord(table,record,role='owner'){
  if(!['institute','courses','batches','faqs','enquiries'].includes(table))throw Error('Unsupported record type');
  if(!allowedToEdit(role,table,Boolean(record.published)))throw Error('Your role cannot save this record');
- if(isDemo){const data=getStore();if(table==='institute')data.institute={...data.institute,...record,updated_at:new Date().toISOString()};else{const current=data[table];const id=record.id||uniqueId();const index=current.findIndex(x=>x.id===id);const row={...(index>=0?current[index]:{}),...record,id};if(index>=0)current[index]=row;else current.unshift(row)}putStore(data);return record}
+ if(isDemo){const data=getStore();let saved;if(table==='institute'){data.institute={...data.institute,...record,updated_at:new Date().toISOString()};saved={...data.institute}}else{const current=data[table];const id=record.id||uniqueId();const index=current.findIndex(x=>x.id===id);const row={...(index>=0?current[index]:{}),...record,id};if(index>=0)current[index]=row;else current.unshift(row);saved={...row}}putStore(data);return saved}
  const map={institute:'ef3_institutes',courses:'ef3_courses',batches:'ef3_batches',faqs:'ef3_faqs',enquiries:'ef3_enquiries'};
  const s=await staffData();const id=s.institute.id;
  const row={...record};if(table!=='institute')row.institute_id=id;

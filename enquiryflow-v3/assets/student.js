@@ -1,4 +1,4 @@
-import {publicData,submitEnquiry,askAssistant,isDemo} from './firebase-platform.js';
+import {publicData,submitEnquiry,askAssistant,isDemo} from './firebase-platform.js?v=3.5';
 import {$,$$,esc,money,shortDate,str,safeUrl} from './utils.js?v=3.4';
 import {filterCourses,filterUpcomingBatches,compareSelection,todayIndia} from './discovery.js';
 let data,selectedCourse='',messages=[],query='',category='All',courseMode='All',sort='featured',batchCourse='All',batchMode='All',compared=[],chatContext={courseId:null},asking=false;

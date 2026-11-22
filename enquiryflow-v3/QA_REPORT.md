@@ -55,3 +55,13 @@ Added 18 regression tests covering institute introduction, accurate course total
 - All **90 automated tests passed**; static check passed, JavaScript syntax checked.
 - Real database integration remains **disabled** in the public v3 demo. The separate Firebase project exists but restrictive rules were not successfully published and live auth/role testing remains incomplete.
 - Attempted Playwright screenshot using local Chromium; `net::ERR_BLOCKED_BY_ADMINISTRATOR` prevents local page navigation. Live browser checks are needed after Pages deployment. Production release remains NO-GO for real student records.
+
+
+## v3.5 Staff save diagnosis and release gate
+
+- Cause 1: public `CONFIG.demoMode` remains true; localStorage saves cannot synchronize devices or sessions.
+- Cause 2: a new course's Publish checkbox was unchecked by default, which saved a staff-visible draft but not a student-visible record.
+- Cause 3: previous course validation treated `0` as a missing fee.
+- Cause 4: saving errors and CSV import approvals were not displayed persistently near the form; prior success messages could be misleading.
+- Added `staff-form.js` pure input normalization, `Save draft` / `Save & publish` controls, explicit browser-only storage messaging, inline validation errors, duplicate-submission prevention, read-after-write verification, new saved-record IDs, and specific import approval guidance.
+- `npm test`: **103/103 passing**; `node scripts/check.mjs`: static checks pass. Browser E2E remains blocked by environment admin policy. **Do not treat the real Firebase backend as configured.**

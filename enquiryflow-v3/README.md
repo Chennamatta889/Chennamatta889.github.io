@@ -136,3 +136,15 @@ This release enhances the **existing isolated v3 demo**; it does not overwrite t
 **Institution workspace:** Improved dashboard with follow-up metrics, next published batches, enquiry stage distribution and quick links. Authorized staff can search private enquiries, filter by status and export only the filtered results as CSV. CSV fields are quoted and dangerous spreadsheet-formula prefixes are escaped. Exports include student contact details, so staff must store them securely and delete unused copies. Student-facing pages never see private lead records.
 
 **Verification:** `npm test` (90 tests including 15 discovery/filter/CSV and 7 UI-contract tests), `npm run check`, `node --check assets/student.js` and `node --check assets/staff.js`. A local Playwright browser navigation attempt still fails with `net::ERR_BLOCKED_BY_ADMINISTRATOR` in this sandbox; browser interaction tests must be performed on the published live preview using an available browser environment. No real institute data, production-grade Firebase auth/permissions, generative AI model, or email/SMS notification has been enabled by this UI release.
+
+
+## v3.5 Staff saving repair (2026-11-22)
+
+- All forms validate and normalize values in `assets/staff-form.js`; ₹0 course fees are accepted as valid.
+- The staff editor now has a clear **Save draft** vs **Save & publish** option for newly added courses, batches and FAQ answers. Existing published entries retain their explicit publish checkbox.
+- After every save, the staff application reloads from its configured data source and verifies the submitted record. False-positive success notifications are replaced with inline error messages, and duplicate clicks are temporarily disabled during the save.
+- Demo saves are strictly **local to the browser and origin**; they are NOT shared by Firebase, other browsers, devices, or a separate private/incognito session. Use the student page in the SAME browser to view published demo changes.
+- Imports have two distinct approval stages: **Stage for review → Approve as unpublished drafts → Edit + Save & publish**. The import feedback is retained after re-render.
+- The existing browser localStorage key remains unchanged (`enquiryflow_v3_demo_state`) so prior fictional edits in that browser are preserved.
+- The Firebase project is created, but public v3 stays in `demoMode: true` while Firestore rules and staff-account provisioning require independent verification. Do not use real student contact information.
+- Graphic browser tests are unavailable in this environment due to a Chromium administrator policy; Node tests and GitHub deployment checks are not a substitute for cross-browser interaction testing.

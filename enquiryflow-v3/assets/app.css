@@ -64,3 +64,9 @@ html{scroll-padding-top:96px}body{background:#fdfefd}::selection{background:#b8f
 @media(max-width:410px){.nav-action{display:none}.hero-metrics{flex-wrap:wrap}.course-card{padding:20px}.discovery-toolbar{grid-template-columns:1fr}.discovery-toolbar .search-control{grid-column:1}.batch-filters label{min-width:100%}.compare-tray-actions{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 @media(min-width:721px){.mobile-menu-toggle{display:none}}
+/* Explicit staff editor save state, particularly useful on narrow/mobile screens. */
+.save-help{margin:14px 0 6px;font-size:12px;line-height:1.5;color:#4d6578}
+.save-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.form-feedback{margin:12px 0;border:1px solid #a7ccdf;background:#eaf6fc;border-radius:10px;padding:10px 12px;color:#244f6b;font-size:13px;line-height:1.5}
+.form-feedback.save-error{border-color:#e7b8ad;background:#fff0eb;color:#913d2e}
+@media(max-width:620px){.save-actions{display:grid;grid-template-columns:1fr}.save-actions .button{width:100%;text-align:center}}

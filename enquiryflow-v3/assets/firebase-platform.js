@@ -2,7 +2,7 @@
    requires verified Firebase Auth and an administrator-provisioned ef3_staff role document.
    Until production anti-abuse is added, enquiry writes accept ONLY fictitious test records. */
 import {CONFIG} from './config.js';
-import * as demo from './platform.js';
+import * as demo from './platform.js?v=3.5';
 import {validateEnquiry,searchKnowledge,uniqueId} from './utils.js?v=3.4';
 export const isDemo = CONFIG.demoMode !== false || !CONFIG.firebase?.apiKey || !CONFIG.firebase?.projectId;
 let initialized;

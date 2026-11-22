@@ -1,5 +1,5 @@
 import fs from 'node:fs';import path from 'node:path';
-const base=process.cwd();const js=['assets/config.js','assets/fixtures.js','assets/utils.js','assets/discovery.js','assets/firebase-platform.js','assets/platform.js','assets/student.js','assets/staff.js'];
+const base=process.cwd();const js=['assets/config.js','assets/fixtures.js','assets/utils.js','assets/discovery.js','assets/staff-form.js','assets/firebase-platform.js','assets/platform.js','assets/student.js','assets/staff.js'];
 const html=['index.html','staff/index.html'];let count=0;
 for(const file of [...js,...html]){if(!fs.existsSync(path.join(base,file)))throw Error('Missing '+file);count++;}
 const contents=js.map(p=>fs.readFileSync(path.join(base,p),'utf8')).join('\n');
