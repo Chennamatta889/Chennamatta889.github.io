@@ -461,6 +461,18 @@ function initTracker(){
  const key='gharwatt:monthly-electricity-v2';
  const currentMonth=new Date();$('v2-tracker-month').value=currentMonth.getFullYear()+'-'+String(currentMonth.getMonth()+1).padStart(2,'0');
  const storage=(()=>{try{return window.localStorage}catch{return null}})();
+ // Discover can copy values into this form for this tab. Nothing is saved until the user consents here.
+ try{
+  const session=window.sessionStorage;
+  const pending=JSON.parse(session.getItem('gharwatt:tracker-prefill-v1')||'null');
+  session.removeItem('gharwatt:tracker-prefill-v1');
+  if(pending&&Number.isFinite(pending.createdAt)&&Date.now()-pending.createdAt<15*60*1000&&
+      valid(pending.amount,0,500000)){
+   $('v2-tracker-amount').value=pending.amount;
+   if(valid(pending.units,0,100000))$('v2-tracker-units').value=pending.units;
+   set('v2-tracker-status','Numbers copied from Start Here. Nothing saved yet. Tick the consent box and press Save only if you want to keep them.');
+  }
+ }catch{}
  let rows=[];
  try{const data=JSON.parse(storage?.getItem(key)||'[]');if(Array.isArray(data))rows=data.filter(x=>/^\d{4}-(?:0[1-9]|1[0-2])$/.test(x.month)&&valid(x.amount,0,500000)).slice(-24)}catch{}
  function show(){
