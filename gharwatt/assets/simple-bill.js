@@ -46,7 +46,7 @@ function update(){
  oldBox.hidden=r.oldDues===null;
  if(r.oldDues!==null){
   oldBox.textContent='Old dues entered: '+money(r.oldDues)+
-   (r.oldDues<=r.amount?'. Difference before other adjustments: '+money(r.estimatedCurrentPortion)+'.':' (more than total payable; check the bill).');
+   (r.oldDues<=r.amount?'. That is '+Math.round(r.oldDues/Math.max(1,r.amount)*100)+'% of the amount payable. Remaining difference before adjustments: '+money(r.estimatedCurrentPortion)+'.':' (more than total payable; check the bill).');
  }
  status.textContent='Example only: 10% fewer units at ₹'+r.rate+'/unit. The actual bill reduction depends on tariff slabs and other charges.';
 }
