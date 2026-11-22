@@ -4,7 +4,7 @@
 const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
 const number=n=>new Intl.NumberFormat('en-IN',{maximumFractionDigits:1}).format(n);
-const valid=(n,min,max)=>Number.isFinite(Number(n))&&String(n).trim()!==''&&Number(n)>=min&&Number(n)<=max;
+const valid=(n,min,max)=>n!==null&&n!==undefined&&typeof n!=='boolean'&&String(n).trim()!==''&&Number.isFinite(Number(n))&&Number(n)>=min&&Number(n)<=max;
 const set=(id,text)=>{let el=$(id);if(el)el.textContent=text;};
 const read=(id)=>$(id)?.value;
 const lineMatch=(lines,labels)=>{
@@ -17,10 +17,25 @@ const lineMatch=(lines,labels)=>{
 };
 function parseBillText(raw){
  const lines=String(raw||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean).slice(0,400);
- const amount=lineMatch(lines,[/^(?:net\s+)?(?:total\s+)?(?:amount\s+(?:payable|due)|bill\s+amount|total\s+(?:due|bill|payable)|payable\s+amount|current\s+bill\s+amount)\b[\s:–-]*/i,/^grand\s+total\b[\s:–-]*/i]);
+ const amount=lineMatch(lines,[/^rounded\s+bill\b[\s:–-]*/i,/^(?:amount\s+(?:payable|due)|total\s+(?:due|payable)|payable\s+amount)\b[\s:–-]*/i,/^(?:net\s+bill\s+amount|bill\s+amount|total\s+bill\s+amount)\b[\s:–-]*/i,/^grand\s+total\b[\s:–-]*/i,/^current\s+bill\s+amount\b[\s:–-]*/i]);
  const units=lineMatch(lines,[/^(?:units\s+(?:consumed|billed)|(?:total\s+)?consumption\s*\(?(?:kwh|units)?\)?|billed\s+units|energy\s+consumed\s*\(?(?:kwh)?\)?)\b[\s:–-]*/i]);
  const days=lineMatch(lines,[/^(?:billing\s+(?:days|period\s+days)|number\s+of\s+days)\b[\s:–-]*/i]);
- return {amount:valid(amount,0,500000)?amount:null,units:valid(units,0,100000)?units:null,days:valid(days,1,120)?days:null};
+ const currentCharges=lineMatch(lines,[/^total\s+(?:current\s+)?charges?\b[\s:–-]*/i,/^current\s+charges?\b[\s:–-]*/i]);
+ const arrears=lineMatch(lines,[/^total\s+arrears\b[\s:–-]*/i,/^net\s+arrears\b[\s:–-]*/i]);
+ return {amount:valid(amount,0,500000)?amount:null,units:valid(units,0,100000)?units:null,days:valid(days,1,120)?days:null,
+  currentCharges:valid(currentCharges,0,500000)?currentCharges:null,
+  arrears:valid(arrears,0,500000)?arrears:null};
+}
+/* A missing label or unreliable OCR must not become a fabricated zero. */
+function assessBillText(raw,result,confidence=null){
+ const text=String(raw||'').trim();
+ const recognized=['amount','units','days'].filter(k=>result?.[k]!==null&&result?.[k]!==undefined).length;
+ const lowConfidence=confidence!==null&&Number.isFinite(Number(confidence))&&Number(confidence)<45;
+ const readable=text.length>=12&&recognized>0&&!lowConfidence;
+ return {readable,recognized,lowConfidence,
+  message:readable?'Possible values found. Check the original bill before confirming.':
+   lowConfidence?'The scanner is not confident about this photo. Do not trust the numbers; crop the amount or units section and retry, or enter them manually.':
+   'Could not reliably identify bill amount or units. The extracted text may be garbled. Crop a smaller section or enter details manually.'};
 }
 function compareBills(a,b){
  if(![a,b].every(x=>x&&valid(x.amount,0,500000)&&valid(x.days,1,120)))return null;
@@ -75,15 +90,21 @@ function initReader(){
  if(!$('v2-reader'))return;
  const status=$('v2-ocr-status'),button=$('v2-read-photo'),cancel=$('v2-ocr-cancel'),progress=$('v2-ocr-progress');
  let scriptLoad=null,pdfScriptLoad=null,sharedWorker=null,workerLoad=null,currentJob=null;
- function show(){
+ function show(confidence=null){
   const r=parseBillText(read('v2-ocr-text'));
+  const quality=assessBillText(read('v2-ocr-text'),r,confidence);
   set('v2-ocr-amount',r.amount===null?'Not found — enter manually':money(r.amount));
   set('v2-ocr-units',r.units===null?'Not found — check your bill':number(r.units)+' units');
   set('v2-ocr-days',r.days===null?'Not found':r.days+' days');
-  if(r.amount!==null)$('v2-confirm-amount').value=r.amount;
-  if(r.units!==null)$('v2-confirm-units').value=r.units;
-  if(r.days!==null&&$('v2-confirm-days'))$('v2-confirm-days').value=r.days;
-  set('v2-ocr-status','Review every value against the original bill. Reading errors are possible.');
+  if(quality.readable){
+   if(r.amount!==null)$('v2-confirm-amount').value=r.amount;
+   if(r.units!==null)$('v2-confirm-units').value=r.units;
+   if(r.days!==null&&$('v2-confirm-days'))$('v2-confirm-days').value=r.days;
+   if(r.currentCharges!==null&&$('v2-confirm-current'))$('v2-confirm-current').value=r.currentCharges;
+   if(r.arrears!==null&&$('v2-confirm-arrears'))$('v2-confirm-arrears').value=r.arrears;
+  }
+  set('v2-ocr-status',quality.message);
+  return quality;
  }
  $('v2-extract').addEventListener('click',show);
  function updateProgress(message,value){
@@ -226,15 +247,23 @@ function initReader(){
     });
    }
    const w=image.width||image.naturalWidth,h=image.height||image.naturalHeight;
-   const plan=ocrResizePlan(w,h);
-   if(!plan)throw new Error('Invalid image dimensions');
-   if(!plan.resized&&file.size<=2000000)return {blob:file,compressed:false,plan};
+   const focus=window.GharWattCrop?.getSelection?.();
+   const sx=focus?Math.floor(w*focus.x):0,sy=focus?Math.floor(h*focus.y):0;
+   const sw=focus?Math.max(1,Math.min(w-sx,Math.round(w*focus.width))):w;
+   const sh=focus?Math.max(1,Math.min(h-sy,Math.round(h*focus.height))):h;
+   const basePlan=ocrResizePlan(sw,sh);
+   if(!basePlan)throw new Error('Invalid image dimensions');
+   const improve=Boolean($('v2-improve-contrast')?.checked);
+   const scale=focus?Math.min(2,2400/Math.max(sw,sh),Math.sqrt(3600000/(sw*sh))):1;
+   const plan=focus?{width:Math.max(1,Math.round(sw*scale)),height:Math.max(1,Math.round(sh*scale)),resized:true}:basePlan;
+   if(!focus&&!improve&&!plan.resized&&file.size<=2000000)return {blob:file,compressed:false,plan};
    const canvas=document.createElement('canvas');canvas.width=plan.width;canvas.height=plan.height;
    const ctx=canvas.getContext('2d',{alpha:false});
    if(!ctx)throw new Error('Image resizing not supported');
    ctx.fillStyle='#fff';ctx.fillRect(0,0,plan.width,plan.height);
    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-   ctx.drawImage(image,0,0,plan.width,plan.height);
+   if(improve)ctx.filter='grayscale(1) contrast(1.65)';
+   ctx.drawImage(image,sx,sy,sw,sh,0,0,plan.width,plan.height);
    const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Photo processing failed')),'image/jpeg',.9));
    canvas.width=0;canvas.height=0;
    return {blob,compressed:true,plan};
@@ -277,10 +306,14 @@ function initReader(){
    updateProgress(image.compressed?'Reading optimized photo…':'Reading photo…',0);
    const result=await limit(worker.recognize(image.blob),70000,'Reading the photo took too long',job);
    if(job.cancelled)return;
-   $('v2-ocr-text').value=String(result?.data?.text||'').slice(0,16000);
+   const fresh=String(result?.data?.text||'').trim();
+   const append=Boolean($('v2-ocr-add-mode')?.checked);
+   const earlier=read('v2-ocr-text').trim();
+   $('v2-ocr-text').value=(append&&earlier?earlier+'\n'+fresh:fresh).slice(0,16000);
    if(progress){progress.value=100;}
-   show();
-   set('v2-ocr-status','Finished reading the photo locally. Please check the amount and units because OCR can make mistakes.');
+   const quality=show(result?.data?.confidence??null);
+   if(quality.readable)set('v2-ocr-status','Possible fields extracted from this photo. Verify them with the printed bill before using them.');
+   // Otherwise retain the prominent warning from show().
   }catch(e){
    if(job.cancelled)return;
    discardWorker();
@@ -298,20 +331,21 @@ function initReader(){
  });
  $('v2-clear').addEventListener('click',()=>{
   if(currentJob)stopReading('Photo reading stopped and cleared.');
-  ['v2-ocr-text','v2-confirm-amount','v2-confirm-units'].forEach(id=>$(id).value='');
-  if($('v2-confirm-days'))$('v2-confirm-days').value='30';
+  ['v2-ocr-text','v2-confirm-amount','v2-confirm-units','v2-confirm-current','v2-confirm-arrears','v2-confirm-days'].forEach(id=>{if($(id))$(id).value=''});
   $('v2-photo').value='';
   ['v2-ocr-amount','v2-ocr-units','v2-ocr-days'].forEach(id=>set(id,'—'));
   set('v2-ocr-status','Photo, PDF and recognized text cleared from this page.');
   window.dispatchEvent(new CustomEvent('gharwatt:bill-clear'));
  });
  $('v2-confirm').addEventListener('click',()=>{
-  const a=read('v2-confirm-amount'),u=read('v2-confirm-units'),d=read('v2-confirm-days');
+  const a=read('v2-confirm-amount'),u=read('v2-confirm-units'),d=read('v2-confirm-days'),current=read('v2-confirm-current'),arrears=read('v2-confirm-arrears');
   if(!valid(a,0,500000)){set('v2-ocr-status','Please enter a valid amount in rupees.');return;}
   if(!valid(d,1,120)||!Number.isInteger(Number(d))){set('v2-ocr-status','Please check the billing period. Enter a whole number from 1 to 120 days.');return;}
   if(String(u).trim()!==''&&!valid(u,0,100000)){set('v2-ocr-status','Please correct the optional units consumed field.');return;}
+  if(String(current).trim()!==''&&!valid(current,0,500000)){set('v2-ocr-status','Please correct the current charges.');return;}
+  if(String(arrears).trim()!==''&&!valid(arrears,0,500000)){set('v2-ocr-status','Please correct the arrears amount.');return;}
   set('v2-ocr-status','Verified for analysis: '+money(Number(a))+(String(u).trim()!==''?' and '+number(Number(u))+' units':'')+' across '+d+' days. Nothing has been uploaded or saved by GharWatt.');
-  window.dispatchEvent(new CustomEvent('gharwatt:bill-confirmed',{detail:{amount:Number(a),units:String(u).trim()===''?null:Number(u),days:Number(d)}}));
+  window.dispatchEvent(new CustomEvent('gharwatt:bill-confirmed',{detail:{amount:Number(a),units:String(u).trim()===''?null:Number(u),days:Number(d),currentCharges:String(current).trim()===''?null:Number(current),arrears:String(arrears).trim()===''?null:Number(arrears)}}));
  });
  window.addEventListener('pagehide',()=>{if(currentJob)stopReading();else discardWorker()},{once:true});
 }
@@ -468,5 +502,5 @@ function initWhatsApp(){
  wire('v2-change-whatsapp',()=> 'My GharWatt electricity bill comparison: '+$('v2-change-rupees').textContent+'. '+$('v2-change-explain').textContent+' https://chennamatta889.github.io/gharwatt/bill-change/');
 }
 initReader();initAppliances();initComparison();initGoal();initTracker();initFinance();initRoof();initCooling();initWhatsApp();
-window.GharWattV2=Object.freeze({parseBillText,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances,ocrResizePlan});
+window.GharWattV2=Object.freeze({parseBillText,assessBillText,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances,ocrResizePlan});
 })();
