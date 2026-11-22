@@ -180,7 +180,7 @@ window.addEventListener('gharwatt:bill-confirmed',event=>{
  const data={amount:detail.amount,units:detail.units,days:oldDays};
  verified=explainBill(data,{});
  if(!verified){msg('Confirm an amount and valid billing days first.');return;}
- for(const t of chargeTypes)delete $('gw-charge-'+t.id).dataset.edited;
+ for(const t of chargeTypes){$('gw-charge-'+t.id).value='';delete $('gw-charge-'+t.id).dataset.edited;}
  showBreakdown();
  renderBill();renderComparison();
  msg('Your bill details are verified for this session. Review optional charge fields, compare bills, then build a personal plan.');
@@ -198,6 +198,7 @@ $('gw-download-report').addEventListener('click',()=>{
  msg('Report downloaded on your device.');
 });
 $('gw-print-report').addEventListener('click',()=>{if(!verified)return;updateReport();window.print();});
+window.addEventListener('gharwatt:bill-clear',()=>{$('gw-advisor-reset').click();});
 $('gw-advisor-reset').addEventListener('click',()=>{
  verified=null;comparison=null;plan=null;['gw-prev-amount','gw-prev-units'].forEach(id=>$(id).value='');
  for(const t of chargeTypes){$('gw-charge-'+t.id).value='';delete $('gw-charge-'+t.id).dataset.edited;}
