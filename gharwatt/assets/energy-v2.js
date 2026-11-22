@@ -85,11 +85,34 @@ function makeShare(buttonId,textFunction,statusId){
 }
 /* Resize very large bill photos before OCR to reduce mobile memory and processing time.
    Never upscale smaller images: tiny text still needs a sufficiently clear source. */
-function ocrResizePlan(width,height,maxEdge=2400,maxPixels=3600000){
+function ocrResizePlan(width,height,maxEdge=1800,maxPixels=2000000){
  const w=Number(width),h=Number(height);
  if(!Number.isFinite(w)||!Number.isFinite(h)||w<=0||h<=0||w>50000||h>50000)return null;
  const scale=Math.min(1,Number(maxEdge)/Math.max(w,h),Math.sqrt(Number(maxPixels)/(w*h)));
  return Object.freeze({width:Math.max(1,Math.round(w*scale)),height:Math.max(1,Math.round(h*scale)),resized:scale<0.999});
+}
+/* Optional lightweight automatic contrast normalization, applied only to small resized images.
+   This does not recover detail missing from the original photo. */
+function enhanceBillPixels(bytes,width,height){
+ if(!bytes||!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||bytes.length!==width*height*4)return false;
+ const counts=new Uint32Array(256);
+ for(let p=0;p<bytes.length;p+=4*8){
+  const gray=Math.round(bytes[p]*.299+bytes[p+1]*.587+bytes[p+2]*.114);
+  counts[gray]++;
+ }
+ let total=0;for(const count of counts)total+=count;
+ const loTarget=Math.floor(total*.006),hiTarget=Math.floor(total*.994);
+ let seen=0,low=0,high=255;
+ for(let i=0;i<256;i++){seen+=counts[i];if(seen>=loTarget){low=i;break}}
+ seen=0;for(let i=0;i<256;i++){seen+=counts[i];if(seen>=hiTarget){high=i;break}}
+ if(high-low<30)return false;
+ const factor=255/(high-low);
+ for(let p=0;p<bytes.length;p+=4){
+  const gray=bytes[p]*.299+bytes[p+1]*.587+bytes[p+2]*.114;
+  const out=Math.max(0,Math.min(255,Math.round((gray-low)*factor)));
+  bytes[p]=bytes[p+1]=bytes[p+2]=out;
+ }
+ return true;
 }
 function initReader(){
  if(!$('v2-reader'))return;
@@ -259,7 +282,7 @@ function initReader(){
    const basePlan=ocrResizePlan(sw,sh);
    if(!basePlan)throw new Error('Invalid image dimensions');
    const improve=Boolean($('v2-improve-contrast')?.checked);
-   const scale=focus?Math.min(2,2400/Math.max(sw,sh),Math.sqrt(3600000/(sw*sh))):1;
+   const scale=focus?Math.min(2,1800/Math.max(sw,sh),Math.sqrt(2000000/(sw*sh))):1;
    const plan=focus?{width:Math.max(1,Math.round(sw*scale)),height:Math.max(1,Math.round(sh*scale)),resized:true}:basePlan;
    if(!focus&&!improve&&!plan.resized&&file.size<=2000000)return {blob:file,compressed:false,plan};
    const canvas=document.createElement('canvas');canvas.width=plan.width;canvas.height=plan.height;
@@ -267,9 +290,14 @@ function initReader(){
    if(!ctx)throw new Error('Image resizing not supported');
    ctx.fillStyle='#fff';ctx.fillRect(0,0,plan.width,plan.height);
    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-   if(improve)ctx.filter='grayscale(1) contrast(1.65)';
    ctx.drawImage(image,sx,sy,sw,sh,0,0,plan.width,plan.height);
-   const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Photo processing failed')),'image/jpeg',.9));
+   if(improve){
+    try{
+     const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);
+     if(enhanceBillPixels(pixels.data,canvas.width,canvas.height))ctx.putImageData(pixels,0,0);
+    }catch{/* A blocked canvas enhancement must never stop normal local OCR. */}
+   }
+   const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Photo processing failed')),'image/jpeg',.88));
    canvas.width=0;canvas.height=0;
    return {blob,compressed:true,plan};
   }finally{
@@ -299,14 +327,14 @@ function initReader(){
     if(quality.readable)set('v2-ocr-status','Possible fields extracted from the PDF. Check the original bill and table values before confirming.');
     return;
    }
-   updateProgress('Optimizing the photo so it is faster to read…',undefined);
-   const image=await limit(preparedPhoto(file),20000,'Photo preparation took too long',job);
+   updateProgress('Preparing a smaller image for faster local recognition…',undefined);
+   const image=await limit(preparedPhoto(file),12000,'Photo preparation took too long',job);
    if(job.cancelled)return;
    updateProgress('Loading the OCR reader (first use downloads language data)…',undefined);
-   await limit(library(),30000,'OCR download was too slow or blocked',job);
+   await limit(library(),22000,'OCR download was too slow or blocked',job);
    if(job.cancelled)return;
    updateProgress('Starting the text-recognition engine…',undefined);
-   const worker=await limit(getWorker(),75000,'The OCR engine took too long to start',job);
+   const worker=await limit(getWorker(),40000,'The OCR engine took too long to start',job);
    if(job.cancelled)return;
    updateProgress(image.compressed?'Reading optimized photo…':'Reading photo…',0);
    // Sparse text for a full multi-column bill; single text block for a focused region.
@@ -316,7 +344,7 @@ function initReader(){
     preserve_interword_spaces:'1'
    }),10000,'OCR layout setup took too long',job);
    if(job.cancelled)return;
-   const result=await limit(worker.recognize(image.blob),70000,'Reading the photo took too long',job);
+   const result=await limit(worker.recognize(image.blob),30000,'Reading the photo took too long',job);
    if(job.cancelled)return;
    const fresh=String(result?.data?.text||'').trim();
    const append=Boolean($('v2-ocr-add-mode')?.checked);
@@ -514,5 +542,5 @@ function initWhatsApp(){
  wire('v2-change-whatsapp',()=> 'My GharWatt electricity bill comparison: '+$('v2-change-rupees').textContent+'. '+$('v2-change-explain').textContent+' https://chennamatta889.github.io/gharwatt/bill-change/');
 }
 initReader();initAppliances();initComparison();initGoal();initTracker();initFinance();initRoof();initCooling();initWhatsApp();
-window.GharWattV2=Object.freeze({parseBillText,assessBillText,ocrPageSegMode,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances,ocrResizePlan});
+window.GharWattV2=Object.freeze({parseBillText,assessBillText,ocrPageSegMode,enhanceBillPixels,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances,ocrResizePlan});
 })();
