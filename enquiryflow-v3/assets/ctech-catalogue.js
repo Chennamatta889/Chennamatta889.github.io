@@ -580,7 +580,7 @@ export const courseTemplates=Object.freeze([
 export const catalogueVersion='ctech-course-proposals-2026-11-22';
 export function remainingCourseTemplates(existing=[]){
  const normalize=s=>String(s||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
- const known=new Set(existing.map(x=>normalize(x.slug||x.title)));
+ const known=new Set(existing.flatMap(x=>[normalize(x.slug),normalize(x.title)]));
  return courseTemplates.filter(t=>!known.has(normalize(t.slug)));
 }
 
