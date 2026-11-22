@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+  <title>EnquiryFlow — Staff Firestore Pilot</title>
+  <link rel="stylesheet" href="./pilot.css?v=1">
+</head>
+<body>
+<main>
+  <header><span class="eyebrow">ENQUIRYFLOW · STAFF PILOT</span><a class="link secondary" href="./pilot-student.html">Student test form ↗</a></header>
+  <h1>Verify a fictional enquiry arrived.</h1>
+  <p>This isolated inbox reads only test enquiries sent using <strong>pilot.student@example.com</strong>. Your login is authenticated by Firebase; private enquiries are protected by the published Firestore rules.</p>
+  <div class="banner"><strong>Test only.</strong> No real admissions, email notifications, or student records should be entered here. Confirm the URL begins <strong>https://chennamatta889.github.io/</strong> before signing in.</div>
+  <section>
+    <h2>1. Sign in as the institute owner</h2>
+    <form id="loginForm" autocomplete="on">
+      <label>Firebase owner email<input id="ownerEmail" type="email" autocomplete="username" required maxlength="180"></label>
+      <label>Firebase owner password<input id="ownerPassword" type="password" autocomplete="current-password" required></label>
+      <div class="actions"><button type="submit" id="loginButton">Verify owner and open test inbox</button><button id="logoutButton" type="button" class="secondary" disabled>Sign out</button></div>
+    </form>
+    <p id="loginStatus" role="status" aria-live="polite">Not signed in.</p>
+  </section>
+  <section>
+    <h2>2. Firebase test enquiries</h2>
+    <p>Select <strong>Refresh test enquiries</strong> after you submit from the student test page. This view will never show actual student names or email addresses.</p>
+    <button id="refreshButton" type="button" disabled>Refresh test enquiries</button>
+    <p id="inboxStatus" class="status" role="status" aria-live="polite">Sign in above to view results.</p>
+    <ul id="inbox" class="results" aria-live="polite"></ul>
+  </section>
+  <footer><a href="./firebase-check.html">Connection diagnostics</a><span> · </span><a href="../staff/">Existing staff demo</a></footer>
+</main>
+<script type="module" src="./pilot-staff.js?v=1"></script>
+</body>
+</html>
