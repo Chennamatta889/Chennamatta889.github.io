@@ -29,8 +29,8 @@ jobs:
           python3 - <<'PY'
           import pathlib,re,sys
           root=pathlib.Path('gharwatt')
-          htmls=list(root.glob('*.html'))
-          assert len(htmls)>=19, len(htmls)
+          htmls=list(root.glob('*.html'))+list(root.glob('*/index.html'))
+          assert len(htmls)>=35, len(htmls)
           bad=[]
           for page in htmls:
               src=page.read_text(encoding='utf-8')
@@ -39,5 +39,13 @@ jobs:
                   path=url.split('#',1)[0].split('?',1)[0]
                   if path and not (page.parent/path).exists():bad.append((str(page),url))
           assert not bad,bad
-          print('Validated',len(htmls),'HTML pages and local references')
+          clean_pages=list(root.glob('*/index.html'))
+          assert len(clean_pages)>=17,len(clean_pages)
+          for page in clean_pages:
+              slug=page.parent.name
+              src=page.read_text(encoding='utf-8')
+              assert f'https://chennamatta889.github.io/gharwatt/{slug}/' in src,slug
+              assert 'href="../assets/styles.css"' in src,slug
+              assert not re.search(r'(?:href|src)=[\"\'][^\"\']+\\.html(?:[#?][^\"\']*)?[\"\']',src),slug
+          print('Validated',len(htmls),'HTML pages, clean links and old redirects')
           PY
