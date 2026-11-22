@@ -52,3 +52,22 @@ test('report explains assumptions and is printable without personal identifiers'
  assert.match(report,/30-day month/);
  assert.doesNotMatch(report,/Account:/);
 });
+
+
+test('arrears dominate historical bill; advisor explicitly blocks solar sizing from total payable',()=>{
+ const bill=a.explainBill({amount:1830,units:18,days:46,currentCharges:164.24,arrears:1667.15},{});
+ const insight=a.arrearsInsight(bill);
+ assert.equal(bill.amount,1830);
+ assert.equal(bill.currentCharges,164.24);
+ assert.equal(bill.arrears,1667.15);
+ assert.equal(insight.dominant,true);
+ assert.ok(insight.percentage>=90);
+ assert.match(insight.message,/Do NOT use total payable/);
+ const report=a.buildReport(bill,null,null,0,[]);
+ assert.match(report,/Total previous dues \/ arrears: ₹1,667/);
+ assert.match(report,/IMPORTANT:/);
+});
+test('advisor does not invent arrears warnings when old dues were not supplied',()=>{
+ const bill=a.explainBill({amount:2200,units:300,days:30},{});
+ assert.equal(a.arrearsInsight(bill),null);
+});
