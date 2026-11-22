@@ -230,3 +230,72 @@ body{background:#faf8f7}
 .gw-directory-quickstart p{color:#eee1fc;font-size:.88rem;line-height:1.62;margin:0}
 .gw-directory-quickstart .btn{background:#ffba6e;color:#291c38;font-weight:800;align-self:flex-start}
 @media(max-width:580px){.gw-directory-quickstart .btn{width:100%;text-align:center}}
+
+/* GharWatt experience polish — 2026-11-23. Presentation only; all tools and limits unchanged. */
+:root{--gw-surface:#fffcfa;--gw-elevated:#fff;--gw-outline:#e7dbe9;--gw-focus:#b285ff}
+.site-header{border-bottom:1px solid #e4d7e7;background:rgba(255,252,250,.95);box-shadow:0 4px 22px rgba(34,23,57,.055)}
+.site-header .nav-shell{max-width:1210px}
+.site-header .logo{font-weight:900;letter-spacing:-.045em}
+.site-header .logo-mark{background:linear-gradient(150deg,#33254d,#594077);color:#ffd299;border-radius:13px;box-shadow:0 5px 16px #2a193e23}
+.main-nav>a:not(.nav-cta){border-radius:10px;transition:background-color .2s,color .2s}
+.main-nav>a:not(.nav-cta):hover,.main-nav>a[aria-current=page]:not(.nav-cta){background:#f3eaf7;color:#4b3075}
+.main-nav .nav-cta{border-radius:12px;box-shadow:0 9px 22px #26164120}
+.hero{background:radial-gradient(circle at 86% 12%,rgba(163,112,208,.36),transparent 34%),radial-gradient(circle at 7% 93%,rgba(255,172,99,.10),transparent 40%),linear-gradient(120deg,#0d1426,#261c42 67%,#372549)}
+.hero-grid{gap:clamp(26px,5vw,66px);padding-block:clamp(62px,8vw,108px)}
+.hero h1{font-size:clamp(3.1rem,5.7vw,5.8rem);line-height:1.055;letter-spacing:-.065em;text-wrap:balance}
+.hero h1 em{color:#ffcc92}
+.hero .lead{color:#e3d9ed;max-width:615px;font-size:clamp(1rem,1.4vw,1.15rem)}
+.hero-actions .btn{min-height:51px;border-radius:13px;font-weight:830;transition:transform .2s,box-shadow .2s,background-color .2s}
+.hero-actions .btn-primary{background:#ffbf79;color:#231b36;box-shadow:0 12px 27px #ffbf7920}
+.hero-actions .btn:hover{transform:translateY(-2px)}
+.hero-note{color:#dcd1e5}
+.gw-hero-upload-link{display:inline-flex;align-items:center;gap:8px;color:#ffd49f;font-size:.9rem;font-weight:800;text-underline-offset:5px;margin-top:12px}
+.gw-hero-upload-link:hover{color:#fff}
+.orb-card{border-color:#ffffff47;background:linear-gradient(145deg,#ffffff23,#ffffff08);box-shadow:0 32px 72px #0d0b1e51}
+.gw-home-discover{background:linear-gradient(145deg,#fffaf2 0%,#faf5ff 65%,#f8f3fd);padding:clamp(38px,5vw,66px) 0}
+.gw-home-discover-head h2{font-size:clamp(1.8rem,3.3vw,2.55rem);text-wrap:balance}
+.gw-home-discover-grid{gap:15px}
+.gw-home-discover-grid>a{position:relative;min-height:185px;padding:21px;border-radius:19px;background:linear-gradient(160deg,#fff,#fff9f1);border:1px solid #e9dce9;box-shadow:0 13px 35px #35234f0b;transition:transform .2s,box-shadow .2s,border-color .2s}
+.gw-home-discover-grid>a:nth-child(2){background:linear-gradient(160deg,#fff,#f8f3ff)}
+.gw-home-discover-grid>a:nth-child(3){background:linear-gradient(160deg,#fff,#fff6eb)}
+.gw-home-discover-grid>a:nth-child(4){background:linear-gradient(160deg,#fff,#f4f0ff)}
+.gw-home-discover-grid>a:hover{transform:translateY(-4px);border-color:#bda3d3;box-shadow:0 20px 40px #37234f1a}
+.gw-home-discover-grid strong{width:50px;height:50px;border-radius:14px;background:#302341;color:#ffcf98;box-shadow:0 6px 16px #281b3b21}
+.gw-home-discover-grid span{font-size:1.06rem;letter-spacing:-.016em}
+.gw-home-discover-grid small{font-size:.83rem;color:#655973}
+.quickbill-section{background:linear-gradient(180deg,#fffdfa,#f7f0fc)}
+.quickbill-shell{border-color:#ded0e8;box-shadow:0 23px 66px #28144215}
+.quickbill-input{background:#fffcfa}
+.quickbill-input h3{color:#271e3c;letter-spacing:-.02em}
+.quickbill-input .field input,.quickbill-input .field select{border-radius:12px;background:#fff}
+.quickbill-input .field input:focus,.quickbill-input .field select:focus{border-color:#9264c7;box-shadow:0 0 0 4px #9874c32b}
+.quickbill-output{background:radial-gradient(circle at 100% 0%,#5c43807a,transparent 55%),linear-gradient(145deg,#25203e,#1b1c35)}
+.quickbill-grid>div{border-color:#ffffff24;background:#ffffff12;border-radius:14px}
+.quickbill-output .btn-primary:not(:disabled){background:#ffc783;color:#231936;border:0;box-shadow:0 8px 24px #eaa8602a}
+.quickbill-explain{border-radius:15px}
+.gw-tool-page .v2-panel,.gw-directory-card{box-shadow:0 11px 31px #2b1e460e}
+.gw-tool-page .v2-panel:focus-within{border-color:#c3addd}
+.gw-directory-card:focus-visible,.gw-home-discover-grid>a:focus-visible,.gw-hero-upload-link:focus-visible{outline:3px solid var(--gw-focus);outline-offset:3px}
+@media(max-width:850px){.hero-grid{padding-block:52px 60px}.gw-home-discover-grid>a{min-height:165px}}
+@media(max-width:700px){
+  .site-header{background:rgba(255,252,250,.97)}
+  .hero-grid{padding-block:41px 42px}
+  .hero h1{font-size:clamp(2.45rem,9.7vw,3.65rem);line-height:1.08}
+  .hero .lead{font-size:.97rem;line-height:1.65}
+  .hero-actions{gap:10px;margin:23px 0 18px}
+  .hero-actions .btn{width:100%;min-height:49px}
+  .gw-hero-upload-link{margin-top:13px;font-size:.84rem}
+  .gw-home-discover{padding:30px 0 36px}
+  .gw-home-discover-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .gw-home-discover-grid>a{display:flex;flex-direction:column;min-height:155px;padding:13px;gap:8px;border-radius:16px}
+  .gw-home-discover-grid strong{width:42px;height:42px;border-radius:12px;flex-shrink:0}
+  .gw-home-discover-grid span{font-size:.92rem;line-height:1.3;align-self:auto}
+  .gw-home-discover-grid small{font-size:.73rem;line-height:1.4;align-self:auto}
+  .quickbill-shell{box-shadow:0 13px 34px #27174713}
+  .quickbill-input,.quickbill-output{padding:22px 18px}
+  .main-nav{background:#fffcfa}
+  .gw-mobile-dock{border-color:#67517e;background:rgba(26,21,44,.985)}
+  .gw-mobile-dock a:active{background:#4f3a6a}
+}
+@media(max-width:350px){.gw-home-discover-grid{grid-template-columns:1fr}.gw-home-discover-grid>a{min-height:0;display:grid;grid-template-columns:42px 1fr;gap:5px 11px}.gw-home-discover-grid strong{grid-row:1/3}}
+@media(prefers-reduced-motion:reduce){.hero-actions .btn,.gw-home-discover-grid>a{transition:none}.hero-actions .btn:hover,.gw-home-discover-grid>a:hover{transform:none}}
