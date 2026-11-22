@@ -7,6 +7,10 @@ on:
     paths:
       - ".github/workflows/publish-career-ops.yml"
       - "index.html"
+      - "job-search.js"
+      - "live-job-discovery-v2.js"
+      - "tests/job-search-relevance.test.cjs"
+      - "tests/live-job-discovery-v2.test.cjs"
       - "about.html"
       - "contact.html"
       - "privacy.html"
@@ -58,7 +62,8 @@ jobs:
         run: |
           node --check app.js
           node --check ../account-site/live-job-discovery-v2.js
-          node --test ../account-site/tests/live-job-discovery-v2.test.cjs
+          node --check ../account-site/job-search.js
+          node --test ../account-site/tests/live-job-discovery-v2.test.cjs ../account-site/tests/job-search-relevance.test.cjs
           node --check ai-studio.js
           node --check job-text.js
           node --check job-search.js
@@ -147,7 +152,7 @@ jobs:
           if 'id="careerops-css-fallback"' not in page:
               page=page.replace("</head>", '<style id="careerops-css-fallback">\n'+css+'\n</style>\n</head>', 1)
           # Cache-bust both active scripts even when their version labels change.
-          page=re.sub(r'(\./(?:app|live-job-discovery-v2)\.js\?v=)[^"]+',
+          page=re.sub(r'(\./(?:app|job-search|live-job-discovery-v2)\.js\?v=)[^"]+',
                       lambda m: m.group(1)+os.environ["GITHUB_RUN_ID"], page)
           html.write_text(page,encoding="utf-8")
           PY
