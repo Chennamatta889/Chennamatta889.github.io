@@ -107,3 +107,13 @@ test('optional contrast processing preserves alpha and stretches low-contrast in
  assert.equal(pixels[0],0);
  assert.equal(pixels[8*4],255);
 });
+
+
+test('default quick scan uses lower pixel budget than opt-in detailed scan',()=>{
+ const quick=m.ocrScanPlan(6000,8000,false);
+ const detailed=m.ocrScanPlan(6000,8000,true);
+ assert.ok(quick.width*quick.height<=2000000);
+ assert.ok(detailed.width*detailed.height<=3600000);
+ assert.ok(detailed.width>=quick.width);
+ assert.ok(detailed.height>=quick.height);
+});
