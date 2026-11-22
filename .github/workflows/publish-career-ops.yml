@@ -57,6 +57,8 @@ jobs:
         working-directory: career-ops-source
         run: |
           node --check app.js
+          node --check ../account-site/live-job-discovery-v2.js
+          node --test ../account-site/tests/live-job-discovery-v2.test.cjs
           node --check ai-studio.js
           node --check job-text.js
           node --check job-search.js
@@ -136,6 +138,7 @@ jobs:
           # mobile browsers request a stale or blocked external stylesheet.
           python3 - <<'PY'
           from pathlib import Path
+          import os, re
           html=Path("site/index.html")
           css=Path("site/styles.css").read_text(encoding="utf-8")
           page=html.read_text(encoding="utf-8")
@@ -143,6 +146,9 @@ jobs:
           assert "</style" not in css.lower(), "Unsafe CSS style terminator"
           if 'id="careerops-css-fallback"' not in page:
               page=page.replace("</head>", '<style id="careerops-css-fallback">\n'+css+'\n</style>\n</head>', 1)
+          # Cache-bust both active scripts even when their version labels change.
+          page=re.sub(r'(\./(?:app|live-job-discovery-v2)\.js\?v=)[^"]+',
+                      lambda m: m.group(1)+os.environ["GITHUB_RUN_ID"], page)
           html.write_text(page,encoding="utf-8")
           PY
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.min.mjs" site/vendor/
