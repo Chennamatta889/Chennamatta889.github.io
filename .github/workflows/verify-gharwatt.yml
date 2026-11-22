@@ -26,8 +26,9 @@ jobs:
           node --check gharwatt/assets/bill-only.js
           node --check gharwatt/assets/product-showcase.js
           node --check gharwatt/assets/affiliate-popup.js
+          node --check gharwatt/assets/electricity-guide.js
           python3 -m json.tool gharwatt/assets/affiliate-links.json > /dev/null
-          node --test gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs
+          node --test gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs
       - name: Validate local page references
         run: |
           python3 - <<'PY'
@@ -43,6 +44,7 @@ jobs:
                   path=url.split('#',1)[0].split('?',1)[0]
                   if path and not (page.parent/path).exists():bad.append((str(page),url))
           assert not bad,bad
+          assert (root/'reduce-electricity-bill'/'index.html').exists(), 'missing electricity saving guide'
           clean_pages=list(root.glob('*/index.html'))
           assert len(clean_pages)>=17,len(clean_pages)
           for page in clean_pages:
