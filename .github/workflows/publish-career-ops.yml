@@ -114,6 +114,8 @@ jobs:
             fi
             cp "$verification_file" "site/$verification_name"
           done
+          # Preserve the tested Phase 11 search-relevance hotfix across deployments.
+          cp account-site/job-search.js site/job-search.js
           cp -R career-ops-source/resources site/resources
           cp career-ops-source/enterprise-careers.json site/data/enterprise-careers.json
           # Version app and CSS URLs for every deployment to prevent stale
