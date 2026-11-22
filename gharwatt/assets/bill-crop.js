@@ -70,6 +70,25 @@ function finish(){
 canvas.addEventListener('pointerup',finish);
 canvas.addEventListener('pointercancel',finish);
 clear?.addEventListener('click',clearSelection);
+// Quick focus regions are optional shortcuts for two-column printed bills.
+// They are not universal templates; the visitor can override by dragging.
+const regions=Object.freeze({
+ amounts:{x:.60,y:.15,width:.38,height:.52},
+ meter:{x:.10,y:.36,width:.49,height:.14}
+});
+for(const btn of document.querySelectorAll('[data-gw-focus]')){
+ btn.addEventListener('click',()=>{
+  if(!image){if(hint)hint.textContent='Choose a bill photograph first, then select an area.';return;}
+  const choice=regions[btn.dataset.gwFocus];
+  if(!choice)return;
+  selection={...choice};anchor=null;draw();
+  const append=$('v2-ocr-add-mode');
+  if(append)append.checked=btn.dataset.gwFocus==='meter';
+  if(hint)hint.textContent=btn.dataset.gwFocus==='meter'
+   ?'Meter-reading area selected. Tap Read photo to attempt units recognition. Check the original numbers: current reading minus previous reading may require a multiplier.'
+   :'Charge area selected. Tap Read photo to attempt amount recognition. Check the printed total and previous dues before confirming.';
+ });
+}
 $('v2-clear')?.addEventListener('click',discard);
 window.GharWattCrop=Object.freeze({getSelection:()=>selection&&selection.width>=.06&&selection.height>=.05?{...selection}:null});
 })();
