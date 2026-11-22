@@ -247,7 +247,7 @@ function initReader(){
   if(currentJob)return;
   const file=$('v2-photo').files?.[0];
   if(!file){set('v2-ocr-status','Choose a photo, or enter the amount and units manually below.');return;}
-  const isPdf=file.type==='application/pdf'||/\\.pdf$/i.test(file.name);
+  const isPdf=file.type==='application/pdf'||/\.pdf$/i.test(file.name);
   if((isPdf&&file.size>12*1024*1024)||(!isPdf&&(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>9*1024*1024))){
    set('v2-ocr-status','Use a PDF smaller than 12 MB or a JPG, PNG or WebP photo smaller than 9 MB.');return;
   }
