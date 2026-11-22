@@ -175,6 +175,7 @@ function initGoal(){
 function initTracker(){
  if(!$('v2-tracker'))return;
  const key='gharwatt:monthly-electricity-v2';
+ const currentMonth=new Date();$('v2-tracker-month').value=currentMonth.getFullYear()+'-'+String(currentMonth.getMonth()+1).padStart(2,'0');
  const storage=(()=>{try{return window.localStorage}catch{return null}})();
  let rows=[];
  try{const data=JSON.parse(storage?.getItem(key)||'[]');if(Array.isArray(data))rows=data.filter(x=>/^\d{4}-(?:0[1-9]|1[0-2])$/.test(x.month)&&valid(x.amount,0,500000)).slice(-24)}catch{}
@@ -247,6 +248,20 @@ function initCooling(){
  }
  ['v2-cooling-hours','v2-cooling-rate'].forEach(id=>$(id).addEventListener('input',update));update();
 }
-initReader();initAppliances();initComparison();initGoal();initTracker();initFinance();initRoof();initCooling();
+function initWhatsApp(){
+ function wire(id,formatter){
+  const b=$(id);if(!b)return;
+  b.addEventListener('click',()=>{
+   const message=formatter();
+   if(!message)return;
+   // This action intentionally opens WhatsApp only on explicit visitor request.
+   const link='https://wa.me/?text='+encodeURIComponent(message);
+   window.open(link,'_blank','noopener,noreferrer');
+  });
+ }
+ wire('v2-goal-whatsapp',()=> 'My GharWatt electricity saving goal: '+$('v2-goal-gap').textContent+' per month, about '+$('v2-goal-units').textContent+' at an example tariff. Not guaranteed. https://chennamatta889.github.io/gharwatt/savings-goal/');
+ wire('v2-change-whatsapp',()=> 'My GharWatt electricity bill comparison: '+$('v2-change-rupees').textContent+'. '+$('v2-change-explain').textContent+' https://chennamatta889.github.io/gharwatt/bill-change/');
+}
+initReader();initAppliances();initComparison();initGoal();initTracker();initFinance();initRoof();initCooling();initWhatsApp();
 window.GharWattV2=Object.freeze({parseBillText,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances});
 })();

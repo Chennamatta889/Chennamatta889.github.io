@@ -210,3 +210,12 @@
 @media(max-width:850px){.v2-home-wrap{align-items:start;flex-direction:column}.v2-grid{gap:10px}.v2-appliance-row{grid-template-columns:repeat(4,minmax(0,1fr))}.v2-appliance-row label:first-child{grid-column:span 2}.v2-appliance-row .v2-remove{grid-column:span 2;justify-self:start}}
 @media(max-width:620px){.v2-link-grid,.v2-grid,.v2-results,.v2-cooling-grid{grid-template-columns:1fr}.v2-panel{padding:16px}.v2-appliance-row{grid-template-columns:repeat(2,minmax(0,1fr))}.v2-appliance-row label:first-child{grid-column:span 2}.v2-appliance-row .v2-remove{grid-column:span 2}.v2-actions .btn{width:100%;text-align:center}.v2-month-row{grid-template-columns:65px minmax(30px,1fr);gap:7px}.v2-month-row>span{grid-column:span 2;text-align:left;margin-left:72px}}
 @media print{.v2-actions,.v2-home-teaser,.v2-home-link,.v2-remove{display:none!important}.v2-panel{box-shadow:none;break-inside:avoid}}
+
+/* GharWatt extra V2 modules */
+.v2-code-example{max-width:100%;overflow:auto;padding:19px 21px;background:#1e1936;color:#f6eaff;border:1px solid #4e416b;border-radius:13px;font-size:.88rem;line-height:1.7}
+.v2-chart .v2-breakdown-row:last-child{border-bottom:none}
+.v2-panel input[type=file]{padding:14px;border:1px dashed #bdaae0;background:#faf6ff}
+.v2-wa-button{background:#184e3b;color:#fff;border:0;border-radius:14px;padding:14px 19px;font-weight:760;cursor:pointer;font-size:.9rem}
+.v2-wa-button:hover,.v2-wa-button:focus-visible{background:#0f382a}
+.v2-hero a.v2-home-link:hover{text-decoration:none}
+@media(max-width:620px){.v2-wa-button{width:100%}}
