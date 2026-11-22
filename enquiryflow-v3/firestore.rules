@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function signedIn() { return request.auth != null; }
+  function roleDoc() { return /databases/$(database)/documents/ef3_staff/$(request.auth.uid); }
+  function isStaff() {
+   return signedIn() && exists(roleDoc()) && get(roleDoc()).data.active == true
+    && get(roleDoc()).data.role in ['owner','admin','editor','counselor'];
+  }
+  function manager() { return isStaff() && get(roleDoc()).data.role in ['owner','admin']; }
+  function editor() { return isStaff() && get(roleDoc()).data.role in ['owner','admin','editor']; }
+  function approvedPublic() { return resource.data.published == true; }
+  function canDraft() { return editor() && request.resource.data.published == false; }
+  // Staff membership is provisioned only through the trusted Firebase console/Admin SDK.
+  match /ef3_staff/{uid} {
+   allow get: if signedIn() && request.auth.uid == uid;
+   allow list, create, update, delete: if false;
+  }
+  match /ef3_institutes/{instituteId} {
+   allow get, list: if approvedPublic() || isStaff();
+   allow create, update: if manager() && request.resource.data.published is bool;
+   allow delete: if false;
+  }
+  match /ef3_courses/{id} {
+   allow get, list: if approvedPublic() || isStaff();
+   allow create: if (manager() && (!request.resource.data.published || request.resource.data.verified_at != null)) || canDraft();
+   allow update: if (manager() && (!request.resource.data.published || request.resource.data.verified_at != null)) || (canDraft() && resource.data.published == false);
+   allow delete: if manager();
+  }
+  match /ef3_batches/{id} {
+   allow get, list: if approvedPublic() || isStaff();
+   allow create: if manager() || canDraft();
+   allow update: if manager() || (canDraft() && resource.data.published == false);
+   allow delete: if manager();
+  }
+  match /ef3_faqs/{id} {
+   allow get, list: if approvedPublic() || isStaff();
+   allow create: if manager() || canDraft();
+   allow update: if manager() || (canDraft() && resource.data.published == false);
+   allow delete: if manager();
+  }
+  match /ef3_enquiries/{id} {
+   // Student intake is temporarily SYNTHETIC-ONLY on the free pilot.
+   // Before collecting real student data: require CAPTCHA/App Check, audit, retention,
+   // explicit institute agreement, a privacy policy, and rate-limiting backend.
+   allow create: if request.resource.data.keys().hasOnly([
+    'full_name','email','course_id','batch_id','question','consent','created_at',
+    'status','institute_id','next_followup_at','staff_notes'])
+    && request.resource.data.keys().hasAll(['full_name','email','consent','status','institute_id'])
+    && request.resource.data.full_name is string
+    && request.resource.data.full_name.matches('^(Demo|Test|Sample)\\b.{0,80}$')
+    && request.resource.data.email is string
+    && request.resource.data.email.matches('^[^@ ]+@example\\.(com|org|net)$')
+    && request.resource.data.consent == true
+    && request.resource.data.status == 'new'
+    && request.resource.data.institute_id == 'demo-tech-academy'
+    && request.resource.data.question is string && request.resource.data.question.size() <= 1500
+    && request.resource.data.staff_notes == ''
+    && request.resource.data.next_followup_at == null;
+   allow get, list: if isStaff();
+   allow update: if isStaff() && request.resource.data.diff(resource.data).affectedKeys()
+    .hasOnly(['status','next_followup_at','staff_notes','assigned_to']);
+   allow delete: if manager();
+  }
+  match /ef3_import_jobs/{id} {
+   allow get, list: if isStaff();
+   allow create: if editor() && request.resource.data.status == 'pending'
+      && request.resource.data.payload is list && request.resource.data.payload.size() <= 100;
+   allow update: if manager() && request.resource.data.diff(resource.data).affectedKeys()
+      .hasOnly(['status','reviewed_at']);
+   allow delete: if manager();
+  }
+  match /{document=**} { allow read, write: if false; }
+ }
+}
