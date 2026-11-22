@@ -27,3 +27,16 @@ test('zero interest EMI and normal EMI calculations',()=>{
  assert.equal(m.loanEmi(12000,0,12).emi,1000);
  const r=m.loanEmi(100000,10,12);assert.ok(r.emi>8500&&r.emi<9000);assert.ok(r.interest>0);
 });
+
+test('photo resizer does not enlarge small readable images',()=>{
+ const r=m.ocrResizePlan(1200,1600);assert.equal(r.width,1200);assert.equal(r.height,1600);assert.equal(r.resized,false);
+});
+test('photo resizer scales large camera images and preserves aspect ratio',()=>{
+ const r=m.ocrResizePlan(6000,8000);assert.equal(r.height,2400);assert.equal(r.width,1800);assert.equal(r.resized,true);
+});
+test('photo resizer caps huge square images by pixel area',()=>{
+ const r=m.ocrResizePlan(6000,6000);assert.ok(r.width*r.height<=3600000);assert.equal(r.width,r.height);
+});
+test('photo resizer rejects corrupt dimension values',()=>{
+ assert.equal(m.ocrResizePlan(0,100),null);assert.equal(m.ocrResizePlan(100,Infinity),null);
+});
