@@ -280,13 +280,17 @@ jobs:
           # GharWatt: verify actual deployed Pages content, not just the repository files.
           curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-live.html
           grep -Fq 'id="solar-calculator"' /tmp/gharwatt-live.html
-          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/electricity-bill.html?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-bill.html
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/electricity-bill/?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-bill.html
           grep -Fq 'id="bill-analyzer"' /tmp/gharwatt-bill.html
-          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/system-size-comparison.html?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-sizes.html
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/system-size-comparison/?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-sizes.html
           grep -Fq 'id="size-comparison"' /tmp/gharwatt-sizes.html
           curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/assets/decision-tools.js?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-tools.js
           grep -Fq 'GharWattDecisionMath' /tmp/gharwatt-tools.js
-          echo "GharWatt pages and interactive tool script are live."
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/solar-subsidy/?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-subsidy.html
+          grep -Fq 'PM Surya Ghar Subsidy' /tmp/gharwatt-subsidy.html
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/solar-subsidy.html?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-legacy-subsidy.html
+          grep -Fq 'url=https://chennamatta889.github.io/gharwatt/solar-subsidy/' /tmp/gharwatt-legacy-subsidy.html
+          echo "GharWatt clean URLs, original legacy redirect and tool scripts are live."
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/" -o /tmp/enquiryflow-v3-student.html
           grep -Fq "EnquiryFlow | Student portal" /tmp/enquiryflow-v3-student.html
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/staff/" -o /tmp/enquiryflow-v3-staff.html
