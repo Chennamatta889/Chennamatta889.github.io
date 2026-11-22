@@ -10,7 +10,7 @@ async function firebase(){
  if(initialized) return initialized;
  initialized=(async()=>{
   const v='12.6.0';
-  const [{initializeApp},{getAuth,initializeAuth,inMemoryPersistence,browserPopupRedirectResolver,GoogleAuthProvider,signInWithPopup,signInWithEmailAndPassword,signOut:onSignOut,onAuthStateChanged},{getFirestore,collection,doc,getDoc,getDocFromServer,getDocs,query,where,orderBy,limit,setDoc,updateDoc,addDoc,writeBatch,serverTimestamp,deleteDoc}]=await Promise.all([
+  const [{initializeApp},{getAuth,initializeAuth,inMemoryPersistence,browserPopupRedirectResolver,GoogleAuthProvider,signInWithPopup,signInWithEmailAndPassword,signOut:onSignOut,onAuthStateChanged},{getFirestore,collection,doc,getDoc,getDocFromServer,getDocs,query,where,orderBy,limit,setDoc,updateDoc,addDoc,writeBatch,runTransaction,serverTimestamp,deleteDoc}]=await Promise.all([
     import(`https://www.gstatic.com/firebasejs/${v}/firebase-app.js`),
     import(`https://www.gstatic.com/firebasejs/${v}/firebase-auth.js`),
     import(`https://www.gstatic.com/firebasejs/${v}/firebase-firestore.js`)
@@ -21,7 +21,7 @@ async function firebase(){
   const auth=studentPage?initializeAuth(app,{persistence:inMemoryPersistence,popupRedirectResolver:browserPopupRedirectResolver}):getAuth(app);
   const db=getFirestore(app);
   await new Promise(resolve=>{const off=onAuthStateChanged(auth,()=>{off();resolve()},()=>{off();resolve()})});
-  return {auth,db,collection,doc,getDoc,getDocFromServer,getDocs,query,where,orderBy,limit,setDoc,updateDoc,addDoc,writeBatch,signInWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,onSignOut,serverTimestamp,deleteDoc};
+  return {auth,db,collection,doc,getDoc,getDocFromServer,getDocs,query,where,orderBy,limit,setDoc,updateDoc,addDoc,writeBatch,runTransaction,signInWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,onSignOut,serverTimestamp,deleteDoc};
  })();
  try{return await initialized}catch(e){initialized=null;throw e}
 }
@@ -92,6 +92,42 @@ export async function saveRecord(type,record,claimedRole){
  }
  return {...record,id};
 }
+/**
+ * Owner-authorized catalogue import. Safe to retry: deterministic Firestore
+ * IDs and transactions ensure existing records are never overwritten.
+ * Every installed course and FAQ is a private unpublished draft.
+ */
+export async function installCtechCatalogueDrafts(courseRows=[],faqRows=[]){
+ if(isDemo)throw Error('Real catalogue import cannot run in demo mode.');
+ if((await verifiedRole())!=='owner')throw Error('Only the verified institute owner can install catalogue drafts.');
+ if(!Array.isArray(courseRows)||courseRows.length>25||!Array.isArray(faqRows)||faqRows.length>20)
+  throw Error('Invalid catalogue size.');
+ const f=await firebase(),counts={courses:0,faqs:0,existing:0};
+ const makeSlug=text=>String(text||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,160);
+ for(const [type,rows] of [['courses',courseRows],['faqs',faqRows]]){
+  for(const item of rows){
+   if(!item||typeof item!=='object')throw Error('Invalid catalogue draft');
+   const slug=makeSlug(type==='courses'?(item.slug||item.title):item.question);
+   if(!slug)throw Error('Draft is missing an identifier');
+   const id='ctech-proposal-'+slug;
+   const ref=f.doc(f.db,'ef3_'+type,id);
+   const record={...item,institute_id:institutionId(),published:false};
+   delete record.id;
+   if(type==='courses'){
+    record.fee_inr=null;record.duration_weeks=null;record.delivery_modes=[];record.verified_at=null;
+   }else record.reviewed_at=null;
+   const created=await f.runTransaction(f.db,async transaction=>{
+    const existing=await transaction.get(ref);
+    if(existing.exists())return false;
+    transaction.set(ref,record);
+    return true;
+   });
+   if(created)counts[type]++;else counts.existing++;
+  }
+ }
+ return counts;
+}
+
 export async function olderEnquiries(offset=80,count=80){if(isDemo)return demo.olderEnquiries(offset,count);const r=await staffData();return r.enquiries.slice(offset,offset+count)}
 export const PRIVACY_VERSION='ef3-privacy-2026-11-22';
 export const CONTACT_POLICY_URL='./production-privacy.html';
