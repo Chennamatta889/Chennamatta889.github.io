@@ -738,7 +738,14 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
         </details>
         <p class="feed-freshness-warning" id="feedFreshness" role="status" hidden></p><p class="discover-feed-status" id="discoverFeedStatus" role="status" hidden></p><button class="btn btn-outline" id="retryDiscoverFeed" type="button" hidden>Reload jobs</button>
         <div class="results-line"><strong id="resultsCount" hidden aria-hidden="true"></strong><span class="sample-tag" id="dataModeTag">Sample data</span><button class="btn btn-outline discover-reset" id="resetDiscoverFilters" type="button" hidden>Reset search &amp; filters</button></div>
-        <section id="careeropsSearchV1" aria-label="Expanded external job discovery" style="margin:14px 0 20px;padding:16px;border:1px solid #31506a;border-radius:14px;background:#102238;color:#e8f1fb">
+        <section id="liveDiscoveryV2" aria-label="Live employer job search" style="margin:14px 0;padding:16px;border:1px solid #2c7a79;border-radius:14px;background:#102a36;color:#e8f1fb">
+ <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px"><strong>Live employer job search · v2</strong><span style="font-size:12px;opacity:.8">Experimental · Read-only · 30 days</span></div>
+ <p style="font-size:13px;margin:10px 0">Fetch matching jobs directly from public employer boards using the role typed above. Only India-based roles updated within 30 days are shown. Results depend on employer API access; updated date is not necessarily original posting date.</p>
+ <button id="liveDiscoveryV2Run" type="button" class="btn btn-primary" style="margin:5px 0 12px">Find live employer jobs</button>
+ <p id="liveDiscoveryV2Status" role="status" aria-live="polite" style="font-size:13px">Enter a job title above, then select Find live employer jobs.</p>
+ <div id="liveDiscoveryV2Results" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px"></div>
+</section>
+<section id="careeropsSearchV1" aria-label="Expanded external job discovery" style="margin:14px 0 20px;padding:16px;border:1px solid #31506a;border-radius:14px;background:#102238;color:#e8f1fb">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><strong>Expanded job discovery · v1</strong><span style="font-size:12px;opacity:.8">External employer searches · No automatic applications</span></div>
   <p style="margin:8px 0 12px;font-size:13px">Search verified employer career portals and major job sites using your current keyword. These links are live searches, not confirmed vacancies in Career-Ops. Check each posting's date, India location and eligibility.</p>
   <div id="careeropsSearchV1Links" style="display:flex;flex-wrap:wrap;gap:9px"></div>
@@ -959,5 +966,6 @@ for(const id of ["resetDiscoverFilters","clearFilters","quickResetFilters"]){con
 render();
 })();
 </script>
+<script defer src="./live-job-discovery-v2.js?v=20261122-v2"></script>
 </body>
 </html>
