@@ -993,7 +993,7 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
 (function(){
   const search=document.getElementById("jobSearch"),panel=document.getElementById("dotnetEmployerSources");
   if(!search||!panel)return;
-  function refresh(){panel.hidden=!/(?:\\.net|dotnet|asp\\s*\\.?net|c#)/i.test(search.value);}
+  function refresh(){panel.hidden=!/(?:\.net|dotnet|asp\s*\.?net|c#)/i.test(search.value);}
   search.addEventListener("input",refresh);
   document.querySelectorAll("#clearFilters,#resetDiscoverFilters,#quickResetFilters").forEach(function(b){
     b.addEventListener("click",function(){setTimeout(refresh,0);});
