@@ -116,3 +116,12 @@ Safety: The assistant uses only published, verified institute records. It exclud
 To test: run `npm test` and visit `/enquiryflow-v3/#assistant` (student chat). Try `DevOps fee and next weekend batch`, `What about online?` as a follow-up, `Compare Java and Python`, `Which course is cheapest?`, and `Do you guarantee placements?`. Press **Clear** to reset conversation context. Use the staff handoff button to reach the fictional enquiry form.
 
 The optional Firebase backend is still intentionally disabled in browser preview mode. Firestore must remain deny-all until authorization rules are deployed and tested. Do not enable real student enquiries without consent, privacy controls, rate limiting, verified role permissions and production testing.
+
+
+## Student assistant v3.3 — institution-wide answers (22 November 2026)
+
+The student chat now answers broad, frequently asked institute questions directly from the approved public institute profile, the verified/published course catalogue, the future-dated published batches and published institute-wide FAQ entries. Examples: **“Tell me about the institute”**, **“How many courses are available?”**, **“What are all course fees?”**, **“When is the next batch?”**, **“What are the upcoming weekend batches?”**, **“Who are the trainers?”**, and multi-part institute + fees + batches + staff questions. A course selected in a preceding turn still works for a context-dependent batch follow-up.
+
+**Privacy:** No private `ef3_staff` records are used to answer public questions. A trainer name or staff biography may be supplied only through an intentionally approved public FAQ with a verified source. Otherwise the assistant explains the gap and offers a staff handoff. Only published, verified courses are counted or priced; past or unpublished batches are excluded. When test/demo mode is active, results explicitly indicate fictional data. Changes to the staff portal's published content flow through to the student chat as the shared data layer is refreshed.
+
+**Deployment limitation:** A genuine generative model is not connected. Firestore rules were not successfully published in Firebase at the time of this change, so GitHub Pages remains deliberately configured for fictional-data demonstration only (`demoMode:true`). Do not advertise this as a live admissions service or accept real student contact information.
