@@ -104,13 +104,15 @@ function instructions(context:ReturnType<typeof pickContext>) {
 }
 Deno.serve(async(req:Request)=>{
   const origin=req.headers.get("Origin");
-  if(origin!==ORIGIN)return response(origin,403,{ok:false,code:"ORIGIN_DENIED",error:"Origin is not allowed."});
-  if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(origin)});
-  if(req.method==="GET")return response(origin,200,{
+  // A read-only, credential-free health check may be opened without an Origin
+  // (e.g. URL previews/monitors). Restrict OPTIONS and billable POST as before.
+  if(req.method==="GET"&&(origin===null||origin===ORIGIN))return response(origin,200,{
     ok:true,ready:configured(),mode:"consent_only",dailyLimit:PER_VISITOR_PER_DAY,
     message:configured()?"GharWatt AI is available. Only submit what you choose.":
       "GharWatt AI provider activation is pending. Existing calculators are available."
   });
+  if(origin!==ORIGIN)return response(origin,403,{ok:false,code:"ORIGIN_DENIED",error:"Origin is not allowed."});
+  if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(origin)});
   if(req.method!=="POST")return response(origin,405,{ok:false,error:"POST required."});
   if(!configured())return response(origin,503,{ok:false,code:"NOT_CONFIGURED",error:"AI assistant is not activated yet."});
   const len=Number(req.headers.get("content-length")||0);
