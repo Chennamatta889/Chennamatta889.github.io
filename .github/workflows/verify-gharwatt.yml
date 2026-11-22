@@ -66,6 +66,9 @@ jobs:
               assert f'id="{item}"' in discover, f'missing Verdict/decision element {item}'
           assert re.search(r'src="\.\./assets/verdict\.js(?:\?[^"]*)?"', discover), 'Verdict engine not included'
           assert 'gw-decision-trust' in discover, 'rule-based vs generative AI transparency missing'
+          assert 'id="gw-ai-question"' in discover and 'id="gw-ai-copy"' in discover, 'reviewed AI handoff missing'
+          assert 'href="https://chatgpt.com/"' in discover, 'external AI option missing'
+          assert 'function aiQuestion' in (root/'assets'/'verdict.js').read_text(encoding='utf-8'), 'opt-in AI prompt is missing'
           for fold in ['detective','challenge','explore-more','continue','languages']:
               assert f'<details class="gw-explore-fold" id="gw-fold-{fold}"' in discover, f'missing compact mobile fold: {fold}'
           assert 'class="gw-discover-jump"' in discover, 'short mobile navigation missing'
