@@ -1,8 +1,8 @@
-import {publicData,submitEnquiry,askAssistant,isDemo,isProductionReady,studentIdentity,signInStudentGoogle,signOutStudent,PRIVACY_VERSION} from './production-adapter.js?v=4.0';
+import {publicData,submitEnquiry,askAssistant,isDemo,isProductionReady,studentIdentity,readProductionReadiness,signInStudentGoogle,signOutStudent,PRIVACY_VERSION} from './production-adapter.js?v=4.2';
 import {$,$$,esc,money,shortDate,str,safeUrl} from './utils.js?v=3.4';
 import {filterCourses,filterUpcomingBatches,compareSelection,todayIndia} from './discovery.js';
 let data,selectedCourse='',messages=[],query='',category='All',courseMode='All',sort='featured',batchCourse='All',batchMode='All',compared=[],chatContext={courseId:null},asking=false;
-let productionReady=false;
+let productionReady=false,readinessRequest=0;
 const app=$('#app');
 const link=url=>safeUrl(url)?`<a href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer">Original source ↗</a>`:'';
 function shell(){
@@ -137,29 +137,58 @@ function bind(){
       description.textContent=` Reference: ${result.id||'received'}. Authorized staff can review it privately. No automatic email was sent.`;
       r.append(heading,description);
     }
-    form.reset();selectedCourse='';renderSelects();await updateVerifiedIdentity();
+    form.reset();selectedCourse='';renderSelects();
   }catch(error){
     r.replaceChildren();r.classList.add('enquiry-error');
     delete r.dataset.delivery;
     r.textContent=`Enquiry was not saved or sent: ${error.message}`;
   }finally{
-    button.disabled=false;
-    button.textContent='Submit verified enquiry ↗';button.disabled=!productionReady;
+    button.textContent='Submit verified enquiry ↗';
+    await updateVerifiedIdentity();
   }
 });
- window.addEventListener('storage',async e=>{if(isDemo&&e.key==='enquiryflow_v3_demo_state'){data=await publicData();refresh()}})
+ window.addEventListener('storage',async e=>{if(isDemo&&e.key==='enquiryflow_v3_demo_state'){data=await publicData();refresh()}});
+ // Refresh readiness when a user returns from the owner setup in another tab.
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)void updateVerifiedIdentity()});
+ window.addEventListener('focus',()=>{void updateVerifiedIdentity()});
 }
 async function updateVerifiedIdentity(){
- const u=await studentIdentity();const button=$('#enquiryForm button[type="submit"]');const email=$('#enquiryForm input[name="email"]');
+ // Do not rely on readiness loaded at initial page-open: owner may have activated
+ // or closed intake in another tab while this page remains open.
+ const requestId=++readinessRequest;
+ const button=$('#enquiryForm button[type="submit"]');
+ const email=$('#enquiryForm input[name="email"]');
  const note=$('#productionReadiness');
- note.textContent=productionReady?'Enquiry intake is enabled for this institute. Google sign-in and consent are required.':'Enquiry intake is NOT ACTIVE. You can test Google sign-in, but submissions remain disabled until the owner publishes real institute contact details and approves privacy handling.';
- button.disabled=!productionReady;
- // Identity verification can be tested before opening real enquiry intake.
- // Keep the SUBMIT button gated by institute approval, not Google sign-in.
+ button.disabled=true;
+ note.textContent='Checking current enquiry intake status with Firebase…';
+ let identity=null,ready=false,error=null;
+ try{
+  [identity,ready]=await Promise.all([studentIdentity(),readProductionReadiness()]);
+ }catch(e){error=e}
+ if(requestId!==readinessRequest)return;
+ productionReady=ready&&!error;
+ if(error){
+  note.textContent='Enquiry status UNAVAILABLE: could not verify live Firebase approval ('+
+   String(error?.code||error?.message||'unknown error').slice(0,130)+'). Submission remains disabled.';
+ }else if(productionReady){
+  note.textContent='Enquiry intake ACTIVE in Firebase. Verified Google sign-in and consent are required.';
+ }else{
+  note.textContent='Enquiry intake CLOSED in Firebase. Confirm activation on the owner page. Note: Save profile closes intake again.';
+ }
+ // Google identity can be verified even while real intake is closed.
  $('#googleStudentLogin').disabled=false;
- if(u?.verified&&u?.google){$('#verifiedGoogle').textContent='Verified: '+u.email;email.value=u.email;email.readOnly=true;$('#googleStudentLogout').hidden=false;$('#googleStudentLogin').hidden=true}
- else{$('#verifiedGoogle').textContent='Google verification required.';email.readOnly=false;email.value='';$('#googleStudentLogout').hidden=true;$('#googleStudentLogin').hidden=false}
+ if(identity?.verified&&identity?.google){
+  $('#verifiedGoogle').textContent='Verified: '+identity.email;
+  email.value=identity.email;email.readOnly=true;
+  $('#googleStudentLogout').hidden=false;$('#googleStudentLogin').hidden=true;
+ }else{
+  $('#verifiedGoogle').textContent=error?'Identity/status check unavailable.':'Google verification required.';
+  email.readOnly=false;email.value='';
+  $('#googleStudentLogout').hidden=true;$('#googleStudentLogin').hidden=false;
+ }
+ button.disabled=!(productionReady&&identity?.verified&&identity?.google);
 }
+
 function refresh(){renderBatchFilterOptions();renderCourses();renderBatches();renderAbout();renderSelects();renderFaqs()}
 async function init(){shell();messages=[{role:'bot',text:'Welcome! Ask about published courses, fees, batches, or institute information. Verify information directly before making a payment.',suggestions:['DevOps course fees','Next Python batch','Compare Java and Python','Is placement guaranteed?']}];renderChat();try{data=await publicData();productionReady=isProductionReady(data.institute);refresh();bind();await updateVerifiedIdentity()}catch(err){$('#coursesGrid').innerHTML=`<p class="error">Unable to load published institute data: ${esc(err.message)}</p>`;}}
 init();
