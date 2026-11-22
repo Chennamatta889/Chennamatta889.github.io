@@ -16,6 +16,7 @@ on:
       - "privacy.html"
       - "terms.html"
       - "resources/**"
+      - "enquiryflow/**"
       - "resource-styles.css"
       - "sitemap.xml"
       - "ads.txt"
@@ -94,6 +95,10 @@ jobs:
           if [ -d account-site/draftflowai ]; then
             cp -R account-site/draftflowai site/draftflowai
           fi
+          # Publish isolated EnquiryFlow static demo without changing Career-Ops files.
+          test -s account-site/enquiryflow/index.html
+          mkdir -p site/enquiryflow
+          cp account-site/enquiryflow/index.html site/enquiryflow/index.html
           # Career-Ops is now the site's index, not a frame or redirect.
           cp career-ops-source/index.html career-ops-source/styles.css \
              career-ops-source/match-engine.js career-ops-source/job-categories.js \
@@ -177,6 +182,7 @@ jobs:
             vendor/pdf.min.mjs vendor/pdf.worker.min.mjs \
             vendor/mammoth.browser.min.js data/jobs.json data/enterprise-careers.json \
             portfolio/index.html portfolio/styles.css portfolio/script.js \
+            enquiryflow/index.html \
             portfolio/profile.jpg draftflowai/index.html \
             privacy.html about.html contact.html terms.html \
             resource-styles.css resources/index.html \
@@ -260,6 +266,8 @@ jobs:
             fi
             sleep 6
           done
+          curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow/" -o /tmp/enquiryflow-demo.html
+          grep -Fq "EnquiryFlow v2" /tmp/enquiryflow-demo.html
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/portfolio/" -o /tmp/career-ops-portfolio.html
           grep -Fq 'Cloud DevOps Engineer' /tmp/career-ops-portfolio.html
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/draftflowai/" -o /tmp/career-ops-draftflow.html
