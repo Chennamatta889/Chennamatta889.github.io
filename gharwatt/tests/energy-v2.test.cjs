@@ -40,3 +40,26 @@ test('photo resizer caps huge square images by pixel area',()=>{
 test('photo resizer rejects corrupt dimension values',()=>{
  assert.equal(m.ocrResizePlan(0,100),null);assert.equal(m.ocrResizePlan(100,Infinity),null);
 });
+
+
+test('garbled OCR is not silently interpreted as zero units or zero rupees',()=>{
+ const txt='Vaneasea Se Excrcy Danan Go 2\\nDuplicate Bill\\nall ETT [=] wo | Tm)\\n[Fa Tes TRG somata Toe Tram]';
+ const r=m.parseBillText(txt);
+ assert.equal(r.amount,null);
+ assert.equal(r.units,null);
+ assert.equal(r.days,null);
+ assert.equal(m.assessBillText(txt,r,20).readable,false);
+});
+test('Maharashtra-style rounded payable and arrears labels are parsed separately',()=>{
+ const txt='Rounded Bill: 1,830.00\\nTotal Current Charges: 164.24\\nTotal Arrears: 1,667.15\\nUnits Consumed: 18';
+ const r=m.parseBillText(txt);
+ assert.equal(r.amount,1830);
+ assert.equal(r.units,18);
+ assert.equal(r.currentCharges,164.24);
+ assert.equal(r.arrears,1667.15);
+});
+test('low OCR confidence prevents silent suggestions even if some numbers look plausible',()=>{
+ const text='Bill Amount: 2000\\nUnits Consumed: 300';
+ assert.equal(m.assessBillText(text,m.parseBillText(text),15).readable,false);
+ assert.equal(m.assessBillText(text,m.parseBillText(text),75).readable,true);
+});
