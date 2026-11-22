@@ -5,12 +5,12 @@ const read=path=>readFileSync(new URL(path,import.meta.url),'utf8');
 test('canonical Ctech student uses real-data entry and public metadata',()=>{
  const h=read('../index.html');
  assert.match(h,/Ctech Academy/);
- assert.match(h,/assets\/production-student\.js\?v=5\.1-catalogue/);
+ assert.match(h,/assets\/production-student\.js\?v=5\.2-guides/);
  assert.doesNotMatch(h,/assets\/student\.js\?v=3\.7/);
 });
 test('staff canonical uses real-data entry with private indexing',()=>{
  const h=read('../staff/index.html');
- assert.match(h,/assets\/production-staff\.js\?v=5\.1-catalogue/);
+ assert.match(h,/assets\/production-staff\.js\?v=5\.2-guides/);
  assert.match(h,/noindex,nofollow/);
 });
 test('original fictional demo routes remain isolated',()=>{
