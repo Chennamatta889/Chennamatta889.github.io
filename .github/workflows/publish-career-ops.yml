@@ -299,11 +299,11 @@ jobs:
           grep -Fq "Ctech Academy | Courses and Student Enquiries" /tmp/enquiryflow-v3-student.html
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/staff/" -o /tmp/enquiryflow-v3-staff.html
           grep -Fq "Ctech Academy | Staff Dashboard" /tmp/enquiryflow-v3-staff.html
-# Make sure the original fictional demo remains available as a rollback option.
-curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/demo/" -o /tmp/enquiryflow-v3-rollback.html
-grep -Fq "EnquiryFlow v3 | Fictional Demo" /tmp/enquiryflow-v3-rollback.html
-curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/demo/staff/" -o /tmp/enquiryflow-v3-rollback-staff.html
-grep -Fq "EnquiryFlow v3 | Demo Staff Workspace" /tmp/enquiryflow-v3-rollback-staff.html
+          # Make sure the original fictional demo remains available as a rollback option.
+          curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/demo/" -o /tmp/enquiryflow-v3-rollback.html
+          grep -Fq "EnquiryFlow v3 | Fictional Demo" /tmp/enquiryflow-v3-rollback.html
+          curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/demo/staff/" -o /tmp/enquiryflow-v3-rollback-staff.html
+          grep -Fq "EnquiryFlow v3 | Demo Staff Workspace" /tmp/enquiryflow-v3-rollback-staff.html
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow/" -o /tmp/enquiryflow-demo.html
           grep -Fq "EnquiryFlow v2" /tmp/enquiryflow-demo.html
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/portfolio/" -o /tmp/career-ops-portfolio.html
