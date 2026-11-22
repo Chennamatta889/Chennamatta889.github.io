@@ -1,0 +1,6 @@
+const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
+const window={};const script=fs.readFileSync(require('node:path').join(__dirname,'../assets/decision-tools.js'),'utf8');vm.runInNewContext(script,{window,document:{getElementById:()=>null}});const {subsidy,analyzeBill,compareSizes}=window.GharWattDecisionMath;
+test('subsidies standard and special category caps',()=>{assert.equal(subsidy(1,false),30000);assert.equal(subsidy(2,false),60000);assert.equal(subsidy(3,false),78000);assert.equal(subsidy(5,false),78000);assert.equal(subsidy(3,true),85800)});
+test('bill analyzer uses entered rates and excludes non-energy charges',()=>{let x=analyzeBill(2400,300,150,4,85);assert.equal(x.rate,7.5);assert.equal(x.size,3);assert.ok(x.savings<=2250);assert.equal(analyzeBill(0,0,0,4,85),null)});
+test('larger system cannot credit more than consumption',()=>{let r=compareSizes(200,8,60000,4,85,false);assert.equal(r.length,4);assert.equal(r[2].subsidy,78000);assert.ok(r.every(x=>x.credited<=200));assert.ok(r[3].monthly<=1600);assert.ok(r.every(x=>x.net>=0));});
+test('zero tariff and zero consumption do not invent revenue or payback',()=>{const r=compareSizes(0,0,60000,4,85,true);assert.ok(r.every(x=>x.monthly===0&&x.payback===null));});
