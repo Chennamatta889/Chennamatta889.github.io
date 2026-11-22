@@ -18,7 +18,29 @@ function safeContext(raw){
 function cleanMessage(raw){
  return typeof raw==='string'?raw.trim().slice(0,550):'';
 }
-root.GharWattAIClient=Object.freeze({safeContext,cleanMessage});
+const BROWSER_ID_KEY="gharwatt:ai-browser-id-v1";
+const UUID_V4=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+function getOrCreateBrowserId(store,randomUUID){
+ // Only called after the visitor explicitly consents to a Gemini request.
+ // An opaque random browser ID is stored locally; no account or bill is saved.
+ if(!store||typeof randomUUID!=='function')return null;
+ try{
+  const existing=store.getItem(BROWSER_ID_KEY);
+  if(typeof existing==='string'&&UUID_V4.test(existing))return existing;
+  const id=randomUUID();
+  if(typeof id!=='string'||!UUID_V4.test(id))return null;
+  store.setItem(BROWSER_ID_KEY,id);
+  return id;
+ }catch{return null}
+}
+function browserId(){
+ let store=null;
+ try{store=root.localStorage}catch{}
+ if(!store)try{store=root.sessionStorage}catch{}
+ const randomUUID=typeof root.crypto?.randomUUID==='function'?()=>root.crypto.randomUUID():null;
+ return getOrCreateBrowserId(store,randomUUID);
+}
+root.GharWattAIClient=Object.freeze({safeContext,cleanMessage,getOrCreateBrowserId});
 const panel=$('gw-ask-ai');
 if(!panel)return;
 const status=$('gw-ai-live-status'),send=$('gw-ai-send'),message=$('gw-ai-message'),
@@ -73,13 +95,18 @@ send.addEventListener('click',async()=>{
  const question=cleanMessage(message.value);
  if(question.length<3)return;
  const share=shareBill.checked;
+ const visitorId=browserId();
+ if(!visitorId){
+  statusText('Your browser could not save an anonymous AI usage ID. Allow site storage to use AI, or try another browser. GharWatt calculators still work.');
+  return;
+ }
  setBusy(true);statusText('AI is preparing an explanation…');
  const requestHistory=transcript.slice(-4).map(x=>({role:x.role==='user'?'user':'model',text:x.text}));
  try{
   const response=await fetch(ENDPOINT,{
    method:'POST',
    headers:{'Content-Type':'application/json','Accept':'application/json'},
-   body:JSON.stringify({consent:true,shareBill:share,
+   body:JSON.stringify({consent:true,visitorId,shareBill:share,
     context:share?customerContext():null,message:question,history:requestHistory}),
    cache:'no-store',signal:AbortSignal.timeout(25000)
   });

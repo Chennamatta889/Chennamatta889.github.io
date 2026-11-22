@@ -9,6 +9,7 @@ This is deployed **disabled by default**. In the **Supabase Dashboard → Projec
 - `GEMINI_API_KEY` — a valid AI Studio API key; may already be configured on the shared project, but must be verified privately.
 - `GHARWATT_AI_ENABLED=true` — **opt-in switch**. Do not enable until the provider billing/free tier and privacy controls have been reviewed.
 - `GHARWATT_GEMINI_MODEL` — optional, defaults to `gemini-3.5-flash-lite`. Verify the chosen model is available to the key.
+- Status: live Gemini integration may already be enabled by the owner. The function does **not** require sign-in; quotas apply to anonymous browser identities, not verified people.
 
 Do not place any secret in GitHub Pages HTML/JavaScript, in the repository, or in a chat message. Use server-side Edge Function secrets only.
 
@@ -23,7 +24,9 @@ Do not place any secret in GitHub Pages HTML/JavaScript, in the repository, or i
 - Only the GitHub Pages origin is allowed; the endpoint has no login requirement.
 - Origin checking is **not** a substitute for authentication, so durable quota reservation is required BEFORE any model call.
 - Atomic database RPC `public.gharwatt_ai_reserve_request` caps AI calls at **3 per visitor per UTC day** and **20 for the whole site per UTC day**; quotas fail closed on errors. No chat content, bill or raw IP is stored.
-- Visitor hash is an opaque daily SHA-256 fingerprint; the proxy-supplied IP is not guaranteed unspoofable. The shared global cap prevents unlimited provider calls even under spoofing.
+- On the first consented AI request, the browser creates a random UUIDv4 and saves it in local storage (or session storage where available). Separate browsers, including browsers on the same Wi-Fi or mobile carrier, receive independent **3-message UTC-day allowances**.
+- The backend stores only a daily salted SHA-256 hash of the browser ID, not the raw ID, raw IP, or conversation. Clearing browser storage can create another ID; this is not secure identity. A strict site-wide **20-message daily cap** still prevents unlimited paid requests. After the site cap is reached, *all* visitors are blocked until the next UTC day (05:30 India time). For higher traffic use verified sign-in/CAPTCHA with rate limits.
+- Existing IP-hashed quota rows remain in history but no longer affect the new anonymous browser quota. No previous usage counters are deleted or reset.
 - Function requires `GHARWATT_AI_ENABLED=true`; no model call otherwise.
 - Only the user's question and optional whitelisted numeric bill fields are sent, after explicit consent. The client keeps conversation history in memory and does not store chats.
 - Outputs are explanations, not audited tariffs or financial advice. Keep all cost calculations deterministic.

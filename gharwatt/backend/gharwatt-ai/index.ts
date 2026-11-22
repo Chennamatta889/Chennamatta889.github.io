@@ -1,7 +1,9 @@
 /**
  * GharWatt AI (public, account-free, disabled by default)
  * Supabase Edge Function. No browser API credentials, session histories, bill images
- * or customer identifiers are stored. Never switch this on without checking quota and billing.
+ * or personal customer details are stored. A daily salted hash of a random,
+ * locally generated browser identifier is stored for quota enforcement only.
+ * Never switch this on without checking quota and billing.
  *
  * Activation secrets on server only:
  *   GHARWATT_AI_ENABLED=true
@@ -60,20 +62,22 @@ function allowedModel() {
   const model=Deno.env.get("GHARWATT_GEMINI_MODEL")||DEFAULT_MODEL;
   return /^gemini-[a-zA-Z0-9._-]{4,55}$/.test(model)?model:DEFAULT_MODEL;
 }
-async function hashedVisitor(req:Request,secret:string) {
-  // Header comes from the hosting gateway. Global quota still caps traffic if
-  // any IP header is absent or unreliable. Raw IP is never stored or logged.
-  const ip=req.headers.get("cf-connecting-ip")||req.headers.get("x-real-ip")||
-    (req.headers.get("x-forwarded-for")||"").split(",")[0].trim()||"unknown";
+// Browser-scoped anonymous quota: two users sharing a network must not share
+// a three-message allowance. UUIDv4 provides 122 random bits without a login.
+// A new browser/storage reset may create another ID; GLOBAL_PER_DAY=20 remains
+// a hard shared cost ceiling. For stronger abuse controls, add CAPTCHA/auth.
+const UUID_V4=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+async function hashedVisitor(visitorId:string,secret:string) {
+  if(!UUID_V4.test(visitorId))throw new Error("INVALID_VISITOR_ID");
   const date=new Date().toISOString().slice(0,10);
-  const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(date+"|"+ip+"|"+secret));
+  const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(date+"|browser|"+visitorId+"|"+secret));
   return [...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,"0")).join("");
 }
-async function reserve(req:Request) {
+async function reserve(visitorId:string) {
   const key=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
   const base=Deno.env.get("SUPABASE_URL")||"";
   if(!base||!key)throw new Error("QUOTA_UNAVAILABLE");
-  const hash=await hashedVisitor(req,key);
+  const hash=await hashedVisitor(visitorId,key);
   const result=await fetch(base+"/rest/v1/rpc/gharwatt_ai_reserve_request",{
     method:"POST",
     headers:{"apikey":key,"Authorization":"Bearer "+key,
@@ -108,6 +112,7 @@ Deno.serve(async(req:Request)=>{
   // (e.g. URL previews/monitors). Restrict OPTIONS and billable POST as before.
   if(req.method==="GET"&&(origin===null||origin===ORIGIN))return response(origin,200,{
     ok:true,ready:configured(),mode:"consent_only",dailyLimit:PER_VISITOR_PER_DAY,
+    globalDailyLimit:GLOBAL_PER_DAY,limitScope:"anonymous_browser",
     message:configured()?"GharWatt AI is available. Only submit what you choose.":
       "GharWatt AI provider activation is pending. Existing calculators are available."
   });
@@ -124,6 +129,9 @@ Deno.serve(async(req:Request)=>{
   try{body=JSON.parse(text)}catch{return response(origin,400,{ok:false,error:"Send a valid JSON message."});}
   if(!body||typeof body!=="object"||Array.isArray(body))return response(origin,400,{ok:false,error:"Invalid request."});
   if(body.consent!==true)return response(origin,403,{ok:false,code:"CONSENT_REQUIRED",error:"Choose to send this message before using AI."});
+  const visitorId=typeof body.visitorId==="string"?body.visitorId.trim():"";
+  if(!UUID_V4.test(visitorId))return response(origin,400,{ok:false,code:"BROWSER_ID_REQUIRED",
+    error:"Could not identify this browser for anonymous AI limits. Enable site storage or try another browser."});
   const question=scrubText(body.message,550);
   if(question.length<3)return response(origin,400,{ok:false,error:"Enter a short question first."});
   const context=body.shareBill===true?pickContext(body.context):pickContext(null);
@@ -134,12 +142,12 @@ Deno.serve(async(req:Request)=>{
     return message?[{role:x.role,parts:[{text:message}]}]:[];
   });
   try{
-    // Durable quota reserve BEFORE provider call. An attacker cannot spend beyond
-    // shared 20/day even by forging IP addresses.
-    const quota=await reserve(req);
+    // Durable per-browser quota reserve BEFORE provider call; the shared 20/day
+    // ceiling prevents unlimited paid traffic if visitors rotate browser IDs.
+    const quota=await reserve(visitorId);
     if(!quota.ok)return response(origin,429,{ok:false,code:quota.code||"QUOTA_EXCEEDED",
-      error:quota.code==="GLOBAL_LIMIT"?"Today's GharWatt AI limit is reached. Please try tomorrow.":
-        "You've used today's three GharWatt AI messages. Please try tomorrow."});
+      error:quota.code==="GLOBAL_LIMIT"?"GharWatt has reached its shared 20 AI requests today. All visitors can use AI again after 00:00 UTC (5:30 AM India time). Other calculators remain available.":
+        "This browser has reached its three AI requests today. Your allowance resets after 00:00 UTC (5:30 AM India time). Other browsers have separate allowances until the site-wide cap is reached."});
     const model=allowedModel();
     const api=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent",{
       method:"POST",

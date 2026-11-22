@@ -71,6 +71,11 @@ jobs:
               assert f'id="{element}"' in discover, f'missing opt-in AI UI field {element}'
           assert re.search(r'src="\.\./assets/gharwatt-ai\.js(?:\?[^"]*)?"',discover), 'GharWatt native AI client not loaded'
           assert (root/'backend'/'gharwatt-ai'/'index.ts').exists(), 'GharWatt AI backend source missing'
+          ai_client=(root/'assets'/'gharwatt-ai.js').read_text(encoding='utf-8')
+          ai_backend=(root/'backend'/'gharwatt-ai'/'index.ts').read_text(encoding='utf-8')
+          assert 'getOrCreateBrowserId' in ai_client and 'visitorId,' in ai_client, 'per-browser identity missing'
+          assert 'const quota=await reserve(visitorId)' in ai_backend and 'GLOBAL_PER_DAY = 20' in ai_backend, 'per-browser backend quota missing'
+          assert 'href="../privacy/"' in discover and 'random anonymous ID' in discover, 'quota disclosure missing'
           assert 'id="gw-ai-question"' in discover and 'id="gw-ai-copy"' in discover, 'reviewed AI handoff missing'
           assert 'href="https://chatgpt.com/"' in discover, 'external AI option missing'
           assert 'function aiQuestion' in (root/'assets'/'verdict.js').read_text(encoding='utf-8'), 'opt-in AI prompt is missing'

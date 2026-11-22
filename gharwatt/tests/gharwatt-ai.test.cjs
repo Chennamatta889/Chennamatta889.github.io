@@ -50,3 +50,33 @@ test('backend has default-off switch, durable quota, and no message storage',()=
  assert.match(ts,/shareBill===true\?pickContext\(body\.context\):pickContext\(null\)/);
  assert.doesNotMatch(ts,/insert.*chat|persist.*question|store.*history/i);
 });
+
+test('anonymous browser IDs stay stable per browser, independent of IP and other browsers',()=>{
+ const mapA=new Map(),mapB=new Map();
+ const storage=m=>({getItem:k=>m.get(k)||null,setItem:(k,v)=>{m.set(k,v)}});
+ const a='3df1db12-a7a9-4873-b9f6-cebe96ff9c43';
+ const b='e647e6b5-f157-4b8b-a633-22d97c2c43b6';
+ let minted=0;
+ const first=ai.getOrCreateBrowserId(storage(mapA),()=>{minted++;return a});
+ const firstAgain=ai.getOrCreateBrowserId(storage(mapA),()=>{minted++;return b});
+ const other=ai.getOrCreateBrowserId(storage(mapB),()=>{minted++;return b});
+ assert.equal(first,a);
+ assert.equal(firstAgain,a);
+ assert.equal(other,b);
+ assert.equal(minted,2);
+});
+test('anonymous ID creation fails closed without storage or secure UUID',()=>{
+ const a='3df1db12-a7a9-4873-b9f6-cebe96ff9c43';
+ assert.equal(ai.getOrCreateBrowserId(null,()=>a),null);
+ assert.equal(ai.getOrCreateBrowserId({getItem:()=>null,setItem:()=>{throw new Error('storage denied')}},()=>a),null);
+ assert.equal(ai.getOrCreateBrowserId({getItem:()=>null,setItem:()=>{}},()=> 'user-controlled-name'),null);
+});
+test('backend keys per-visitor limit by random browser ID rather than shared IP',()=>{
+ const ts=fs.readFileSync(path.join(__dirname,'../backend/gharwatt-ai/index.ts'),'utf8');
+ assert.match(ts,/const visitorId=typeof body\.visitorId/);
+ assert.match(ts,/const quota=await reserve\(visitorId\)/);
+ assert.match(ts,/hash(?:ed)?Visitor\(visitorId:string,secret:string\)/);
+ assert.doesNotMatch(ts,/req\.headers\.get\("x-real-ip"\)|req\.headers\.get\("x-forwarded-for"\)/);
+ assert.match(ts,/GLOBAL_PER_DAY = 20/);
+ assert.match(ts,/BROWSER_ID_REQUIRED/);
+});
