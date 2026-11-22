@@ -89,7 +89,7 @@ function ocrResizePlan(width,height,maxEdge=1800,maxPixels=2000000){
  const w=Number(width),h=Number(height);
  if(!Number.isFinite(w)||!Number.isFinite(h)||w<=0||h<=0||w>50000||h>50000)return null;
  const scale=Math.min(1,Number(maxEdge)/Math.max(w,h),Math.sqrt(Number(maxPixels)/(w*h)));
- return Object.freeze({width:Math.max(1,Math.round(w*scale)),height:Math.max(1,Math.round(h*scale)),resized:scale<0.999});
+ return Object.freeze({width:Math.max(1,Math.floor(w*scale)),height:Math.max(1,Math.floor(h*scale)),resized:scale<0.999});
 }
 /* Optional lightweight automatic contrast normalization, applied only to small resized images.
    This does not recover detail missing from the original photo. */
@@ -101,7 +101,7 @@ function enhanceBillPixels(bytes,width,height){
   counts[gray]++;
  }
  let total=0;for(const count of counts)total+=count;
- const loTarget=Math.floor(total*.006),hiTarget=Math.floor(total*.994);
+ const loTarget=Math.max(1,Math.ceil(total*.006)),hiTarget=Math.max(1,Math.ceil(total*.994));
  let seen=0,low=0,high=255;
  for(let i=0;i<256;i++){seen+=counts[i];if(seen>=loTarget){low=i;break}}
  seen=0;for(let i=0;i<256;i++){seen+=counts[i];if(seen>=hiTarget){high=i;break}}
@@ -283,7 +283,7 @@ function initReader(){
    if(!basePlan)throw new Error('Invalid image dimensions');
    const improve=Boolean($('v2-improve-contrast')?.checked);
    const scale=focus?Math.min(2,1800/Math.max(sw,sh),Math.sqrt(2000000/(sw*sh))):1;
-   const plan=focus?{width:Math.max(1,Math.round(sw*scale)),height:Math.max(1,Math.round(sh*scale)),resized:true}:basePlan;
+   const plan=focus?{width:Math.max(1,Math.floor(sw*scale)),height:Math.max(1,Math.floor(sh*scale)),resized:true}:basePlan;
    if(!focus&&!improve&&!plan.resized&&file.size<=2000000)return {blob:file,compressed:false,plan};
    const canvas=document.createElement('canvas');canvas.width=plan.width;canvas.height=plan.height;
    const ctx=canvas.getContext('2d',{alpha:false});
