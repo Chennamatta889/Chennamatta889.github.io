@@ -73,3 +73,28 @@ html{scroll-padding-top:96px}body{background:#fdfefd}::selection{background:#b8f
 
 /* Enquiry delivery states. Explicitly separate local demo saving from verified backend submission. */
 .response.enquiry-local,.response.enquiry-error,.response.enquiry-success{padding:15px 16px;border-radius:12px;line-height:1.65;font-weight:500}.response.enquiry-local{background:#fff7e5;border:1px solid #e9cd87;color:#75531d}.response.enquiry-success{background:#e7f8ef;border:1px solid #a8dfc3;color:#176544}.response.enquiry-error{background:#fff0ec;border:1px solid #eec0b3;color:#a23828}.response strong,.response span,.response a{display:block}.response strong{font-weight:800}.response a{color:#0b7467;text-decoration:underline;font-weight:800;margin-top:9px}.response a:hover{text-decoration:none}#enquiryForm button:disabled{opacity:.65;cursor:progress}
+
+/* Ctech Academy reviewed-catalogue presentation. No changes to existing demo components. */
+.ctech-template-panel{margin-bottom:22px}
+.ctech-template-panel .surface-head{gap:18px;flex-wrap:wrap}
+.ctech-template-panel>details{margin-top:16px}
+.ctech-template-panel summary{cursor:pointer;font-weight:800}
+.ctech-template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:12px;margin-top:15px}
+.ctech-proposal{padding:14px 16px;border:1px solid #dce7e9;border-radius:12px;background:#f8fbfc}
+.ctech-proposal summary strong{display:block;color:#14344c}
+.ctech-proposal summary span{display:block;font-size:12px;font-weight:600;color:#547481;margin-top:5px}
+.ctech-proposal[open]{grid-column:1/-1}
+.ctech-proposal p,.ctech-proposal li{margin:9px 0;font-size:14px;line-height:1.6;color:#415867}
+.ctech-proposal ol,.ctech-proposal ul{padding-left:23px}
+#courseImportStatus,#faqImportStatus{font-size:14px;color:#166e61}
+.ctech-detail-btn{display:block;width:100%;text-align:left;border:1px solid #cfe4dc;border-radius:9px;background:#f1faf6;color:#096954;font-weight:800;padding:10px 14px;margin-top:12px}
+.ctech-detail-btn:hover,.ctech-detail-btn:focus-visible{background:#dff5eb}
+.ctech-course-dialog{width:min(800px,calc(100vw - 24px));max-height:90vh;overflow:auto}
+.ctech-detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+.ctech-detail-stats span{background:#eff8f4;border-radius:10px;padding:13px;font-weight:700}
+.ctech-detail-stats b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#4b776b;margin-bottom:5px}
+.ctech-detail-columns{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:18px 0}
+.ctech-detail-columns h3{font-size:17px;margin:0 0 11px}
+.ctech-detail-columns p,.ctech-detail-list li{font-size:14px;line-height:1.65;margin:0 0 9px;color:#365060}
+.ctech-detail-list{padding-left:21px;margin:0}
+@media(max-width:650px){.ctech-detail-stats{grid-template-columns:repeat(2,1fr)}.ctech-detail-columns{grid-template-columns:1fr;gap:14px}.ctech-course-dialog{max-height:94vh}.ctech-template-grid{grid-template-columns:1fr}}
