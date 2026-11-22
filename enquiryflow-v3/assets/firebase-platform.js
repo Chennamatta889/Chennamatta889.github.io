@@ -97,7 +97,7 @@ export async function submitEnquiry(payload){
  const f=await firebase();const body={full_name:String(payload.full_name).trim(),email:String(payload.email).trim(),course_id:payload.course_id||null,batch_id:payload.batch_id||null,question:payload.question||'',consent:true,created_at:new Date().toISOString(),status:'new',institute_id:institutionId(),next_followup_at:null,staff_notes:''};
  const ref=await f.addDoc(f.collection(f.db,'ef3_enquiries'),body);return {id:ref.id,demo:true};
 }
-export async function askAssistant(question,records){if(isDemo)return demo.askAssistant(question,records);return {...searchKnowledge(question,records),mode:'verified-knowledge-only',note:'No generative model connected. Responses use published institute records.'}}
+export async function askAssistant(question,records,context={}){if(isDemo)return demo.askAssistant(question,records,context);return {...searchKnowledge(question,records,context),mode:'verified-knowledge-only',note:'No generative model connected. Responses use published institute records.'}}
 export async function queueImport(rows,sourceUrl,claimedRole){
  if(isDemo)return demo.queueImport(rows,sourceUrl,claimedRole);
  const role=await verifiedRole();if(!['owner','admin','editor'].includes(role))throw Error('Import requires editor access');
