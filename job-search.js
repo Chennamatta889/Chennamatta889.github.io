@@ -39,6 +39,18 @@
       points+=best;
       if(bestSource!=="description")mainHits++;
     }
+    // A role query must be supported by the role itself, not split across a
+    // generic title word ("Engineer") and an incidental employer name ("AI").
+    // Exact employer-name searches remain supported.
+    const roleWords=new Set(["engineer","developer","architect","analyst","administrator","tester","scientist","consultant","specialist","designer","manager","lead","intern","trainee"]);
+    const requestedRole=terms.some(term=>roleWords.has(term));
+    const exactCompany=containsTerm(fields[3][1],search);
+    if(requestedRole&&!exactCompany){
+      const roleText=[fields[0][1],fields[1][1],fields[2][1]].join(" ");
+      const meaningful=terms.filter(term=>!roleWords.has(term)&&!["senior","junior","associate","entry","level","full","stack"].includes(term));
+      if(meaningful.length&&!meaningful.every(term=>containsTerm(roleText,term)))
+        return {matches:false,score:0,source:"role-mismatch"};
+    }
     // Exact job-role phrases outrank broad company or description mentions.
     if(containsTerm(fields[0][1],search))points+=180;
     else if(containsTerm(fields[1][1],search))points+=100;
