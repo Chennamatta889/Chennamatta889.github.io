@@ -1,0 +1,147 @@
+import {publicData,submitEnquiry,askAssistant,isDemo} from './connected-adapter.js?v=3.8';
+import {$,$$,esc,money,shortDate,str,safeUrl} from './utils.js?v=3.4';
+import {filterCourses,filterUpcomingBatches,compareSelection,todayIndia} from './discovery.js';
+let data,selectedCourse='',messages=[],query='',category='All',courseMode='All',sort='featured',batchCourse='All',batchMode='All',compared=[],chatContext={courseId:null},asking=false;
+const app=$('#app');
+const link=url=>safeUrl(url)?`<a href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer">Original source ↗</a>`:'';
+function shell(){
+ app.innerHTML=`<div class="demo-ribbon">${isDemo?'V3 PREVIEW • Fictional course fees and student records. This is not an operating institute website.':'CONNECTED FIREBASE TEST • Fictional data only. Real admissions are disabled.'}</div>
+ <header class="site-header"><div class="wrap nav-row"><a class="brand" href="#top"><span class="brand-icon">✦</span><span>Enquiry<span class="accent">Flow</span><small>Student experience</small></span></a><button class="mobile-menu-toggle" id="mobileNavToggle" aria-controls="studentNav" aria-expanded="false" aria-label="Open navigation" type="button">☰</button><nav id="studentNav"><a href="#courses">Courses</a><a href="#batches">Batches</a><a href="#faq">FAQs</a><a href="#about">Institute</a><a href="#assistant">Ask assistant</a></nav><a class="nav-action" href="#enquire">Enquire now <span aria-hidden="true">↗</span></a></div></header>
+ <main id="top"><section class="hero"><div class="wrap hero-grid"><div><span class="eyebrow">LEARN WITH CLARITY</span><h1>Find your next<br><em>learning opportunity.</em></h1><p id="heroIntro">Browse programs, compare fees and learning modes, find the right batch, and get clear answers from approved information.</p><div class="hero-actions"><a href="#courses" class="button primary">Explore courses <span>↗</span></a><a href="#assistant" class="button secondary">Ask the course assistant</a></div><div class="hero-trust"><span>✓ Compare up to 3 courses</span><span>✓ See upcoming batch dates</span><span>✓ Ask verified questions</span></div><div class="hero-metrics"><div><b id="courseMetric">—</b><span>Courses</span></div><div><b id="batchMetric">—</b><span>Published batches</span></div><div><b>One</b><span>Place for answers</span></div></div></div><div class="hero-panel"><div class="hero-panel-top"><span class="pill green">Course intelligence</span><span class="tiny">STUDENT VIEW</span></div><div class="orb">✦</div><h3>Learn what matters, before you enrol.</h3><p>Fees, syllabus, batches and verified answers — without endless back-and-forth.</p><div class="panel-check"><span>✓</span> Clear course comparisons</div><div class="panel-check"><span>✓</span> Current published batch details</div><div class="panel-check"><span>✓</span> Enquiry handoff to institute staff</div></div></div></section>
+ <section class="section" id="courses"><div class="wrap"><div class="section-title"><div><span class="eyebrow">COURSE CATALOGUE</span><h2>Explore programs</h2><p>Fees and course descriptions come from the institution's published records.</p></div><span class="info-stamp" id="coursesCount"></span></div><div class="toolbar discovery-toolbar"><label class="search-control"><span>Search courses</span><input id="courseSearch" type="search" placeholder="Try AWS, Python, Java, analytics…" aria-label="Search courses"></label><label class="select-control"><span>Learning mode</span><select id="courseMode" aria-label="Filter by learning mode"><option value="All">All modes</option><option value="Online">Online</option><option value="Classroom">Classroom</option></select></label><label class="select-control"><span>Sort by</span><select id="courseSort" aria-label="Sort courses"><option value="featured">Featured</option><option value="fee-asc">Fee: low to high</option><option value="fee-desc">Fee: high to low</option><option value="duration">Shortest duration</option><option value="name">Course name A–Z</option></select></label></div><div class="category-row"><div id="categories" class="chip-group"></div><button type="button" class="text-button" id="resetCourseFilters">Reset filters</button></div><div class="cards" id="coursesGrid"></div><div id="compareTray" class="compare-tray" hidden aria-live="polite"></div></div></section><dialog id="compareDialog" class="compare-dialog" aria-label="Compare selected courses"><div id="compareDialogContent"></div></dialog>
+ <section class="section soft" id="batches"><div class="wrap"><div class="section-title"><div><span class="eyebrow">SCHEDULES</span><h2>Upcoming batches</h2><p>These are published schedules, not confirmed seat reservations.</p></div></div><div class="batch-filters"><label>Course<select id="batchCourseFilter" aria-label="Filter batches by course"><option value="All">All courses</option></select></label><label>Mode<select id="batchModeFilter" aria-label="Filter batches by mode"><option value="All">All modes</option><option value="Online">Online</option><option value="Classroom">Classroom</option></select></label><span id="batchVisibleCount" class="batch-count"></span></div><div class="batch-list" id="batchList"></div></div></section>
+ <section class="section" id="assistant"><div class="wrap two-col"><div class="assistant-intro"><span class="eyebrow">KNOWLEDGE ASSISTANT</span><h2>Ask a question.<br>Get a grounded answer.</h2><p>Ask about the institute, how many courses it offers, all published fees, the next batch or approved staff information. Answers use the published catalogue and FAQs. Unverified answers are escalated instead of invented.</p><div class="sample-questions"><button data-question="Tell me about the institute">About institute</button><button data-question="How many courses are available?">Course count</button><button data-question="Show all course fees">All fees</button><button data-question="When is the next batch?">Next batch</button><button data-question="Who are the trainers?">Staff information</button></div><div class="fineprint">${isDemo?'FAQ retrieval simulation (not a generative AI model).':'An AI response is only available when its secure server integration is configured.'}</div></div><div class="chat"><div class="chat-heading"><span class="bot-icon">✦</span><div><b>Course assistant</b><small>Answers grounded in approved knowledge</small></div><button id="clearChat" type="button" class="chat-clear" aria-label="Clear chat history" title="Clear chat">Clear</button><span class="online-dot"></span></div><div class="chat-messages" id="chatMessages" aria-live="polite"></div><div class="chat-suggestions" id="chatSuggestions" aria-label="Suggested follow-up questions"></div><form id="chatForm" class="chat-form"><input name="question" maxlength="500" placeholder="Ask about a course or batch…" aria-label="Ask the course assistant" required><button class="button primary" type="submit">Send</button></form><div class="chat-utilities"><button type="button" id="copyAnswer" class="text-button" aria-label="Copy latest assistant answer">⧉ Copy latest answer</button><span id="chatUtilityStatus" role="status"></span></div><div class="chat-disclaimer">${isDemo?'Fictional course data • No messages leave your device.':'Do not share sensitive personal information in the chat.'}</div></div></div></section>
+ <section class="section faq-section soft" id="faq"><div class="wrap"><div class="section-title"><div><span class="eyebrow">GOOD TO KNOW</span><h2>Frequently asked questions</h2><p>Answers reviewed by the institute. Unpublished details are never shown.</p></div><a class="text-button" href="#assistant">Ask a different question ↗</a></div><div id="faqList" class="faq-list"></div></div></section>
+ <section class="section soft" id="about"><div class="wrap about-grid"><div><span class="eyebrow">ABOUT THE INSTITUTE</span><h2 id="instituteTitle">A modern learning experience.</h2><p id="instituteDescription"></p><div class="about-details" id="instituteDetails"></div></div><div class="about-panel"><span class="eyebrow">BEFORE ENROLLING</span><h3>Know the details, then decide.</h3><p>Check fees, course duration, delivery format and syllabus. When something is not published, contact the institute before making a payment.</p><div class="about-icons"><span>✦ Transparent course details</span><span>✦ Staff-managed knowledge</span><span>✦ No invented admission guarantees</span></div></div></div></section>
+ <section class="section" id="enquire"><div class="wrap enquiry-grid"><div><span class="eyebrow">GET IN TOUCH</span><h2>Need more information?</h2><p>${isDemo?'Test the enquiry workflow with fictional details. This does NOT contact staff or send email; submissions remain in this browser.':'Test the real Firebase connection with fictional details only. These test records are visible to authorized institute staff across devices.'}</p><div class="info-box">${isDemo?'<b>Demo-only intake.</b> Use a name beginning Demo/Test and an @example.com email. Nothing is sent to any institution.':'<b>Fictional test only.</b> Use a Demo/Test/Sample name and an @example.com email. Do not provide real personal details. No email is sent.'}</div></div><div class="form-card"><h3>${isDemo?'Test an enquiry':'Send a fictional test enquiry'}</h3><form id="enquiryForm" class="stack"><label>Full name<input name="full_name" placeholder="${isDemo?'Demo Learner':'Demo Learner'}" required maxlength="90"></label><label>Email<input name="email" type="email" placeholder="${isDemo?'demo@example.com':'demo@example.com'}" required maxlength="180"></label><label>Course<select name="course_id" id="enquiryCourse"><option value="">General enquiry</option></select></label><label>Preferred batch<select name="batch_id" id="enquiryBatch"><option value="">Not decided</option></select></label><label>Question or preferred callback time<textarea name="question" rows="3" maxlength="1500" placeholder="Tell us what you'd like to know"></textarea></label><label class="checkboxline"><input type="checkbox" name="consent" required><span>I agree to the use of my details to respond to this enquiry.</span></label><div style="display:none" aria-hidden="true"><label>Do not fill<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div><button type="submit" class="button primary fill">${isDemo?'Save fictional enquiry locally':'Save fictional test enquiry'} ↗</button><div id="formResponse" class="response" role="status" aria-live="polite"></div></form></div></div></section></main>
+ <footer class="site-footer"><div class="wrap footer-grid"><span><b>✦ EnquiryFlow</b><small>Independent training institute platform demonstration.</small></span><a href="./connected-staff.html">Institution staff ↗</a><small>${isDemo?'Demo institute and fees are illustrative only.':'Fictional pilot only. Do not submit real admissions enquiries.'}</small></div></footer>`;
+}
+function renderCourses(){
+ const found=filterCourses(data.courses,{query,category,mode:courseMode,sort});
+ $('#coursesCount').textContent=`Showing ${found.length} of ${data.courses.length} courses`;
+ $('#coursesGrid').innerHTML=found.map(c=>`<article class="course-card ${compared.includes(c.id)?'is-compared':''}"><div class="card-top"><span class="pill">${esc(c.category||'Course')}</span><button class="compare-pick" type="button" data-compare="${esc(c.id)}" aria-pressed="${compared.includes(c.id)}" aria-label="${compared.includes(c.id)?'Remove':'Add'} ${esc(c.title)} ${compared.includes(c.id)?'from':'to'} comparison">${compared.includes(c.id)?'✓ Selected':'+ Compare'}</button></div><h3>${esc(c.title)}</h3><p>${esc(c.description)}</p><div class="course-tags">${(c.curriculum||[]).slice(0,3).map(t=>`<span>${esc(t)}</span>`).join('')}</div><div class="course-meta"><div><small>Published fee</small><b>${money(c.fee_inr)}</b></div><div><small>Duration</small><b>${esc(c.duration_weeks)} weeks</b></div></div><div class="card-bottom"><span>${esc((c.delivery_modes||[]).join(' · '))}</span><button data-choose="${esc(c.id)}">Enquire <span>→</span></button></div>${link(c.source_url)}</article>`).join('')||'<div class="empty discovery-empty">No courses match those filters. Try a different keyword or <button type="button" class="text-button" id="emptyResetFilters">clear filters</button>.</div>';
+ const categories=['All',...new Set(data.courses.map(c=>c.category).filter(Boolean))];
+ $('#categories').innerHTML=categories.map(c=>`<button class="filter ${category===c?'active':''}" data-category="${esc(c)}" aria-pressed="${category===c}">${esc(c)}</button>`).join('');
+ renderCompareTray();
+}
+function renderCompareTray(){
+ compared=compared.filter(id=>data.courses.some(c=>c.id===id)).slice(0,3);
+ const tray=$('#compareTray');if(!compared.length){tray.hidden=true;tray.innerHTML='';return}
+ const chosen=compareSelection(compared,data.courses);
+ tray.hidden=false;
+ tray.innerHTML=`<div><span class="eyebrow">COURSE COMPARISON</span><b>${chosen.length} of 3 selected</b><small>${chosen.map(c=>esc(c.title)).join(' · ')}</small></div><div class="compare-tray-actions"><button type="button" class="text-button" id="clearComparison">Clear</button><button type="button" class="button primary" id="openComparison" ${chosen.length<2?'disabled':''}>Compare courses ↗</button></div>`;
+}
+function openComparison(){
+ const chosen=compareSelection(compared,data.courses);if(chosen.length<2)return;
+ const attrs=[['Published fee',c=>money(c.fee_inr)],['Duration',c=>c.duration_weeks?`${c.duration_weeks} weeks`:'Not specified'],['Learning modes',c=>(c.delivery_modes||[]).join(', ')||'Not specified'],['Syllabus highlights',c=>(c.curriculum||[]).slice(0,5).join(', ')||'Not specified'],['Next published batch',c=>{const b=filterUpcomingBatches(data.batches,[c],{today:todayIndia()})[0];return b?`${shortDate(b.start_date)} · ${b.label}`:'No upcoming batch published'}]];
+ $('#compareDialogContent').innerHTML=`<div class="compare-dialog-head"><div><span class="eyebrow">SIDE BY SIDE</span><h2>Find your best fit</h2><p>Compare approved information before enquiring. ${isDemo?'All fees and dates are fictional.':''}</p></div><button type="button" class="icon-close" id="closeCompareDialog" aria-label="Close comparison">✕</button></div><div class="compare-table-scroll"><table class="compare-table"><thead><tr><th>Details</th>${chosen.map(c=>`<th>${esc(c.title)}</th>`).join('')}</tr></thead><tbody>${attrs.map(([name,format])=>`<tr><th scope="row">${name}</th>${chosen.map(c=>`<td>${esc(format(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="compare-dialog-foot"><p>Prices and availability should be confirmed with the institute.</p><button class="button primary" type="button" id="closeCompareDialogFooter">Done</button></div>`;
+ $('#compareDialog').showModal();
+}
+
+function renderBatches(){
+ const listed=filterUpcomingBatches(data.batches,data.courses,{courseId:batchCourse,mode:batchMode,today:todayIndia()});
+ $('#batchVisibleCount').textContent=`${listed.length} upcoming ${listed.length===1?'batch':'batches'}`;
+ $('#batchList').innerHTML=listed.map(b=>{const c=data.courses.find(c=>c.id===b.course_id);return `<div class="batch-row"><div class="batch-date"><b>${esc(new Date(b.start_date+'T12:00:00').toLocaleDateString('en-IN',{day:'2-digit'}))}</b><small>${esc(new Date(b.start_date+'T12:00:00').toLocaleDateString('en-IN',{month:'short'}))}</small></div><div class="batch-info"><b>${esc(c?.title||'Course')}</b><span>${esc(b.label)} · ${esc(b.days)}, ${esc(b.time_window)}</span></div><span class="pill">${esc(b.mode)}</span><button class="batch-action" data-choose="${esc(c?.id||'')}" data-batch="${esc(b.id)}">Ask about batch →</button></div>`}).join('')||'<div class="empty">No upcoming batches match those filters. Check another course or ask staff for future schedules.</div>';
+}
+function renderBatchFilterOptions(){const select=$('#batchCourseFilter');select.innerHTML='<option value="All">All courses</option>'+data.courses.map(c=>`<option value="${esc(c.id)}">${esc(c.title)}</option>`).join('');if(!data.courses.some(c=>c.id===batchCourse))batchCourse='All';select.value=batchCourse;$('#batchModeFilter').value=batchMode;}
+function renderFaqs(){
+ const faqs=(data.faqs||[]).slice(0,8);
+ $('#faqList').innerHTML=faqs.map((f,i)=>`<details class="faq-card" ${i===0?'open':''}><summary><span>${esc(f.question)}</span><span aria-hidden="true" class="faq-chevron">+</span></summary><div class="faq-answer"><p>${esc(f.answer)}</p>${link(f.source_url)}</div></details>`).join('')||'<div class="empty">The institute has not published FAQs yet. Ask the course assistant or request a clarification.</div>';
+}
+
+function renderAbout(){const i=data.institute;$('#instituteTitle').textContent=i.name;$('#instituteDescription').textContent=i.about||'';$('#heroIntro').textContent=i.tagline||'Discover courses, fees and batches in one place.';$('#instituteDetails').innerHTML=`<span>⌖ ${esc(i.city||'Location to be confirmed')}</span><span>✉ ${esc(i.email||'Contact institute')}</span>${safeUrl(i.website_url)?`<a href="${esc(safeUrl(i.website_url))}" rel="noopener noreferrer" target="_blank">Official website ↗</a>`:''}`;$('#courseMetric').textContent=data.courses.length;$('#batchMetric').textContent=data.batches.length;}
+function renderSelects(){const course=$('#enquiryCourse'),batch=$('#enquiryBatch');course.innerHTML='<option value="">General enquiry</option>'+data.courses.map(c=>`<option value="${esc(c.id)}">${esc(c.title)}</option>`).join('');course.value=selectedCourse||'';const opts=data.batches.filter(b=>!course.value||b.course_id===course.value);batch.innerHTML='<option value="">Not decided</option>'+opts.map(b=>`<option value="${esc(b.id)}">${esc(b.label)}</option>`).join('');}
+function renderChat(){
+ const area=$('#chatMessages');
+ area.innerHTML=messages.map(m=>`<div class="bubble ${m.role}"><span class="speaker">${m.role==='bot'?'EnquiryFlow assistant':'You'}</span><div class="bubble-text">${esc(m.text)}</div>${(m.sources||[]).map(link).join('')}${m.handoff?'<button class="chat-handoff" type="button" data-chat-handoff="'+esc(m.courseId||'')+'">Request staff clarification ↗</button>':''}</div>`).join('');
+ if(asking)area.insertAdjacentHTML('beforeend','<div class="bubble bot chat-loading" role="status">Checking approved institute information…</div>');
+ const latest=[...messages].reverse().find(m=>m.role==='bot');
+ const prompts=asking?[]:(latest?.suggestions?.length?latest.suggestions:['About the institute','How many courses are available?','Show all course fees','When is the next batch?']);
+ $('#chatSuggestions').innerHTML=prompts.map(q=>`<button type="button" data-question="${esc(q)}">${esc(q)}</button>`).join('');
+ const button=$('#chatForm button[type=submit]');button.disabled=asking;button.textContent=asking?'Checking…':'Send';
+ area.scrollTop=area.scrollHeight;
+}
+async function sendChatQuestion(question){
+ const q=str(question);if(!q||asking)return;
+ asking=true;messages.push({role:'user',text:q});renderChat();
+ try{
+  const result=await askAssistant(q,data,chatContext);
+  if(result.courseId && data.courses.some(c=>c.id===result.courseId))chatContext.courseId=result.courseId;
+  if(result.intent==='compare'||result.intent==='clarify')chatContext.courseId=null;
+  messages.push({role:'bot',text:result.answer||'I could not find an approved answer.',sources:result.sources||[],handoff:!!result.handoff,courseId:result.courseId||chatContext.courseId,suggestions:result.suggestions||[]});
+ }catch(error){messages.push({role:'bot',text:'The assistant cannot answer just now. Please use the enquiry form for staff help.',handoff:true,suggestions:['Show courses']});}
+ asking=false;
+ if(messages.length>32)messages=messages.slice(-32);
+ renderChat();
+}
+
+function bind(){
+ $('#courseSearch').addEventListener('input',e=>{query=e.target.value;renderCourses()});
+ $('#courseMode').addEventListener('change',e=>{courseMode=e.target.value;renderCourses()});
+ $('#courseSort').addEventListener('change',e=>{sort=e.target.value;renderCourses()});
+ $('#batchCourseFilter').addEventListener('change',e=>{batchCourse=e.target.value;renderBatches()});
+ $('#batchModeFilter').addEventListener('change',e=>{batchMode=e.target.value;renderBatches()});
+ const resetFilters=()=>{category='All';query='';courseMode='All';sort='featured';$('#courseSearch').value='';$('#courseMode').value='All';$('#courseSort').value='featured';renderCourses()};
+ $('#resetCourseFilters').addEventListener('click',resetFilters);
+ $('#mobileNavToggle').addEventListener('click',()=>{const nav=$('#studentNav');const open=nav.classList.toggle('is-open');$('#mobileNavToggle').setAttribute('aria-expanded',String(open))});
+ $('#studentNav').addEventListener('click',e=>{if(e.target.closest('a')){$('#studentNav').classList.remove('is-open');$('#mobileNavToggle').setAttribute('aria-expanded','false')}});
+ $('#compareDialog').addEventListener('click',e=>{if(e.target===$('#compareDialog'))$('#compareDialog').close()});
+ $('#categories').addEventListener('click',e=>{const b=e.target.closest('[data-category]');if(b){category=b.dataset.category;renderCourses()}});
+ document.addEventListener('click',e=>{
+ const compare=e.target.closest('[data-compare]');if(compare){const id=compare.dataset.compare;if(compared.includes(id))compared=compared.filter(x=>x!==id);else if(compared.length<3)compared.push(id);else{compare.title='Maximum 3 courses can be compared';return}renderCourses();return}
+ if(e.target.closest('#openComparison')){openComparison();return}
+ if(e.target.closest('#clearComparison')){compared=[];renderCourses();return}
+ if(e.target.closest('#closeCompareDialog')||e.target.closest('#closeCompareDialogFooter')){$('#compareDialog').close();return}
+ if(e.target.closest('#emptyResetFilters')){resetFilters();return}
+ const b=e.target.closest('[data-choose]');if(b){selectedCourse=b.dataset.choose;renderSelects();if(b.dataset.batch)$('#enquiryBatch').value=b.dataset.batch;location.hash='enquire'}const q=e.target.closest('[data-question]');if(q){location.hash='assistant';sendChatQuestion(q.dataset.question);}const handoff=e.target.closest('[data-chat-handoff]');if(handoff){selectedCourse=handoff.dataset.chatHandoff||chatContext.courseId||'';renderSelects();location.hash='enquire';$('#enquiryForm [name=question]').value='Please confirm the details discussed in the course assistant.';}});
+ $('#enquiryCourse').addEventListener('change',()=>{selectedCourse=$('#enquiryCourse').value;renderSelects()});
+ $('#chatForm').addEventListener('submit',async e=>{e.preventDefault();const input=$('#chatForm [name=question]');const q=str(input.value);if(!q||asking)return;input.value='';await sendChatQuestion(q);});$('#clearChat').addEventListener('click',()=>{if(asking)return;chatContext={courseId:null};messages=[{role:'bot',text:'Conversation cleared. Ask about the institute, total courses, fees, next batches or staff information.',suggestions:['About the institute','How many courses are available?','Show all course fees','When is the next batch?']}];renderChat()});
+ $('#copyAnswer').addEventListener('click',async()=>{const last=[...messages].reverse().find(m=>m.role==='bot');if(!last)return;const status=$('#chatUtilityStatus');try{await navigator.clipboard.writeText(last.text);status.textContent='Copied';}catch{status.textContent='Copy not available in this browser';}});
+ $('#enquiryForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const form=e.currentTarget, r=$('#formResponse');
+  const button=form.querySelector('button[type=submit]');
+  if(button.disabled)return;
+  const fields=Object.fromEntries(new FormData(form));
+  const payload={...fields,consent:form.elements.consent.checked};
+  r.replaceChildren();r.className='response';
+  if(fields.website){r.textContent='Submission rejected.';r.classList.add('enquiry-error');return;}
+  button.disabled=true;
+  button.textContent=isDemo?'Saving test enquiry…':'Saving fictional test enquiry…';
+  r.textContent=isDemo?'Saving fictional enquiry in this browser…':'Saving a fictional test record to Firebase…';
+  try{
+    const result=await submitEnquiry(payload);
+    r.replaceChildren();
+    const heading=document.createElement('strong');
+    const description=document.createElement('span');
+    if(result.demo){
+      r.classList.add('enquiry-local');
+      r.dataset.delivery='local-only';
+      heading.textContent='Saved locally — NOT sent to the institute.';
+      description.textContent=` Test reference: ${result.id||'DEMO'}. Nothing was emailed or delivered. Test records are only visible on this browser and device.`;
+      const staffLink=document.createElement('a');
+      staffLink.href='./connected-staff.html?view=enquiries';
+      staffLink.textContent='View the test enquiry in Staff → Enquiries ↗';
+      r.append(heading,description,staffLink);
+    }else{
+      r.classList.add('enquiry-success');
+      r.dataset.delivery='staff-backend';
+      heading.textContent='Fictional test enquiry saved to Firebase.';
+      description.textContent=` Reference: ${result.id||'received'}. Authorized staff can review this test record from another device. No email was sent.`;
+      r.append(heading,description);
+    }
+    form.reset();selectedCourse='';renderSelects();
+  }catch(error){
+    r.replaceChildren();r.classList.add('enquiry-error');
+    delete r.dataset.delivery;
+    r.textContent=`Enquiry was not saved or sent: ${error.message}`;
+  }finally{
+    button.disabled=false;
+    button.textContent=isDemo?'Save fictional enquiry locally ↗':'Save fictional test enquiry ↗';
+  }
+});
+ window.addEventListener('storage',async e=>{if(isDemo&&e.key==='enquiryflow_v3_demo_state'){data=await publicData();refresh()}})
+}
+function refresh(){renderBatchFilterOptions();renderCourses();renderBatches();renderAbout();renderSelects();renderFaqs()}
+async function init(){shell();messages=[{role:'bot',text:'Welcome! Ask about the institute, total courses, published fees, upcoming batches or staff. I also remember the course during follow-up questions. All institute data here is fictional.',suggestions:['DevOps course fees','Next Python batch','Compare Java and Python','Is placement guaranteed?']}];renderChat();try{data=await publicData();refresh();bind()}catch(err){$('#coursesGrid').innerHTML=`<p class="error">Unable to load published institute data: ${esc(err.message)}</p>`;}}
+init();
