@@ -49,3 +49,11 @@ This setup does not guarantee cost-free inference. Provider usage or Supabase Ed
 ## Deployment
 
 The canonical source is `gharwatt/backend/gharwatt-ai/index.ts`. Update and deploy that function through the Supabase dashboard/CLI/connected tools; repository-only changes do not redeploy the backend.
+
+## Post-analysis recommendations
+
+After a consented bill upload, Gemini's answer now includes a prioritized next step and alternatives: billing/arrears review, no-cost efficiency habits, appliance upgrade checks and solar screening. That narrative is not verified financial advice.
+
+To get a deterministic recommendation, the customer must verify and enter the bill amount, units, previous unpaid dues and billing period, as well as home/roof access, then click "Show my recommended next step." This uses the existing browser-only GharWatt Verdict engine and consumes no extra Gemini request. The values are not uploaded or stored in a database.
+
+The rule engine puts arrears checks before upgrades when a payable bill is dominated by previous dues; suggests free habits for low usage; and marks rooftop solar as "worth comparing" only after stronger indicators (confirmed monthly usage, home ownership and potential roof access). Solar is not a proven best purchase from bill data: local tariffs, shade, permissions, real installation quote, verified energy yield, subsidies and ongoing costs are needed for a financial comparison.
