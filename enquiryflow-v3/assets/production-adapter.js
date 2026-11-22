@@ -10,7 +10,7 @@ async function firebase(){
  if(initialized) return initialized;
  initialized=(async()=>{
   const v='12.6.0';
-  const [{initializeApp},{getAuth,initializeAuth,inMemoryPersistence,browserPopupRedirectResolver,GoogleAuthProvider,signInWithPopup,signInWithEmailAndPassword,signOut:onSignOut,onAuthStateChanged},{getFirestore,collection,doc,getDoc,getDocs,query,where,orderBy,limit,setDoc,updateDoc,addDoc,writeBatch,serverTimestamp,deleteDoc}]=await Promise.all([
+  const [{initializeApp},{getAuth,initializeAuth,inMemoryPersistence,browserPopupRedirectResolver,GoogleAuthProvider,signInWithPopup,signInWithEmailAndPassword,signOut:onSignOut,onAuthStateChanged},{getFirestore,collection,doc,getDoc,getDocFromServer,getDocs,query,where,orderBy,limit,setDoc,updateDoc,addDoc,writeBatch,serverTimestamp,deleteDoc}]=await Promise.all([
     import(`https://www.gstatic.com/firebasejs/${v}/firebase-app.js`),
     import(`https://www.gstatic.com/firebasejs/${v}/firebase-auth.js`),
     import(`https://www.gstatic.com/firebasejs/${v}/firebase-firestore.js`)
@@ -21,7 +21,7 @@ async function firebase(){
   const auth=studentPage?initializeAuth(app,{persistence:inMemoryPersistence,popupRedirectResolver:browserPopupRedirectResolver}):getAuth(app);
   const db=getFirestore(app);
   await new Promise(resolve=>{const off=onAuthStateChanged(auth,()=>{off();resolve()},()=>{off();resolve()})});
-  return {auth,db,collection,doc,getDoc,getDocs,query,where,orderBy,limit,setDoc,updateDoc,addDoc,writeBatch,signInWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,onSignOut,serverTimestamp,deleteDoc};
+  return {auth,db,collection,doc,getDoc,getDocFromServer,getDocs,query,where,orderBy,limit,setDoc,updateDoc,addDoc,writeBatch,signInWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,onSignOut,serverTimestamp,deleteDoc};
  })();
  try{return await initialized}catch(e){initialized=null;throw e}
 }
@@ -100,6 +100,11 @@ export function isProductionReady(institute){
   typeof institute.name==='string' && institute.name.trim()!=='' && institute.name!=='Demo Tech Academy' &&
   typeof institute.email==='string' && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(institute.email) &&
   !/@example\.(com|org|net)$/i.test(institute.email));
+}
+export async function readProductionReadiness(){
+ const f=await firebase();
+ const latest=await f.getDocFromServer(f.doc(f.db,'ef3_institutes',institutionId()));
+ return latest.exists()&&isProductionReady(latest.data());
 }
 export async function studentIdentity(){
  const f=await firebase(),u=f.auth.currentUser;
