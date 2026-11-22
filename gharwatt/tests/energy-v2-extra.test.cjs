@@ -1,0 +1,11 @@
+const {test}=require('node:test');const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+const sandbox={window:{},document:{getElementById:()=>null},Intl,Date,Map};
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../assets/energy-v2-extra.js'),'utf8'),sandbox);
+const f=sandbox.window.GharWattV2Extra;
+test('BEE label comparison uses actual entered annual kWh',()=>{const r=f.compareLabels(1200,900,18000,8);assert.equal(r.savedKwh,300);assert.equal(r.savedRupees,2400);assert.equal(r.paybackYears,7.5)});
+test('Buying a higher consumption product is not called a saving',()=>{const r=f.compareLabels(900,1000,18000,8);assert.equal(r.savedKwh,-100);assert.equal(r.paybackYears,null)});
+test('Solar plus habits cannot double-count electricity savings',()=>{const r=f.compareSolar(300,8,100,3,100);assert.equal(r.solarOnlyUnits,300);assert.equal(r.combinationUnits,300);assert.equal(r.solarAfterHabits,200)});
+test('Solar is capped at remaining consumption',()=>{const r=f.compareSolar(250,8,50,1,100);assert.equal(r.combinationUnits,150);assert.equal(r.combinationAmount,1200)});
+test('Invalid inputs are not presented as actual calculations',()=>{assert.equal(f.compareSolar(300,-1,100,3),null);assert.equal(f.compareLabels(100,50,2000,Infinity),null)});
+test('Daily kWh CSV aggregates by month and skips invalid rows',()=>{const r=f.readCsv('date,units_kwh\n2026-11-01,8.5\n2026-11-02,9.5\n2026-11-55,900\n2026-12-01,10');assert.equal(r.rows.length,3);assert.equal(r.skipped,1);assert.equal(r.byMonth[0].units,18)});
+test('CSV parser rejects files without proper column names',()=>assert.equal(f.readCsv('meter,bill\nabc,1').error.includes('date,units_kwh'),true));
