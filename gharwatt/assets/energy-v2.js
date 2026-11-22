@@ -290,8 +290,8 @@ function initReader(){
     if(job.cancelled)return;
     if(!extracted.trim()){set('v2-ocr-status','This PDF contains no selectable text (it may be a scan). Try an image of the relevant bill area or enter details manually.');return;}
     $('v2-ocr-text').value=extracted;
-    show();
-    set('v2-ocr-status','PDF text extracted locally. Verify every amount and unit, especially if the original has tables.');
+    const quality=show();
+    if(quality.readable)set('v2-ocr-status','Possible fields extracted from the PDF. Check the original bill and table values before confirming.');
     return;
    }
    updateProgress('Optimizing the photo so it is faster to read…',undefined);
