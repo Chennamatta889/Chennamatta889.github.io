@@ -33,8 +33,9 @@ jobs:
           node --check gharwatt/assets/bill-advisor.js
           node --check gharwatt/assets/bill-crop.js
           node --check gharwatt/assets/simple-bill.js
+          node --check gharwatt/assets/discover.js
           python3 -m json.tool gharwatt/assets/affiliate-links.json > /dev/null
-          node --test gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs gharwatt/tests/energy-v2.test.cjs gharwatt/tests/energy-v2-extra.test.cjs gharwatt/tests/toolkit-ui.test.cjs gharwatt/tests/bill-advisor.test.cjs gharwatt/tests/simple-bill.test.cjs
+          node --test gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs gharwatt/tests/energy-v2.test.cjs gharwatt/tests/energy-v2-extra.test.cjs gharwatt/tests/toolkit-ui.test.cjs gharwatt/tests/bill-advisor.test.cjs gharwatt/tests/simple-bill.test.cjs gharwatt/tests/discover.test.cjs
       - name: Validate local page references
         run: |
           python3 - <<'PY'
@@ -51,6 +52,15 @@ jobs:
                   if path and not (page.parent/path).exists():bad.append((str(page),url))
           assert not bad,bad
           assert (root/'reduce-electricity-bill'/'index.html').exists(), 'missing electricity saving guide'
+          assert (root/'discover'/'index.html').exists(), 'guided Discover page missing'
+          discover=(root/'discover'/'index.html').read_text(encoding='utf-8')
+          for element in ['gw-bill-amount','gw-bill-units','gw-bill-start','gw-bill-result','gw-appliance-grid','gw-challenge-list','gw-myth-options','gw-compare-output','gw-product-result','gw-track-preview','gw-solar-guidance']:
+              assert f'id="{element}"' in discover, f'missing Discover element {element}'
+          assert 'src="../assets/discover.js?v=20261123-discover1"' in discover, 'Discover JavaScript missing'
+          assert 'href="../assets/discover.css?v=20261123-discover1"' in discover, 'Discover styles missing'
+          home=(root/'index.html').read_text(encoding='utf-8')
+          assert 'href="discover/"' in home and 'class="gw-home-discover"' in home, 'homepage journey missing'
+          assert 'https://chennamatta889.github.io/gharwatt/discover/' in (root/'sitemap.xml').read_text(encoding='utf-8'), 'Discover sitemap missing'
           for name in ['energy-tools','bill-reader','appliance-planner','bill-change','savings-goal','monthly-tracker','cooling-costs','solar-finance','roof-planner','appliance-star-compare','solar-vs-saving','smart-meter-csv','electricity-basics-telugu','electricity-basics-hindi']:
               assert (root/name/'index.html').exists(), f'missing page {name}'
           clean_pages=list(root.glob('*/index.html'))
