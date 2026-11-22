@@ -146,3 +146,48 @@ test('backend keeps bill uploads bounded, opt-in and inside existing quotas',()=
  assert.match(source,/PER_VISITOR_PER_DAY = 5/);
  assert.match(source,/GLOBAL_PER_MINUTE = 10/);
 });
+
+
+test('uploaded-bill advice reuses deterministic verdict instead of trusting AI narrative',()=>{
+ const sandbox={window:{},document:{getElementById:()=>null},Intl};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../assets/verdict.js'),'utf8'),sandbox);
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../assets/gharwatt-ai-upload.js'),'utf8'),sandbox);
+ const recommend=sandbox.window.GharWattBillAIAdvice.recommendOptions;
+ const verdict=sandbox.window.GharWattVerdict.verdict;
+ const low=recommend({amount:'500',units:'40',period:'monthly',home:'own',roof:'yes'},verdict);
+ assert.equal(low.key,'free-first');
+ assert.match(low.alternatives[2],/long time to pay back/);
+ const high=recommend({amount:'4000',units:'400',period:'monthly',home:'own',roof:'yes'},verdict);
+ assert.equal(high.key,'compare-roof');
+ assert.match(high.alternatives[2],/worth comparing/);
+ assert.match(high.alternatives[2],/NOT proven the best/);
+ const renter=recommend({amount:'3500',units:'300',period:'monthly',home:'rent',roof:'yes'},verdict);
+ assert.equal(renter.key,'efficiency-first');
+ assert.match(renter.alternatives[2],/not the default next step/);
+ const arrears=recommend({amount:'1800',units:'50',arrears:'1600',period:'monthly'},verdict);
+ assert.equal(arrears.key,'arrears');
+ assert.match(arrears.title,/unpaid charges/);
+ const uncertain=recommend({amount:'3500',units:'400',period:'unknown',home:'own',roof:'yes'},verdict);
+ assert.equal(uncertain.key,'check-period');
+ assert.match(uncertain.alternatives[2],/Confirm monthly consumption/);
+});
+test('recommendations only display after an explicit customer review, with no extra provider call',()=>{
+ const upload=fs.readFileSync(path.join(__dirname,'../assets/gharwatt-ai-upload.js'),'utf8');
+ const html=fs.readFileSync(path.join(__dirname,'../discover/index.html'),'utf8');
+ assert.match(upload,/reviewButton\.addEventListener\("click",showRecommendedOptions\)/);
+ assert.match(upload,/review\.hidden=false/);
+ assert.match(upload,/review\.addEventListener\("input"/);
+ assert.match(upload,/result=verdictEngine\(input\)/);
+ assert.match(upload,/item\.textContent=option/);
+ assert.match(html,/id="gw-ai-bill-review"/);
+ assert.match(html,/id="gw-ai-fact-units"/);
+ assert.match(html,/id="gw-ai-fact-home"/);
+ assert.match(html,/id="gw-ai-fact-roof"/);
+ assert.match(html,/runs only in this browser/i);
+ const backend=fs.readFileSync(path.join(__dirname,'../backend/gharwatt-ai/index.ts'),'utf8');
+ assert.match(backend,/Recommended next step \(with the reason\)/);
+ assert.match(backend,/never call it the best purchase from the bill alone/i);
+ assert.match(backend,/GLOBAL_PER_DAY = 400/);
+ assert.match(backend,/PER_VISITOR_PER_DAY = 5/);
+ assert.match(backend,/GLOBAL_PER_MINUTE = 10/);
+});
