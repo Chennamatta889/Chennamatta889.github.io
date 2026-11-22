@@ -105,3 +105,14 @@ is deliberately limited to `Demo/Test/Sample` names and example.com/.org/.net em
 MUST NOT be used for real customer information until consent, anti-abuse, and notification
 security reviews pass. If the project lacks Firestore, Auth or correct rules, leave the public
 preview in clearly labelled, local demo mode.
+
+## Chat assistant v3.2 (November 22, 2026)
+
+The student website now includes a **conversation-aware, deterministic knowledge assistant**.
+It recognizes course aliases (e.g., AWS/DevOps, Python/Django, Java/Spring), handles fee-plus-batch questions, compares programs, lists upcoming published schedules, remembers the previously discussed course for follow-up questions during the same browser session, offers context-specific follow-up prompts and provides a student enquiry handoff when institute confirmation is required.
+
+Safety: The assistant uses only published, verified institute records. It excludes unpublished courses, does not quote unknown fees as zero, avoids past batches, never invents placement/refund guarantees and treats phone/email prompts as sensitive. Source links must be HTTPS. The pilot's data is fictional and **no generative AI model is connected**. The staff handoff is a simulated enquiry request, not an actual admission or booking. Do not enter real personal details.
+
+To test: run `npm test` and visit `/enquiryflow-v3/#assistant` (student chat). Try `DevOps fee and next weekend batch`, `What about online?` as a follow-up, `Compare Java and Python`, `Which course is cheapest?`, and `Do you guarantee placements?`. Press **Clear** to reset conversation context. Use the staff handoff button to reach the fictional enquiry form.
+
+The optional Firebase backend is still intentionally disabled in browser preview mode. Firestore must remain deny-all until authorization rules are deployed and tested. Do not enable real student enquiries without consent, privacy controls, rate limiting, verified role permissions and production testing.
