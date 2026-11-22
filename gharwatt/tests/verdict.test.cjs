@@ -103,3 +103,21 @@ test('implausible upgrade cannot show confident payback',()=>{
  assert.equal(r.upgrade.plausible,false);
  assert.equal(r.upgrade.paybackMonths,null);
 });
+
+
+test('optional AI question shares only explicitly allowed aggregate bill values',()=>{
+ const question=ctx.window.GharWattVerdict.aiQuestion({
+  amount:500,units:40,period:'monthly',arrears:null,home:'rent',roof:'no',
+  accountNumber:'9999999999',address:'PRIVATE HOME STREET',consumerName:'SENSITIVE NAME'
+ });
+ assert.match(question,/₹500/);
+ assert.match(question,/40 kWh/);
+ assert.match(question,/GharWatt preliminary verdict/i);
+ assert.match(question,/Do not invent my tariff/i);
+ assert.doesNotMatch(question,/9999999999|PRIVATE HOME STREET|SENSITIVE NAME/);
+});
+test('AI question does not echo invalid untrusted text and is not submitted to any service',()=>{
+ const question=ctx.window.GharWattVerdict.aiQuestion({amount:'<script>bad</script>',units:'abc',period:'x'});
+ assert.match(question,/not entered/);
+ assert.doesNotMatch(question,/<script>|abc/);
+});
