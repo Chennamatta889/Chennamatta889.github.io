@@ -1,0 +1,68 @@
+/* Smart Bill Advisor. Scoped to the bill-reader so other GharWatt pages remain unchanged. */
+#gw-advisor{scroll-margin-top:90px;min-width:0;margin:30px 0 36px;border:1px solid #ddd1e8;border-radius:25px;background:linear-gradient(145deg,#fff9f2,#f7f0ff 52%,#fff);padding:clamp(18px,3vw,30px);box-shadow:0 16px 40px #33214616}
+#gw-advisor [hidden]{display:none!important}
+.gw-advisor-heading .eyebrow{color:#754ea9;font-size:.75rem}
+.gw-advisor-heading h2{color:#271b3e;font-size:clamp(1.5rem,3.2vw,2rem);line-height:1.2;letter-spacing:-.035em;margin:8px 0 10px}
+.gw-advisor-heading p{color:#605571;line-height:1.65;margin:0 0 20px}
+.gw-advisor-status{border-left:4px solid #7a5abd;background:#f0eafb;padding:13px 15px;border-radius:0 11px 11px 0;font-size:.88rem;color:#3a2a51;line-height:1.55;margin:18px 0}
+.gw-advisor-panel{margin:18px 0;border:1px solid #e7dced;background:#fff;border-radius:20px;padding:clamp(16px,2.6vw,25px);box-shadow:0 5px 22px #26164008;min-width:0}
+.gw-stage-title{display:flex;gap:13px;align-items:start;margin:0 0 18px}
+.gw-stage-title>span{width:40px;height:40px;flex-shrink:0;display:grid;place-items:center;border-radius:12px;background:#29213e;color:#ffd095;font-weight:900;font-size:.9rem}
+.gw-stage-title h3{font-size:clamp(1.12rem,2.4vw,1.38rem);margin:0 0 4px;line-height:1.25;letter-spacing:-.025em;color:#282039}
+.gw-stage-title p{font-size:.87rem;color:#6b5e79;line-height:1.5;margin:0}
+.gw-advisor-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}
+.gw-advisor-metrics>div{padding:17px 14px;background:linear-gradient(140deg,#282140,#44325b);border-radius:15px;color:#fff;min-width:0}
+.gw-advisor-metrics small{color:#ddd0ed;display:block;line-height:1.38;font-size:.76rem}
+.gw-advisor-metrics strong{display:block;font-size:clamp(1.06rem,2.5vw,1.43rem);line-height:1.25;margin-top:6px;overflow-wrap:anywhere}
+.gw-advisor-hint{color:#6c607b;font-size:.83rem;line-height:1.65;margin:13px 0}
+.gw-advisor-panel h4{font-size:1rem;color:#2f2245;margin:24px 0 8px}
+.gw-charge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:15px}
+.gw-charge-grid label,.gw-appliance-fields label{font-size:.85rem;color:#36294c;font-weight:730;display:flex;flex-direction:column;gap:6px;min-width:0}
+.gw-charge-grid label small{font-weight:450;color:#766882;font-size:.75rem;line-height:1.45}
+.gw-charge-grid input,.gw-appliance-fields input{width:100%;min-width:0;padding:10px 12px;min-height:48px;background:#fff;border:1px solid #d9cfe2;border-radius:11px;color:#231b37;font:inherit;font-size:1rem}
+.gw-charge-grid input:focus,.gw-appliance-fields input:focus{outline:3px solid #b7a0e1;outline-offset:1px}
+.gw-advisor-remainder{margin:18px 0 0;padding:13px 14px;border:1px solid #ebdcbd;border-radius:12px;background:#fff8ed;font-size:.88rem;color:#48394d;line-height:1.55}
+.gw-advisor-remainder strong{font-variant-numeric:tabular-nums}
+.gw-advisor-result{padding:15px 17px;margin:18px 0 12px;border-radius:13px;background:#f2eafa;border:1px solid #e1d3f5;color:#322447;line-height:1.65;font-size:.9rem;overflow-wrap:anywhere}
+.gw-goal-grid{margin-bottom:19px}
+.gw-appliance-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.gw-appliance-card{min-width:0;border:1px solid #e7dfeb;padding:15px;border-radius:14px;background:#fdfbff}
+.gw-appliance-card h4{margin:0 0 13px;color:#251a3c;font-size:1rem}
+.gw-appliance-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 8px}
+.gw-appliance-fields label{font-size:.77rem}
+.gw-appliance-fields input{min-height:43px;padding:8px}
+.gw-appliance-card>p{font-size:.76rem;color:#665c72;line-height:1.55;margin:12px 0 0}
+.gw-advisor-actions{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 7px}
+.gw-advisor-actions .btn{font-size:.86rem;white-space:normal;min-height:45px}
+.gw-advisor-actions .btn-outline{color:#4e3588;border-color:#bfb1d7;background:#fff}
+.gw-advisor-actions .btn-outline:hover{background:#f6f0ff}
+.gw-plan-tips{margin:10px 0;padding-left:24px;font-size:.87rem;line-height:1.6;color:#40354d}
+.gw-plan-tips li{margin:5px 0}
+.gw-print-sheet{display:none;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:680px){
+ #gw-advisor{margin:21px 0 27px;border-radius:18px;padding:15px}
+ .gw-advisor-panel{padding:15px;border-radius:15px;margin:12px 0}
+ .gw-stage-title{gap:9px}.gw-stage-title>span{height:34px;width:34px;border-radius:9px;font-size:.8rem}
+ .gw-advisor-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .gw-advisor-metrics>div{padding:13px 10px}
+ .gw-advisor-metrics>div:last-child{grid-column:span 2}
+ .gw-charge-grid{grid-template-columns:1fr;gap:12px}
+ .gw-appliance-grid{grid-template-columns:1fr;gap:10px}
+ .gw-appliance-card{padding:13px}
+ .gw-advisor-actions{flex-direction:column}
+ .gw-advisor-actions .btn{width:100%;min-height:48px}
+ .gw-advisor-result{padding:12px 13px}
+}
+@media print{
+ body:has(#gw-advisor-report){background:#fff!important;color:#111!important;padding:0!important}
+ body:has(#gw-advisor-report) .site-header,body:has(#gw-advisor-report) .gw-mobile-dock,
+ body:has(#gw-advisor-report) .gw-crumbs,body:has(#gw-advisor-report) .content-hero,
+ body:has(#gw-advisor-report) .footer,body:has(#gw-advisor-report) .gw-tool-next,
+ body:has(#gw-advisor-report) #v2-reader>.v2-notice,body:has(#gw-advisor-report) #v2-reader>.v2-panel,
+ body:has(#gw-advisor-report) #v2-reader>h2,body:has(#gw-advisor-report) #v2-reader>p,
+ body:has(#gw-advisor-report) #v2-reader>.v2-related,body:has(#gw-advisor-report) .gw-advisor-heading,
+ body:has(#gw-advisor-report) .gw-advisor-status,body:has(#gw-advisor-report) .gw-advisor-panel{display:none!important}
+ body:has(#gw-advisor-report) .gw-tool-page .article{padding:0!important}
+ body:has(#gw-advisor-report) #gw-advisor{padding:0!important;margin:0!important;box-shadow:none!important;border:0!important;background:#fff!important}
+ body:has(#gw-advisor-report) .gw-print-sheet{display:block!important;margin:0!important;padding:12mm 0!important;font:11pt/1.55 ui-monospace,monospace;color:#111}
+}
