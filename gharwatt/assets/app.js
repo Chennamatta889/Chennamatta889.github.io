@@ -4,6 +4,7 @@
   const INR=new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0});
   const N=new Intl.NumberFormat('en-IN',{maximumFractionDigits:0});
   const $=(id)=>document.getElementById(id);
+  const appScript=document.currentScript; // Save before deferred DOMContentLoaded initialization
   const read=(id,fallback=0)=>{const n=Number($(id)?.value);return Number.isFinite(n)?n:fallback};
   const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
   const specialStates = new Set(['HP','UK','JK','LA','AR','AS','MN','ML','MZ','NL','SK','TR','AN','LD']);
@@ -108,7 +109,7 @@
   function wireMenu(){const b=$('menu-toggle'),nav=$('main-nav');if(!b||!nav)return;b.addEventListener('click',()=>{const open=!nav.classList.contains('open');nav.classList.toggle('open',open);b.setAttribute('aria-expanded',String(open));b.textContent=open?'Close':'Menu'});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu'}))}
   // Mobile-only quick navigation. URLs are based on this script path so subpages work.
   function wireMobileDock(){
-    const script=document.currentScript;
+    const script=appScript;
     if(!script?.src||document.querySelector('.gw-mobile-dock'))return;
     const root=new URL('../',script.src);
     const links=[
