@@ -11,8 +11,13 @@
   "use strict";
   function normalize(value){
     return String(value==null?"":value).normalize("NFKC").toLowerCase()
+      // Canonicalize technology spellings BEFORE discarding punctuation.
+      .replace(/\basp\s*\.?\s*net\b/g,"asp dotnet")
+      .replace(/\.net\b/g,"dotnet")
+      .replace(/\bdot\s+net\b/g,"dotnet")
+      .replace(/c#/g,"csharp")
+      .replace(/c\+\+/g,"cpp")
       .replace(/[^\p{L}\p{N}]+/gu," ").replace(/\s+/g," ").trim()
-      // Treat well-known joined technology brands and their spaced forms equally.
       .replace(/\bservice now\b/g,"servicenow")
       .replace(/\bsales force\b/g,"salesforce");
   }
@@ -38,6 +43,15 @@
       if(!best)return {matches:false,score:0,source:"none"};
       points+=best;
       if(bestSource!=="description")mainHits++;
+    }
+    // Explicit platform/role names cannot match solely through skills.
+    // Example: DevOps should not return a Product Manager who merely lists DevOps.
+    // Likewise a Salesforce posting mentioning ServiceNow tools is not a
+    // ServiceNow role. Employer-name searches remain valid for ServiceNow.
+    const roleIdentity=[fields[0][1],fields[2][1],fields[3][1]].join(" ");
+    if(["devops","sre","servicenow"].some(term=>terms.includes(term)&&
+        !containsTerm(roleIdentity,term))){
+      return {matches:false,score:0,source:"role-mismatch"};
     }
     // A role query must be supported by the role itself, not split across a
     // generic title word ("Engineer") and an incidental employer name ("AI").
