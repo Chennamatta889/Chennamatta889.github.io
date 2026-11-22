@@ -1000,9 +1000,25 @@
     $("refreshCloud").disabled = true;
     showFeedStatus("loading", "Loading published listings", "Retrieving the latest available employer-board feed.");
     try {
-      const response = await fetch("./data/jobs.json?v=" + Date.now(), {cache:"no-store"});
-      if (!response.ok) throw new Error("HTTP " + response.status);
-      const feed = await response.json();
+      // Use the root deployment first. If it has not published its data asset,
+      // recover from the original public Career-Ops feed; both are validated below.
+      const feedUrls=[
+        "./data/jobs.json?v="+Date.now(),
+        "https://chennamatta889.github.io/career-ops-cloud/data/jobs.json?v="+Date.now()
+      ];
+      let feed=null,loadError=null;
+      for(const url of feedUrls){
+        try{
+          const response=await fetch(url,{cache:"no-store"});
+          if(!response.ok)throw new Error("HTTP "+response.status);
+          const candidate=await response.json();
+          if(candidate?.schema!=="careerops.public-jobs.v1"||candidate.market!=="IN"||
+             candidate.scan?.india_only!==true||!Array.isArray(candidate.jobs))
+            throw new Error("Invalid public feed");
+          feed=candidate;break;
+        }catch(error){loadError=error;}
+      }
+      if(!feed)throw loadError||new Error("No available public job feed");
       // A previous account's in-flight fetch must not overwrite the new account.
       if(startingEpoch!==accountEpoch)return;
       if (!feed || feed.schema !== "careerops.public-jobs.v1" ||
