@@ -915,5 +915,66 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
   <p class="application-followup-note">Your confirmation is stored in My applications; employer verification is not implied.</p>
 </section>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script id="careerops-navigation-recovery">
+/* Emergency route recovery: only repairs navigation if the main app did not. */
+(function(){
+  "use strict";
+  const routes=new Set(["overview","discover","applications","resume","ai","activity","settings"]);
+  function activate(route){
+    if(!routes.has(route))return;
+    document.querySelectorAll(".page").forEach(function(p){p.classList.toggle("active",p.id==="page-"+route);});
+    document.querySelectorAll("[data-nav]").forEach(function(n){
+      const active=n.getAttribute("data-nav")===route;
+      n.classList.toggle("active",active);
+      if(active)n.setAttribute("aria-current","page");else n.removeAttribute("aria-current");
+    });
+    document.title=(route==="discover"?"Find jobs":route==="applications"?"My applications":route.charAt(0).toUpperCase()+route.slice(1))+" | Career-Ops";
+    const sidebar=document.getElementById("sidebar"),scrim=document.getElementById("mobileScrim");
+    if(sidebar)sidebar.classList.remove("open");
+    if(scrim)scrim.classList.remove("show");
+    document.body.classList.remove("nav-open");
+    for(const id of ["mobileMenu","mobileMore"]){const b=document.getElementById(id);if(b)b.setAttribute("aria-expanded","false");}
+  }
+  document.addEventListener("click",function(e){
+    const target=e.target.closest("[data-nav]");
+    if(!target)return;
+    const route=target.getAttribute("data-nav");
+    if(!routes.has(route))return;
+    setTimeout(function(){
+      const page=document.getElementById("page-"+route);
+      if(page && !page.classList.contains("active")){
+        history.replaceState(history.state,"",location.pathname+location.search+"#"+route);
+        activate(route);
+      }
+    },0);
+  });
+  window.addEventListener("hashchange",function(){
+    const route=location.hash.slice(1);
+    if(routes.has(route))setTimeout(function(){
+      const page=document.getElementById("page-"+route);
+      if(page && !page.classList.contains("active"))activate(route);
+    },0);
+  });
+  document.addEventListener("click",function(e){
+    const button=e.target.closest("#mobileMenu,#mobileMore");
+    if(!button)return;
+    setTimeout(function(){
+      const sidebar=document.getElementById("sidebar"),scrim=document.getElementById("mobileScrim");
+      if(!sidebar)return;
+      if(!sidebar.classList.contains("open")){
+        sidebar.classList.add("open");
+        if(scrim)scrim.classList.add("show");
+        document.body.classList.add("nav-open");
+        button.setAttribute("aria-expanded","true");
+      }
+    },0);
+  });
+  const initial=location.hash.slice(1);
+  if(routes.has(initial))setTimeout(function(){
+    const page=document.getElementById("page-"+initial);
+    if(page && !page.classList.contains("active"))activate(initial);
+  },50);
+})();
+</script>
 </body>
 </html>
