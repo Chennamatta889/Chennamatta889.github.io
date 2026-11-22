@@ -958,14 +958,17 @@ a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px s
   document.addEventListener("click",function(e){
     const button=e.target.closest("#mobileMenu,#mobileMore");
     if(!button)return;
+    const sidebar=document.getElementById("sidebar");
+    if(!sidebar)return;
+    const before=sidebar.classList.contains("open");
     setTimeout(function(){
-      const sidebar=document.getElementById("sidebar"),scrim=document.getElementById("mobileScrim");
-      if(!sidebar)return;
-      if(!sidebar.classList.contains("open")){
-        sidebar.classList.add("open");
-        if(scrim)scrim.classList.add("show");
-        document.body.classList.add("nav-open");
-        button.setAttribute("aria-expanded","true");
+      if(sidebar.classList.contains("open")!==before)return; // Main app handled toggle
+      const open=!before,scrim=document.getElementById("mobileScrim");
+      sidebar.classList.toggle("open",open);
+      if(scrim)scrim.classList.toggle("show",open);
+      document.body.classList.toggle("nav-open",open);
+      for(const id of ["mobileMenu","mobileMore"]){
+        const b=document.getElementById(id);if(b)b.setAttribute("aria-expanded",String(open));
       }
     },0);
   });
