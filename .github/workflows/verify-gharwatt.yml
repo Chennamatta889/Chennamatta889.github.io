@@ -83,7 +83,7 @@ jobs:
           assert 'id="gw-ai-bill-answer"' in discover, 'uploaded bill analysis result missing'
           assert re.search(r'src="\.\./assets/gharwatt-ai-upload\.js(?:\?[^"]*)?"',discover), 'optional bill AI uploader script missing'
           assert 'readBodyLimited(req,maxBody)' in ai_backend and 'billConsent!==true' in ai_backend, 'secure bill upload backend missing'
-          assert 'an AI option' in (root/'bill-reader'/'index.html').read_text(encoding='utf-8'), 'bill-only OCR and AI routes not distinguished'
+          assert 'sends your selected document to Google Gemini' in (root/'bill-reader'/'index.html').read_text(encoding='utf-8'), 'bill-only OCR and AI routes not distinguished'
           assert (root/'backend'/'gharwatt-ai'/'quota-400-5-10.sql').exists(), 'GharWatt atomic sliding-window SQL source missing'
           assert 'id="gw-ai-question"' in discover and 'id="gw-ai-copy"' in discover, 'reviewed AI handoff missing'
           assert 'href="https://chatgpt.com/"' in discover, 'external AI option missing'
