@@ -62,6 +62,29 @@ function applianceSummary(selections,billedUnits=null){
    total>billed*1.15?'Your selected appliance estimates exceed the billed units. Check assumed hours, wattages, counts and billing-period length.':
    'This is a partial estimate for selected appliances, not a measured breakdown of your bill.'};
 }
+function applianceContext(selections,bill=null){
+ const periodMonthly=bill?.period==='monthly';
+ const units=good(bill?.units,0,100000)?Number(bill.units):null;
+ const summary=applianceSummary(selections,periodMonthly?units:null);
+ if(!summary)return null;
+ const dominant=[...summary.items].sort((a,b)=>b.units-a.units)[0]||null;
+ const dominantShare=dominant&&summary.units>0?Math.round(dominant.units/summary.units*100):null;
+ let message='';
+ let status='unverified';
+ if(units===null){
+  message='Your billed units are not entered. Add them above if you want to check whether the appliance assumptions are reasonable.';
+ }else if(!periodMonthly){
+  status='period-unknown';
+  message='Your bill shows '+num(units)+' units. The appliances are estimated for 30 days. Confirm that the bill is for about one month before comparing.';
+ }else if(summary.exceedsBill){
+  status='mismatch';
+  message='These illustrative appliance assumptions exceed your '+num(units)+' billed units. Review the running hours and wattage'+(dominant?' of '+dominant.name.toLowerCase()+' first':'')+'. This is not evidence of an incorrect electricity bill.';
+ }else{
+  status='partial';
+  message='Your bill shows '+num(units)+' units for about one month. This is only a partial estimate for selected appliances—not a measured breakdown of those units.';
+ }
+ return {summary,dominant,dominantShare,units,periodMonthly,status,message};
+}
 function compareBills(previous,current){
  if(!previous||!current||!good(previous.amount,0,500000)||!good(current.amount,0,500000))return null;
  const uKnown=good(previous.units,0,100000)&&good(current.units,0,100000);
@@ -87,7 +110,7 @@ function compareDevices(oldW,newW,hours,days=30,rate=8,priceDifference=''){
   note:'Illustrative power draw, hours and savings rate. Not live product specifications or a confirmed tariff.'};
 }
 function challengeCount(done){return Array.isArray(done)?done.filter(Boolean).length:0;}
-root.GharWattDiscover=Object.freeze({APPLIANCES,CHALLENGE,billSnapshot,estimateItem,applianceSummary,compareBills,compareDevices,challengeCount});
+root.GharWattDiscover=Object.freeze({APPLIANCES,CHALLENGE,billSnapshot,estimateItem,applianceSummary,applianceContext,compareBills,compareDevices,challengeCount});
 if(!$('gw-discover'))return;
 const state={snapshot:null,selected:new Map(),challenge:Array(CHALLENGE.length).fill(false),answers:new Map(),saved:false};
 const storage=(()=>{try{return root.localStorage}catch{return null}})(),session=(()=>{try{return root.sessionStorage}catch{return null}})();
@@ -117,22 +140,80 @@ function summarize(){
  focus('gw-bill-result');
 }
 $('gw-bill-start').addEventListener('click',summarize);
-function addProgressMessage(message){set('gw-journey-status',message);}
+function liveBill(){
+ // Read values directly rather than waiting for "Show snapshot". This fixes the
+ // confusing "bill usage is unknown" message after someone types 40 units.
+ const fields=formFields();
+ const snapshot=billSnapshot(fields.amount,fields.units,fields.period,fields.oldDues);
+ if(snapshot.ok)return snapshot;
+ if(good(fields.units,0,100000))return {amount:null,units:Number(fields.units),period:fields.period==='monthly'?'monthly':'unknown'};
+ return null;
+}
 function renderEstimate(){
  const selections=[...state.selected.values()];
- const estimate=applianceSummary(selections,state.snapshot?.units??null);
+ const current=applianceContext(selections,liveBill());
  const box=$('gw-appliance-result');box.replaceChildren();
- if(!estimate||!selections.length){box.textContent='Tap appliances you actually use to see illustrative energy consumption. No watts required.';return;}
- const head=document.createElement('p');head.className='gw-estimate-head';head.textContent='Selected appliances: about '+num(estimate.units)+' units in 30 days.';box.append(head);
- const p=document.createElement('p');p.textContent=estimate.explanation;box.append(p);
- if(state.snapshot?.period!=='monthly'){const note=document.createElement('p');note.textContent='Monthly estimate assumes 30 days. To compare it fairly with a bill, select a roughly one-month bill period above.';box.append(note);}
+ if(!current||!selections.length){
+  box.textContent='Choose only the appliances you actually use. GharWatt will estimate units without asking you to know watts.';
+  return;
+ }
+ const estimate=current.summary;
+ const metric=document.createElement('div');metric.className='gw-estimate-metric';
+ const heading=document.createElement('span');heading.textContent='Illustrative consumption · 30 days';
+ const figure=document.createElement('strong');figure.textContent=num(estimate.units)+' units';
+ metric.append(heading,figure);box.append(metric);
+ const message=document.createElement('p');message.className=current.status==='mismatch'?'gw-estimate-warning':'gw-estimate-message';
+ message.textContent=current.message;box.append(message);
+ if(current.dominant&&current.dominantShare>=45){
+  const leader=document.createElement('p');leader.className='gw-estimate-highlight';
+  leader.textContent='Biggest estimate: '+current.dominant.name+' · '+num(current.dominant.units)+' units ('+current.dominantShare+'% of selected appliance estimate). Based on assumed watts and hours, not measured use.';
+  box.append(leader);
+  const review=document.createElement('a');review.className='gw-estimate-review';
+  review.href='#gw-card-'+current.dominant.id;review.textContent='Review '+current.dominant.name.toLowerCase()+' usage assumptions ↑';box.append(review);
+ }
+ if(current.status==='period-unknown'){
+  const prompt=document.createElement('button');prompt.type='button';prompt.className='gw-confirm-month';
+  prompt.textContent='Yes, this bill covers about one month';
+  prompt.addEventListener('click',()=>{
+   $('gw-bill-period').value='monthly';
+   if(state.snapshot)state.snapshot=billSnapshot(...Object.values(formFields()));
+   renderEstimate();
+   set('gw-appliance-status','Now comparing your stated bill units to a 30-day appliance illustration. Check all assumptions.');
+  });
+  box.append(prompt);
+ }else if(current.units===null){
+  const link=document.createElement('a');link.href='#gw-bill-units';link.className='gw-estimate-review';
+  link.textContent='Add units from my electricity bill ↑';box.append(link);
+ }
+ const detail=document.createElement('details');detail.className='gw-estimate-details';
+ const summary=document.createElement('summary');summary.textContent='See the assumptions for '+estimate.items.length+' selected appliance'+(estimate.items.length===1?'':'s');
+ detail.append(summary);
  const list=document.createElement('ul');list.className='gw-estimate-list';
- for(const x of estimate.items){const li=document.createElement('li');li.textContent=x.name+': '+num(x.units)+' units (1 device uses '+x.watts+' W at '+x.hours+' h/day; count '+x.count+').';list.append(li);}
- box.append(list);
+ const sorted=[...estimate.items].sort((a,b)=>b.units-a.units);
+ for(const x of sorted){
+  const li=document.createElement('li');
+  li.textContent=x.name+': '+num(x.units)+' units (example: '+x.count+' × '+x.watts+' W × '+x.hours+' hours/day × 30 days).';
+  list.append(li);
+ }
+ detail.append(list);box.append(detail);
 }
+['gw-bill-amount','gw-bill-units','gw-bill-period','gw-old-dues'].forEach(id=>{
+ const field=$(id);
+ const change=()=>{
+  // A previous confirmed snapshot must never be mistaken for newer edited fields.
+  if(state.snapshot){
+   state.snapshot=null;
+   show('gw-bill-result',false);show('gw-share-options',false);
+   set('gw-bill-status','Bill details changed. Tap Show my electricity snapshot to refresh your report.');
+  }
+  if(state.selected.size)renderEstimate();
+ };
+ field.addEventListener('input',change);
+ field.addEventListener('change',change);
+});
 const grid=$('gw-appliance-grid');
 for(const item of APPLIANCES){
- const card=document.createElement('article');card.className='gw-choose-card';
+ const card=document.createElement('article');card.className='gw-choose-card';card.id='gw-card-'+item.id;
  const top=document.createElement('button');top.type='button';top.className='gw-appliance-toggle';top.setAttribute('aria-pressed','false');
  top.innerHTML='<span class="gw-card-symbol" aria-hidden="true"></span><span class="gw-appliance-name"></span><span class="gw-choose-label">Add +</span>';
  top.querySelector('.gw-card-symbol').textContent=item.icon;
@@ -161,6 +242,17 @@ for(const item of APPLIANCES){
  [count,watts,select].forEach(e=>e.addEventListener('input',update));
  grid.append(card);
 }
+$('gw-clear-appliances').addEventListener('click',()=>{
+ state.selected.clear();
+ for(const card of grid.querySelectorAll('.gw-choose-card')){
+  const button=card.querySelector('.gw-appliance-toggle');
+  button.setAttribute('aria-pressed','false');
+  button.querySelector('.gw-choose-label').textContent='Add +';
+  card.querySelector('.gw-appliance-options').hidden=true;
+ }
+ renderEstimate();
+ set('gw-appliance-status','Selections cleared. Choose only the appliances you actually use.');
+});
 function detective(){
  if(!state.snapshot){set('gw-compare-output','Enter your current bill at the top first.');return;}
  const oldAmount=$('gw-previous-money').value,oldUnits=$('gw-previous-units').value;
