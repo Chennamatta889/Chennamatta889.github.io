@@ -100,3 +100,50 @@
 @keyframes ghw-offer-appear{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:600px){.ghw-offer-popup{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));width:auto;max-width:400px;margin-inline:auto;padding:15px 16px}.ghw-offer-main{margin:9px 0}.ghw-offer-disclosure{font-size:.67rem}}
 @media(prefers-reduced-motion:reduce){.ghw-offer-popup{animation:none}}
+
+/* Household electricity-saving guide — accessible cards and browser-only checklist */
+.energy-content-hero{background:linear-gradient(125deg,#16182e 0%,#29244c 68%,#322857 100%);color:#fff}
+.energy-content-hero .content-head p{color:#e2dafa}.energy-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.energy-actions .btn-outline{border-color:#bbb0e5;color:#fff}
+.energy-article{padding-bottom:75px}
+.energy-intro{background:#fff1d8;border-left:5px solid #a86c23;padding:19px 23px;border-radius:12px;font-size:1.05rem;line-height:1.65}
+.energy-explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0 24px}
+.energy-explain-grid>div{border:1px solid #dfd5e9;border-radius:15px;padding:18px;background:#fff}
+.energy-explain-grid span{font-weight:750;color:#5e5271}.energy-explain-grid strong{display:block;font-size:1.7rem;color:#37235f;margin:7px 0}
+.energy-tip-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0 24px}
+.energy-tip{padding:20px;border:1px solid #e4dcea;border-radius:16px;background:#fff;box-shadow:0 5px 17px rgba(25,17,57,.035)}
+.energy-tip-top{display:flex;align-items:center;gap:10px}.energy-tip-number{display:grid;place-items:center;background:#ece6ff;border-radius:9px;color:#5535a2;width:37px;height:37px;font-weight:850}
+.energy-tip-label{font-size:.73rem;font-weight:800;letter-spacing:.035em;text-transform:uppercase;color:#695d84}
+.energy-tip h3{margin:13px 0 8px;font-size:1.1rem;line-height:1.35}.energy-tip p{font-size:.92rem;color:#5b5267;margin:0;line-height:1.62}
+.energy-example{background:#f1eaff;padding:20px 24px;border-radius:16px;margin:25px 0}
+.energy-example h2{margin-top:0}.energy-example p{margin-bottom:12px}
+.energy-tool{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);border:1px solid #ded5e9;border-radius:17px;overflow:hidden;margin:20px 0}
+.energy-form{padding:22px;background:#fff;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.energy-form .field{min-width:0}.energy-form input,.energy-form select{width:100%;min-width:0}
+.energy-form .field small{display:block;color:#766c80;font-size:.79rem;margin-top:7px}
+.energy-result{padding:23px;background:#272144;color:#fff;display:flex;flex-direction:column;gap:7px}
+.energy-result span{color:#e1d5ff;font-size:.86rem}.energy-result strong{font-size:clamp(1.22rem,3vw,1.7rem);font-variant-numeric:tabular-nums;margin-bottom:9px}
+.energy-result p{font-size:.78rem;color:#f0e6ff;line-height:1.55;margin:9px 0 0}
+.energy-disclaimer{font-size:.85rem;color:#72687a}
+.energy-plan{border:1px solid #dfd4ec;background:#fff;border-radius:19px;padding:22px;margin:20px 0 25px}
+.energy-plan-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.energy-reset{background:transparent;color:#5b3c99;border:1px solid #d7c8eb;border-radius:10px;padding:7px 13px;font-weight:700}
+.energy-plan progress{display:block;width:100%;height:14px;accent-color:#7c62ed;margin:14px 0 22px}
+.energy-day-list{display:grid;gap:10px}
+.energy-day{display:grid;grid-template-columns:auto 63px 1fr;align-items:start;gap:12px;padding:12px;border:1px solid #eee5f2;background:#faf8fd;border-radius:12px;line-height:1.5;cursor:pointer}
+.energy-day:has(input:checked){background:#f0ecfd;border-color:#b6a4ed}
+.energy-day input{width:19px;height:19px;margin:2px 0 0;accent-color:#7054b9}
+.energy-day-marker{font-size:.76rem;font-weight:850;color:#533f89;white-space:nowrap;padding-top:2px}
+.energy-related{border:1px solid #ded3ee;background:linear-gradient(125deg,#f9f4ff,#fff8ed);border-radius:17px;padding:21px;margin-top:22px}
+.energy-related h2{margin-top:0}.energy-related>div{display:grid;gap:9px}.energy-related a{font-weight:780;text-underline-offset:3px}
+.energy-related p{font-size:.87rem;color:#695d76;margin-bottom:0}
+.energy-home-teaser{padding:35px 0;background:linear-gradient(110deg,#24203f,#3e3169);color:#fff}
+.energy-home-teaser-inner{display:flex;align-items:center;justify-content:space-between;gap:28px}
+.energy-home-teaser h2{margin:7px 0 10px;font-size:clamp(1.4rem,3vw,2rem);line-height:1.2}
+.energy-home-teaser p{margin:0;max-width:650px;color:#e7ddfd;line-height:1.55}
+.energy-home-teaser .btn{flex-shrink:0}
+.energy-bill-crosslink{padding:18px 20px;background:#f1ecff;border:1px solid #dacef4;border-radius:14px;margin:28px auto;line-height:1.6}
+.energy-bill-crosslink a{display:inline;color:#5b3e9f;font-weight:790;text-underline-offset:3px}
+@media(max-width:780px){.energy-home-teaser-inner{flex-direction:column;align-items:flex-start}.energy-home-teaser .btn{width:auto}.energy-tool{grid-template-columns:1fr}.energy-tip-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.energy-explain-grid{grid-template-columns:1fr}.energy-form{grid-template-columns:1fr}.energy-day{grid-template-columns:auto 46px 1fr;gap:9px}.energy-tip{padding:17px}.energy-actions{flex-direction:column}.energy-actions .btn{width:100%;text-align:center}}
+@media print{.site-header,.footer,.energy-actions,.energy-tool,.energy-reset,.energy-home-teaser{display:none!important}.energy-day,.energy-tip{break-inside:avoid}}
