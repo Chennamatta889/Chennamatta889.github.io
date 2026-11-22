@@ -1,0 +1,157 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function signedIn() { return request.auth != null; }
+  function roleDoc() { return /databases/$(database)/documents/ef3_staff/$(request.auth.uid); }
+  function isStaff() {
+   return signedIn() && exists(roleDoc()) && get(roleDoc()).data.active == true
+    && get(roleDoc()).data.role in ['owner','admin','editor','counselor'];
+  }
+  function manager() { return isStaff() && get(roleDoc()).data.role in ['owner','admin']; }
+  function editor() { return isStaff() && get(roleDoc()).data.role in ['owner','admin','editor']; }
+  function approvedPublic() { return resource.data.published == true; }
+  function canDraft() { return editor() && request.resource.data.published == false; }
+  // Staff membership is provisioned only through the trusted Firebase console/Admin SDK.
+  match /ef3_staff/{uid} {
+   allow get: if signedIn() && request.auth.uid == uid;
+   allow list, create, update, delete: if false;
+  }
+  match /ef3_institutes/{instituteId} {
+   allow get, list: if approvedPublic() || isStaff();
+   allow create, update: if manager() && request.resource.data.published is bool;
+   allow delete: if false;
+  }
+  match /ef3_courses/{id} {
+   allow get, list: if approvedPublic() || isStaff();
+   allow create: if (manager() && (!request.resource.data.published || request.resource.data.verified_at != null)) || canDraft();
+   allow update: if (manager() && (!request.resource.data.published || request.resource.data.verified_at != null)) || (canDraft() && resource.data.published == false);
+   allow delete: if manager();
+  }
+  match /ef3_batches/{id} {
+   allow get, list: if approvedPublic() || isStaff();
+   allow create: if manager() || canDraft();
+   allow update: if manager() || (canDraft() && resource.data.published == false);
+   allow delete: if manager();
+  }
+  match /ef3_faqs/{id} {
+   allow get, list: if approvedPublic() || isStaff();
+   allow create: if manager() || canDraft();
+   allow update: if manager() || (canDraft() && resource.data.published == false);
+   allow delete: if manager();
+  }
+  match /ef3_enquiries/{id} {
+   // Student intake is temporarily SYNTHETIC-ONLY on the free pilot.
+   // Before collecting real student data: require CAPTCHA/App Check, audit, retention,
+   // explicit institute agreement, a privacy policy, and rate-limiting backend.
+   allow create: if request.resource.data.keys().hasOnly([
+    'full_name','email','course_id','batch_id','question','consent','created_at',
+    'status','institute_id','next_followup_at','staff_notes'])
+    && request.resource.data.keys().hasAll(['full_name','email','consent','status','institute_id'])
+    && request.resource.data.full_name is string
+    && request.resource.data.full_name.matches('^(Demo|Test|Sample)\\b.{0,80}$')
+    && request.resource.data.email is string
+    && request.resource.data.email.matches('^[^@ ]+@example\\.(com|org|net)$')
+    && request.resource.data.consent == true
+    && request.resource.data.status == 'new'
+    && request.resource.data.institute_id == 'demo-tech-academy'
+    && request.resource.data.question is string && request.resource.data.question.size() <= 1500
+    && request.resource.data.staff_notes == ''
+    && request.resource.data.next_followup_at == null;
+   allow get, list: if isStaff();
+   allow update: if isStaff() && request.resource.data.diff(resource.data).affectedKeys()
+    .hasOnly(['status','next_followup_at','staff_notes','assigned_to']);
+   allow delete: if manager();
+  }
+  match /ef3_import_jobs/{id} {
+   allow get, list: if isStaff();
+   allow create: if editor() && request.resource.data.status == 'pending'
+      && request.resource.data.payload is list && request.resource.data.payload.size() <= 100;
+   allow update: if manager() && request.resource.data.diff(resource.data).affectedKeys()
+      .hasOnly(['status','reviewed_at']);
+   allow delete: if manager();
+  }
+  // REAL INTAKE: completely isolated from fictional ef3_enquiries.
+  // Only verified Google accounts may submit real enquiries, with a per-UID
+  // 15-minute cooldown enforced in the SAME atomic batch using getAfter().
+  // This deters casual spam but cannot prevent abuse by many Google accounts.
+  function realRate(uid) {
+   return /databases/$(database)/documents/ef3_real_intake_limits/$(uid);
+  }
+  function realEnquiry(id) {
+   return /databases/$(database)/documents/ef3_real_enquiries/$(id);
+  }
+  function verifiedGoogle() {
+   return request.auth != null
+    && request.auth.token.email_verified == true
+    && request.auth.token.firebase.sign_in_provider == 'google.com';
+  }
+  function instituteIsReady() {
+   return exists(/databases/$(database)/documents/ef3_institutes/demo-tech-academy)
+    && get(/databases/$(database)/documents/ef3_institutes/demo-tech-academy).data.published == true
+    && get(/databases/$(database)/documents/ef3_institutes/demo-tech-academy).data.production_ready == true
+    && get(/databases/$(database)/documents/ef3_institutes/demo-tech-academy).data.name != 'Demo Tech Academy'
+    && get(/databases/$(database)/documents/ef3_institutes/demo-tech-academy).data.email != 'admissions@example.com';
+  }
+  function mayCreateRealEnquiry(id) {
+   return verifiedGoogle() && instituteIsReady()
+    && request.resource.data.keys().hasOnly([
+     'auth_uid','full_name','email','course_id','batch_id','question',
+     'consent','consent_version','created_at','status','institute_id',
+     'next_followup_at','staff_notes'])
+    && request.resource.data.keys().hasAll([
+     'auth_uid','full_name','email','course_id','batch_id','question',
+     'consent','consent_version','created_at','status','institute_id',
+     'next_followup_at','staff_notes'])
+    && request.resource.data.auth_uid == request.auth.uid
+    && request.resource.data.full_name is string
+    && request.resource.data.full_name.size() >= 2
+    && request.resource.data.full_name.size() <= 90
+    && request.resource.data.email == request.auth.token.email
+    && request.resource.data.email is string
+    && request.resource.data.email.size() <= 180
+    && (request.resource.data.course_id == null ||
+        (request.resource.data.course_id is string && request.resource.data.course_id.size() <= 100))
+    && (request.resource.data.batch_id == null ||
+        (request.resource.data.batch_id is string && request.resource.data.batch_id.size() <= 100))
+    && request.resource.data.question is string
+    && request.resource.data.question.size() <= 1500
+    && request.resource.data.consent == true
+    && request.resource.data.consent_version == 'ef3-privacy-2026-11-22'
+    && request.resource.data.created_at == request.time
+    && request.resource.data.status == 'new'
+    && request.resource.data.institute_id == 'demo-tech-academy'
+    && request.resource.data.staff_notes == ''
+    && request.resource.data.next_followup_at == null
+    && (!exists(realRate(request.auth.uid)) ||
+        get(realRate(request.auth.uid)).data.last_created_at <= request.time - duration.value(15, 'm'))
+    && getAfter(realRate(request.auth.uid)).data.enquiry_id == id
+    && getAfter(realRate(request.auth.uid)).data.last_created_at == request.time;
+  }
+  match /ef3_real_enquiries/{id} {
+   allow create: if mayCreateRealEnquiry(id);
+   allow get, list: if isStaff();
+   allow update: if isStaff() &&
+    request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+      'status','next_followup_at','staff_notes','assigned_to'])
+    && request.resource.data.status in ['new','contacted','demo_requested','enrolled','closed']
+    && request.resource.data.staff_notes is string
+    && request.resource.data.staff_notes.size() <= 2000;
+   allow delete: if manager();
+  }
+  match /ef3_real_intake_limits/{uid} {
+   allow create, update: if verifiedGoogle() && request.auth.uid == uid
+    && request.resource.data.keys().hasOnly(['enquiry_id','last_created_at'])
+    && request.resource.data.keys().hasAll(['enquiry_id','last_created_at'])
+    && request.resource.data.enquiry_id is string
+    && request.resource.data.enquiry_id.size() >= 10
+    && request.resource.data.enquiry_id.size() <= 110
+    && request.resource.data.last_created_at == request.time
+    && (!exists(realRate(uid)) ||
+        get(realRate(uid)).data.last_created_at <= request.time - duration.value(15, 'm'))
+    && getAfter(realEnquiry(request.resource.data.enquiry_id)).data.auth_uid == uid
+    && getAfter(realEnquiry(request.resource.data.enquiry_id)).data.created_at == request.time;
+   allow get, list, delete: if false;
+  }
+  match /{document=**} { allow read, write: if false; }
+ }
+}
