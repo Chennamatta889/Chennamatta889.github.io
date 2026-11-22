@@ -90,7 +90,22 @@ function comparePaths(input={}){
  return {rate,baselineReady,monthlyUnits:monthly?units:null,save,upgrade,solar,
   warning:'Three independent scenarios—not additive. ₹ savings use an illustrative marginal rate, NOT total bill amount ÷ units. Actual slabs, subsidies, fixed charges, exports, weather and changes in usage can affect results.'};
 }
-root.GharWattVerdict=Object.freeze({verdict,comparePaths});
+function aiQuestion(input={}){
+ const result=verdict(input);
+ const amount=good(input.amount,0,500000)?'₹'+Number(input.amount):'not entered';
+ const units=good(input.units,0,100000)?Number(input.units)+' kWh':'not entered';
+ const dues=good(input.arrears,0,500000)?'₹'+Number(input.arrears):'not provided';
+ const period=input.period==='monthly'?'approximately one month':'unknown';
+ const home=input.home==='own'?'owned':input.home==='rent'?'rented':'not specified';
+ return 'Please explain my electricity bill and suggest safe, low-cost ways to reduce usage in an Indian home.\n'+
+  'Amount payable: '+amount+'. Electricity units: '+units+'. Billing period: '+period+'. Previous dues: '+dues+'. Home: '+home+'.\n'+
+  'GharWatt preliminary verdict: '+result.title+'. '+result.reason+'\n'+
+  'Explain what these figures do and do not show. Suggest three practical next steps without asking me to know appliance wattages. '+
+  'Do not invent my tariff, subsidy, location, DISCOM, appliances, solar payback, or guaranteed savings. '+
+  'If specific tariff details are necessary, ask for my state, provider, tariff category and billing date, and refer me to official sources. '+
+  'Distinguish assumptions from verified facts. Please do not ask for account numbers or personal details.';
+}
+root.GharWattVerdict=Object.freeze({verdict,comparePaths,aiQuestion});
 const $=id=>typeof document==='undefined'?null:document.getElementById(id);
 if(!$('gw-verdict'))return;
 const set=(id,v)=>{const el=$(id);if(el)el.textContent=v};
@@ -108,6 +123,7 @@ function renderVerdict(){
  set('gw-verdict-reason',v.reason);
  set('gw-verdict-confidence',v.confidence);
  set('gw-verdict-caution',v.caution);
+ const prompt=$('gw-ai-question');if(prompt)prompt.value=aiQuestion(snapshot());
  const list=$('gw-verdict-steps');list.replaceChildren();
  for(const tip of v.steps){const li=document.createElement('li');li.textContent=tip;list.appendChild(li);}
 }
@@ -158,6 +174,18 @@ $('gw-bill-start').addEventListener('click',()=>{
  const bill=snapshot();
  if(!good(bill.amount,0,500000))return;
  update();
+});
+const copyButton=$('gw-ai-copy');
+if(copyButton)copyButton.addEventListener('click',async()=>{
+ const content=aiQuestion(snapshot());
+ const preview=$('gw-ai-question');if(preview)preview.value=content;
+ try{
+  if(!navigator.clipboard?.writeText)throw new Error('Clipboard unavailable');
+  await navigator.clipboard.writeText(content);
+  set('gw-ai-copy-status','Copied locally. Only text you choose to paste into an AI assistant will be shared with that provider.');
+ }catch{
+  set('gw-ai-copy-status','Automatic copy is unavailable on this device. Select the question text above and copy it manually.');
+ }
 });
 const controls=['gw-bill-amount','gw-bill-units','gw-bill-period','gw-old-dues','gw-home-status','gw-roof-status',
  'gw-compare-rate','gw-reduce-percent','gw-old-watts','gw-new-watts','gw-upgrade-hours',
