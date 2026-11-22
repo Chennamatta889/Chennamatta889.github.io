@@ -62,12 +62,16 @@ jobs:
           node --check ai-studio.js
           node --check job-text.js
           node --check job-search.js
+          node --check india-jobs.js
+          node --check external-job-search.js
+          node --check scripts/phase12-role-coverage.cjs
+          node --check scripts/report-published-coverage.mjs
           node --check enterprise-careers.js
           node --check enterprise-connector-policy.cjs
           node --check application-email.js
           node --check scripts/universal-job-scan.mjs
           node --check scripts/guard-public-feed.mjs
-          node --test scripts/enterprise-careers.test.cjs scripts/guard-public-feed.test.mjs scripts/universal-job-scan.test.mjs scripts/job-search.test.cjs scripts/application-email.test.cjs scripts/job-text.test.cjs scripts/google-oauth.test.cjs scripts/navigation-ui.test.cjs scripts/phase45-stability.test.cjs
+          node --test scripts/india-jobs.test.cjs scripts/external-job-search.test.cjs scripts/report-published-coverage.test.mjs scripts/enterprise-careers.test.cjs scripts/guard-public-feed.test.mjs scripts/universal-job-scan.test.mjs scripts/job-search.test.cjs scripts/application-email.test.cjs scripts/job-text.test.cjs scripts/google-oauth.test.cjs scripts/navigation-ui.test.cjs scripts/phase45-stability.test.cjs
 
       - name: Install browser resume extraction libraries
         shell: bash
@@ -90,7 +94,7 @@ jobs:
           # Career-Ops is now the site's index, not a frame or redirect.
           cp career-ops-source/index.html career-ops-source/styles.css \
              career-ops-source/match-engine.js career-ops-source/job-categories.js \
-             career-ops-source/job-text.js career-ops-source/job-search.js career-ops-source/enterprise-careers.js career-ops-source/application-email.js career-ops-source/careerops-config.js \
+             career-ops-source/job-text.js career-ops-source/job-search.js career-ops-source/india-jobs.js career-ops-source/external-job-search.js career-ops-source/enterprise-careers.js career-ops-source/application-email.js career-ops-source/careerops-config.js \
              career-ops-source/app.js career-ops-source/resume-parser.js \
              career-ops-source/ai-studio.js career-ops-source/private-workspace.js \
              career-ops-source/health-check.js site/
@@ -118,7 +122,10 @@ jobs:
             -e "s|?v=20261121-application-confirmation-v1|?v=$GITHUB_RUN_ID|g" \
             -e "s|?v=20261121-phase08-10-v1|?v=$GITHUB_RUN_ID|g" \
             -e "s|?v=20261121-search-relevance-v1|?v=$GITHUB_RUN_ID|g" \
-            -e "s|?v=20261121-phase10b-v1|?v=$GITHUB_RUN_ID|g" site/index.html
+            -e "s|?v=20261121-phase10b-v1|?v=$GITHUB_RUN_ID|g" \
+            -e "s|?v=20261121-mobile-nav-v1|?v=$GITHUB_RUN_ID|g" \
+            -e "s|?v=20261121-india-portals-v1|?v=$GITHUB_RUN_ID|g" \
+            -e "s|?v=20261121-india-scope-v1|?v=$GITHUB_RUN_ID|g" site/index.html
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/pdfjs-dist/build/pdf.worker.min.mjs" site/vendor/
           cp "$RUNNER_TEMP/career-ops-vendor/node_modules/mammoth/mammoth.browser.min.js" site/vendor/
@@ -130,15 +137,16 @@ jobs:
         run: |
           FEED_OUTPUT="$GITHUB_WORKSPACE/site/data/jobs.json" node scripts/universal-job-scan.mjs
           node scripts/guard-public-feed.mjs "$GITHUB_WORKSPACE/site/data/jobs.json"
+          COVERAGE_OUTPUT="$GITHUB_WORKSPACE/site/data/coverage-evidence.json" node scripts/report-published-coverage.mjs "$GITHUB_WORKSPACE/site/data/jobs.json"
 
       - name: Verify output and preserved portfolio
         shell: bash
         run: |
           set -euo pipefail
           for asset in index.html app.js ai-studio.js careerops-config.js \
-            private-workspace.js job-text.js job-search.js enterprise-careers.js application-email.js health-check.js \
+            private-workspace.js job-text.js job-search.js india-jobs.js external-job-search.js enterprise-careers.js application-email.js health-check.js \
             vendor/pdf.min.mjs vendor/pdf.worker.min.mjs \
-            vendor/mammoth.browser.min.js data/jobs.json data/enterprise-careers.json \
+            vendor/mammoth.browser.min.js data/jobs.json data/coverage-evidence.json data/enterprise-careers.json \
             portfolio/index.html portfolio/styles.css portfolio/script.js \
             portfolio/profile.jpg draftflowai/index.html \
             privacy.html about.html contact.html terms.html \
@@ -146,6 +154,7 @@ jobs:
             ads.txt robots.txt sitemap.xml; do
               test -s "site/$asset"
           done
+          ! grep -q '<base href="/career-ops-cloud/">' site/index.html
           grep -q 'id="page-discover"' site/index.html
           grep -q 'id="loadMoreJobs"' site/index.html
           grep -q 'id="feedFreshness"' site/index.html
@@ -155,6 +164,8 @@ jobs:
           grep -Fq "./job-text.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./app.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./job-search.js?v=$GITHUB_RUN_ID" site/index.html
+          grep -Fq "./india-jobs.js?v=$GITHUB_RUN_ID" site/index.html
+          grep -Fq "./external-job-search.js?v=$GITHUB_RUN_ID" site/index.html
           grep -Fq "./enterprise-careers.js?v=$GITHUB_RUN_ID" site/index.html
           grep -q 'id="enterpriseCareerDirectory"' site/index.html
           grep -q 'id="enterpriseCareerCards"' site/index.html
