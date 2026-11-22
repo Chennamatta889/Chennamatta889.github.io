@@ -94,3 +94,42 @@
 .v2-focus-btn:focus-visible{outline:3px solid #ffc88c;outline-offset:2px}
 .v2-focus-note{font-size:.81rem;color:#63566d;line-height:1.55;margin:8px 0 14px}
 @media(max-width:400px){.v2-focus-shortcuts{grid-template-columns:1fr}}
+
+
+/* Fast bill flow — two fields first, advanced scanning on demand. */
+.gw-simple-bill{padding:clamp(17px,3vw,27px);background:linear-gradient(128deg,#fff5e8 0%,#fffefa 55%,#f7f0ff 100%);border:1px solid #eadac7;border-radius:21px;margin:18px 0 23px;box-shadow:0 10px 30px rgba(49,30,81,.07)}
+.gw-simple-kicker{font-size:.7rem;color:#8b531d;font-weight:850;letter-spacing:.09em}
+.gw-simple-heading h2{font-size:clamp(1.5rem,3.4vw,2rem);line-height:1.2;color:#2a1d40;margin:7px 0}
+.gw-simple-heading p{font-size:.91rem;color:#62536e;line-height:1.6;margin:3px 0 17px}
+.gw-simple-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.gw-simple-fields label{display:flex;flex-direction:column;font-size:.89rem;font-weight:750;color:#322743;gap:8px;min-width:0}
+.gw-simple-fields small{font-weight:450;color:#706578;font-size:.76rem;line-height:1.45}
+.gw-simple-fields input{width:100%;min-height:49px;padding:11px 12px;border-radius:11px;border:1px solid #d2c4db;background:white;color:#281c35;font-size:1rem}
+.gw-simple-fields input:focus-visible{outline:3px solid #b8a0db;outline-offset:1px}
+.gw-simple-more{margin:14px 0;background:#fff9f1;border:1px solid #eddec8;border-radius:12px;overflow:hidden}
+.gw-simple-more>summary{list-style:revert;cursor:pointer;padding:12px 15px;color:#624a2e;font-size:.87rem;font-weight:740}
+.gw-simple-more .gw-simple-fields{padding:0 14px 14px}
+.gw-simple-primary{margin:7px 0 2px;width:100%;min-height:49px}
+.gw-simple-status{margin:10px 0 0;font-size:.83rem;color:#645871;line-height:1.55}
+.gw-simple-result{margin:15px 0;padding:13px;border-radius:13px;border:1px solid #d6c4e5;background:white}
+.gw-simple-result[hidden],#gw-simple-use[hidden],#gw-simple-old-dues-note[hidden]{display:none!important}
+.gw-simple-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.gw-simple-metrics>div{background:#29213e;border-radius:11px;padding:13px;min-width:0;color:#fff}
+.gw-simple-metrics small{display:block;color:#dfd5ec;font-size:.74rem;line-height:1.45}
+.gw-simple-metrics strong{display:block;margin-top:5px;font-size:clamp(1.08rem,3vw,1.34rem);overflow-wrap:anywhere;line-height:1.25}
+.gw-simple-explain{color:#49394d;font-size:.85rem;line-height:1.6;margin:10px 0 0}
+#gw-simple-use{margin-top:9px;width:100%;min-height:47px;background:#fff;color:#47316b;border:1px solid #b4a2c9}
+.gw-photo-details{border:1px solid #ded2e7;border-radius:17px;background:#fbf9ff;margin:18px 0 26px;overflow:hidden}
+.gw-photo-details>summary{cursor:pointer;padding:19px;font-weight:830;line-height:1.45;color:#322044;background:#f4edfa;list-style:revert;font-size:1.03rem}
+.gw-photo-details>summary span{font-size:.81rem;font-weight:500;display:block;color:#695e79;margin-left:19px}
+.gw-photo-details[open]>summary{border-bottom:1px solid #ded2e7}
+.gw-photo-details-inner{padding:12px}
+.gw-photo-details-inner>.v2-panel{margin:0;box-shadow:none}
+@media(max-width:650px){
+ .gw-simple-bill{border-radius:16px;padding:15px;margin:11px 0 17px}
+ .gw-simple-fields{grid-template-columns:1fr;gap:13px}
+ .gw-simple-more .gw-simple-fields{padding:0 12px 12px}
+ .gw-photo-details>summary{padding:15px}
+ .gw-photo-details-inner{padding:7px}
+ .gw-simple-metrics>div{padding:10px}
+}
