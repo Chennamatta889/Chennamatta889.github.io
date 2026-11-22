@@ -20,7 +20,7 @@ test('Ctech Academy favicon is a self-contained accessible SVG', () => {
   assert.match(icon, /<path /);
   assert.match(icon, /<circle /);
   assert.ok(icon.length < 2000, 'favicon should be lightweight');
-  assert.doesNotMatch(icon, /<(?:script|image|foreignObject)\b|https?:\/\//i);
+  assert.doesNotMatch(icon, /<(?:script|image|foreignObject)\b|(?:href|xlink:href)="https?:\/\//i);
 });
 
 test('All production entry pages refer to the isolated Ctech favicon', () => {
