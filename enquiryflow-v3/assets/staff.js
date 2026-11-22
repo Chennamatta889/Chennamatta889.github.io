@@ -58,7 +58,7 @@ function bindEvents(){
  const approve=e.target.closest('[data-approve]');if(approve){if(!confirm('Approve this import as UNPUBLISHED draft courses?'))return;const job=state.imports.find(j=>j.id===approve.dataset.approve);try{await approveImport(job,state.role);await refresh();alertText('Import approved as UNPUBLISHED draft courses. Open Courses & fees, edit each course, then select Save & publish to show it on the student website in this browser.')}catch(err){alertText(err.message)}}
  });
  app.addEventListener('submit',async e=>{
- if(e.target.id==='recordForm'){
+ if(e.target instanceof HTMLFormElement && e.target.matches('#recordForm')){
   e.preventDefault();
   const form=e.target;
   if(form.dataset.saving==='true')return;
@@ -90,7 +90,7 @@ function bindEvents(){
     else alertText(message);
   }finally{form.dataset.saving='false';buttons.forEach(b=>b.disabled=false)}
  }
- if(e.target.id==='importForm'){
+ if(e.target instanceof HTMLFormElement && e.target.matches('#importForm')){
   e.preventDefault();const f=e.target,fd=new FormData(f),file=fd.get('file');const feedback=f.querySelector('[data-form-feedback]');
   try{
     if(!file||file.size>150000)throw Error('CSV must be 150 KB or smaller.');
