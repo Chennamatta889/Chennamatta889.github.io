@@ -31,3 +31,11 @@ Date: 22 November 2026
 ## Release decision
 
 **No-go for public real-data production release.** Suitable for offline internal review and further security testing. Requires one isolated project, role provisioning and live end-to-end tests before launch.
+
+## Chat assistant v3.2 release QA
+
+- 31 original automated tests and 19 additional assistant tests: **50/50 passed**.
+- New scenarios: multi-intent fees/batches, follow-up context, compare/cheapest/all-fees, policy refusal, counselor handoff, unpublished data exclusion, outdated batch exclusion, null fees, public URL filtering, PII guards and staff-edited course prices.
+- `node --check` passed for updated frontend code; `node scripts/check.mjs` passed static integrity checks. These tests do **not** establish production-grade Firebase security or AI model availability.
+- Chromium graphical browser smoke test was attempted but blocked by environment policy (`ERR_BLOCKED_BY_ADMINISTRATOR` for local `127.0.0.1`). Live browser smoke tests remain a separate release gate.
+- The chat engine remains a **deterministic retrieval simulation**, not a generative AI API or official institute service. All demo records are fictional.
