@@ -305,6 +305,19 @@ jobs:
           curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/solar-subsidy.html?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-legacy-subsidy.html
           grep -Fq 'url=https://chennamatta889.github.io/gharwatt/solar-subsidy/' /tmp/gharwatt-legacy-subsidy.html
           echo "GharWatt clean URLs, original legacy redirect and tool scripts are live."
+          # GharWatt V2: require actual deployed visitor tools, not only committed source.
+          for entry in "energy-tools|Save electricity. Understand every rupee." "bill-reader|id=\"v2-reader\"" "appliance-planner|id=\"v2-appliances\"" "bill-change|id=\"v2-bill-compare\"" "savings-goal|id=\"v2-goal\"" "monthly-tracker|id=\"v2-tracker\"" "solar-finance|id=\"v2-finance\"" "roof-planner|id=\"v2-roof\"" "smart-meter-csv|id=\"v2-csv-reader\"" "appliance-star-compare|id=\"v2-star-label\"" "solar-vs-saving|id=\"v2-solar-habits\"" "electricity-basics-telugu|కరెంటు బిల్లు" "electricity-basics-hindi|बिजली का बिल"; do
+            slug="${entry%%|*}"
+            expected="${entry#*|}"
+            curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/$slug/?verify=$GITHUB_RUN_ID" -o "/tmp/gharwatt-v2-$slug.html"
+            grep -Fq "$expected" "/tmp/gharwatt-v2-$slug.html"
+          done
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/assets/energy-v2.js?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-v2-live.js
+          grep -Fq 'GharWattV2' /tmp/gharwatt-v2-live.js
+          curl --retry 6 --retry-delay 5 --retry-all-errors -fsSL --max-time 25 "https://chennamatta889.github.io/gharwatt/assets/energy-v2-extra.js?verify=$GITHUB_RUN_ID" -o /tmp/gharwatt-v2-extra-live.js
+          grep -Fq 'GharWattV2Extra' /tmp/gharwatt-v2-extra-live.js
+          echo "GharWatt V2: all core and advanced energy tools are publicly reachable."
+
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/" -o /tmp/enquiryflow-v3-student.html
           grep -Fq "Ctech Academy | Courses and Student Enquiries" /tmp/enquiryflow-v3-student.html
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/enquiryflow-v3/staff/" -o /tmp/enquiryflow-v3-staff.html
