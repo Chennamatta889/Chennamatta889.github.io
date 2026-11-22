@@ -39,3 +39,8 @@ Date: 22 November 2026
 - `node --check` passed for updated frontend code; `node scripts/check.mjs` passed static integrity checks. These tests do **not** establish production-grade Firebase security or AI model availability.
 - Chromium graphical browser smoke test was attempted but blocked by environment policy (`ERR_BLOCKED_BY_ADMINISTRATOR` for local `127.0.0.1`). Live browser smoke tests remain a separate release gate.
 - The chat engine remains a **deterministic retrieval simulation**, not a generative AI API or official institute service. All demo records are fictional.
+
+
+## v3.3 generalized institution knowledge tests
+
+Added 18 regression tests covering institute introduction, accurate course totals, public-only counts, all published fees, missing prices, cross-course next batch, weekend filtering, expired batches, combined fee and schedule answers, staff privacy, approved/unapproved faculty FAQs, human handoff, course-context retention and bounded large catalogue responses. Full Node test suite: **68 tests passing**; static check: **8/8 expected RLS schema declarations present**. These results are local tests, **not** evidence that Firebase Firestore RLS/rules were deployed or that real students can safely submit enquiries.
