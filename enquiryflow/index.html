@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Public EnquiryFlow v2 demo with scripted FAQ assistant and fictional enquiries. Do not enter real personal data. No messages sent.">
-<title>EnquiryFlow v2 · Public demo (FAQ simulation)</title>
+<meta name="description" content="Independent EnquiryFlow demo using NareshIT JNTU publicly listed course details and fictional leads. Not affiliated with institute.">
+<title>EnquiryFlow v2 · Real Institute Public Data Demo</title>
 <style>:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17283d;background:#f5f7fb;line-height:1.45;font-synthesis:none}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}.layout{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr)}aside{background:#0e2137;color:#eaf4ff;display:flex;flex-direction:column;padding:25px 17px;gap:28px}.logo{display:flex;gap:12px;align-items:center;padding:3px 8px}.logo-icon{width:41px;height:41px;background:#27c5a1;display:grid;place-items:center;border-radius:14px;color:#09283c;font-size:25px;font-weight:900}.logo-name{font-weight:850;letter-spacing:-.5px;font-size:17px}.logo-sub{font-size:11px;color:#8eb0c7}.nav{display:grid;gap:5px}.nav button{width:100%;border:0;background:transparent;color:#b6ccdc;text-align:left;padding:12px 13px;border-radius:11px;display:flex;align-items:center;gap:10px;font-weight:600}.nav button.active,.nav button:hover{background:#213b54;color:white}.nav-symbol{font-size:20px}.aside-note{margin-top:auto;background:#1a374e;border:1px solid #32546c;padding:14px;border-radius:13px;font-size:12px;color:#c5d8e9}.aside-note strong{color:#a4f0d7}.main{min-width:0}.topbar{background:#fff;border-bottom:1px solid #e4e9f0;padding:19px 35px;display:flex;align-items:center;justify-content:space-between;gap:15px}.eyebrow{text-transform:uppercase;font-size:11px;letter-spacing:1.4px;font-weight:800;color:#708095}.topbar h1{font-size:22px;line-height:1.25;margin:3px 0 0;letter-spacing:-.6px}.chips{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.chip{border-radius:99px;background:#eff5fa;border:1px solid #dee8f1;color:#536c80;padding:6px 11px;font-size:11px;font-weight:800}.chip.green{background:#e2faef;color:#197957;border-color:#b4e9d1}.content{max-width:1350px;margin:0 auto;padding:28px 35px 55px}.banner{border-radius:15px;background:linear-gradient(110deg,#112d45 0%,#204f65 75%,#1e735e 100%);color:white;padding:24px 27px;display:flex;justify-content:space-between;align-items:center;gap:20px}.banner h2{font-size:22px;letter-spacing:-.5px;margin:0 0 5px}.banner p{margin:0;color:#cfe1e8;font-size:13px;max-width:640px}.btn{border:1px solid #d9e3eb;background:white;color:#213750;border-radius:10px;padding:10px 15px;font-weight:800;font-size:13px;display:inline-flex;justify-content:center;align-items:center;gap:7px;white-space:nowrap}.btn:hover{border-color:#60a2aa;background:#f8fcfc}.btn.primary{background:#13aa87;border-color:#13aa87;color:white}.btn.primary:hover{background:#0a8e72}.btn.dark{background:#173752;color:white;border:0}.btn.small{padding:7px 10px;font-size:12px}.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #68b7ea;outline-offset:2px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-top:20px}.stat{border:1px solid #e6eaf0;background:white;padding:20px;border-radius:14px;box-shadow:0 5px 19px rgba(18,45,73,.025)}.stat-label{font-size:12px;color:#667b90;font-weight:700}.stat-num{font-size:32px;line-height:1.35;font-weight:850;letter-spacing:-.7px;margin-top:9px}.stat-note{font-size:11px;color:#8698aa;margin-top:4px}.section-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(260px,1fr);gap:18px;margin-top:20px}.panel{border-radius:14px;border:1px solid #e6ebf1;background:white;box-shadow:0 5px 19px rgba(18,45,73,.025);min-width:0;overflow:hidden}.panel-head{padding:19px 20px;border-bottom:1px solid #eaf0f3;display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h3{font-size:15px;margin:0}.panel-head p{font-size:12px;color:#8190a0;margin:4px 0 0}.panel-body{padding:18px 20px}.muted{font-size:12px;color:#7790a4}.bar-row{margin-bottom:15px}.bar-label{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:6px}.bar-label b{font-size:12px}.bar-track{height:8px;background:#edf2f6;border-radius:100px;overflow:hidden}.bar-fill{height:100%;background:#20b795;border-radius:100px}.due-list{display:grid;gap:10px}.due-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #edf0f4;padding:10px 12px;border-radius:10px}.due-title{font-weight:750;font-size:12px}.due-sub{color:#8191a2;font-size:11px;margin-top:3px}.tag{font-size:10px;padding:5px 8px;border-radius:100px;background:#e8f1fb;color:#3b6eac;font-weight:800;white-space:nowrap}.tag.overdue{background:#fff0e7;color:#bc6232}.tag.today{background:#fff8e3;color:#9c7823}.toolbar{display:flex;gap:9px;flex-wrap:wrap;justify-content:space-between;margin:17px 0}.toolbar-start,.toolbar-end{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.field{border:1px solid #dce5ec;border-radius:9px;padding:10px 11px;background:#fff;color:#233c51;width:100%;font-size:13px;min-width:0}.toolbar input{width:min(270px,100%)}.toolbar select{width:auto;min-width:145px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:780px}th{text-transform:uppercase;letter-spacing:.9px;font-size:10px;color:#74889b;background:#f8fafc;text-align:left;padding:13px 15px}td{padding:13px 15px;border-top:1px solid #edf1f5;font-size:12px}td strong{display:block;font-size:12px}.table-sub{font-size:10px;color:#8a9bae;margin-top:3px}.status-select{padding:6px 8px;border-radius:8px;border:1px solid #d6e5ea;background:#f7fbfc;color:#385e72;font-size:11px;width:124px}.date-input{width:134px;padding:6px;border-radius:8px;border:1px solid #d6e5ea;color:#465d70;font-size:11px}.empty{padding:26px;text-align:center;color:#6b8397}.footnote{color:#8b9baf;font-size:11px;margin-top:16px}.activity{display:grid;gap:12px}.activity-item{display:flex;gap:12px;align-items:flex-start}.activity-dot{width:11px;height:11px;background:#1bb38d;border-radius:100px;margin-top:5px;box-shadow:0 0 0 4px #e5f8f2;flex:none}.activity-msg{font-size:12px;font-weight:700}.activity-time{font-size:11px;color:#8ca0ad;margin-top:3px}.view{display:none}.view.active{display:block}.intake-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(230px,.8fr);gap:18px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.form-group{display:grid;gap:6px}.form-group.full{grid-column:1/-1}.form-group label{font-weight:750;font-size:12px}.form-help{color:#73899b;font-size:11px}.consent-line{display:flex;align-items:start;gap:9px;font-size:12px;color:#4a6174}.consent-line input{margin-top:3px}.form-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:17px}.notice{background:#e9f8f2;color:#156c54;border-radius:11px;padding:12px 14px;font-size:12px}.notice.warning{background:#fff5e6;color:#966a21}.notice.error{background:#ffedeb;color:#ae463d}.how-row{border-bottom:1px solid #e7ecf0;padding:12px 0}.how-row:last-child{border-bottom:0}.how-num{display:inline-grid;place-items:center;background:#e2f4ee;color:#1a896c;border-radius:8px;width:26px;height:26px;font-size:12px;font-weight:900;margin-right:7px}.how-row b{font-size:12px}.how-row p{font-size:11px;color:#72879a;margin:5px 0 0 34px}.section-title{font-size:18px;margin:0 0 4px}.intro{font-size:13px;color:#7b8b9b;margin:0 0 18px}.activity-panel{margin-top:20px}.footer{margin-top:25px;color:#93a3b3;text-align:center;font-size:11px}@media(max-width:1100px){.layout{grid-template-columns:205px minmax(0,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.section-grid{grid-template-columns:1fr}}@media(max-width:720px){.layout{display:block}aside{padding:10px 14px;gap:8px;position:sticky;top:0;z-index:5}.logo{padding:0}.logo-icon{width:30px;height:30px;border-radius:9px;font-size:18px}.logo-name{font-size:14px}.logo-sub,.aside-note{display:none}.nav{display:flex;overflow-x:auto;gap:4px}.nav button{width:auto;white-space:nowrap;padding:8px 10px;font-size:11px}.nav-symbol{font-size:15px}.topbar{padding:15px 16px;align-items:start}.topbar h1{font-size:18px}.eyebrow{font-size:9px}.chips{justify-content:flex-end}.chip{font-size:9px;padding:5px 7px}.content{padding:17px 13px 35px}.banner{padding:18px;display:block}.banner h2{font-size:18px}.banner .btn{margin-top:14px}.stats{gap:10px;margin-top:13px}.stat{padding:14px}.stat-num{font-size:26px}.section-grid{margin-top:12px;gap:12px}.panel-head{padding:15px}.panel-body{padding:14px}.intake-layout{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}.toolbar{display:grid}.toolbar-start,.toolbar-end{width:100%}.toolbar input{width:100%;flex:1}.toolbar select{flex:1}.btn{font-size:12px}.stat-label{font-size:11px}}@media(prefers-reduced-motion:no-preference){.btn,.nav button{transition:.15s ease}}
 @media(max-width:720px){.nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;overflow:visible}.nav button{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px;font-size:10px;line-height:1.25;white-space:normal;text-align:center;gap:3px}.nav-symbol{font-size:16px}}
 /* v2: assistant + 10–30 daily enquiry scale improvements */
@@ -27,6 +27,7 @@
 .pager{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:13px 17px;border-top:1px solid #e7edf2}.pager button:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:1070px){.assistant-grid{grid-template-columns:1fr}.assistant-side{grid-template-columns:repeat(2,minmax(0,1fr))}.assistant-side .notice{grid-column:1/-1;grid-row:1}}
 @media(max-width:720px){.nav{grid-template-columns:repeat(5,minmax(0,1fr))}.nav button{font-size:9px}.assistant-side{grid-template-columns:1fr}.assistant-side .notice{grid-column:auto;grid-row:auto}.assistant-chat-panel{min-height:560px}.assistant-messages{min-height:270px;max-height:370px;padding:13px}.assistant-bottom{padding:13px}.chat-bubble{max-width:97%;font-size:12px}.banner-actions{margin-top:12px}.banner-actions .btn{margin-top:0}.assistant-compose .btn{padding:10px}}
+.realdata-notice{background:#fff6e8;border:1px solid #f0d99c;color:#675021;border-radius:12px;padding:13px 15px;font-size:12px;line-height:1.55;margin-bottom:15px}.realdata-notice strong{color:#754c17}.program-card{border:1px solid #dce7eb;border-radius:10px;padding:11px;margin-top:10px}.program-card strong{display:block;font-size:13px}.program-card p{font-size:11px;color:#5d7787;margin:5px 0}.program-card a,.chat-source{color:#116d8e;font-size:11px;font-weight:800;text-underline-offset:2px}.chat-source{display:block;margin-top:8px}
 </style>
 <meta name="robots" content="noindex,nofollow">
 </head>
@@ -41,12 +42,13 @@
     <button type="button" data-view="intake"><span class="nav-symbol">＋</span> Intake demo</button>
     <button type="button" data-view="automation"><span class="nav-symbol">◷</span> Activity log</button>
   </nav>
-  <div class="aside-note"><strong>PRIVATE INTERNAL PROTOTYPE</strong><p>Not a public website. Initial data is fictional. No actual WhatsApp or email messages are dispatched from this browser demo.</p></div>
+  <div class="aside-note"><strong>INDEPENDENT PUBLIC DEMO</strong><p>Publicly listed course data from a real institute. Not affiliated. All leads are synthetic and stored in this browser; no real messages are sent.</p></div>
 </aside>
 <main class="main">
-  <header class="topbar"><div><div class="eyebrow">Training institute · Internal review</div><h1 id="pageTitle">Overview</h1></div><div class="chips"><span class="chip green">PRIVATE v2</span><span class="chip" id="mode">OFFLINE DEMO</span></div></header>
+  <header class="topbar"><div><div class="eyebrow">Training institute · Independent product evaluation</div><h1 id="pageTitle">Overview</h1></div><div class="chips"><span class="chip green">PUBLIC INFO SNAPSHOT</span><span class="chip" id="mode">OFFLINE DEMO</span></div></header>
   <div class="content">
     <div role="status" aria-live="polite" id="toast" class="notice" hidden style="margin-bottom:15px"></div>
+    <div class="realdata-notice"><strong>Independent demonstration — not affiliated with Naresh i Technologies.</strong> Course information is sourced from the official JNTU Hyderabad pages, checked 22 November 2026. Published prices and durations may change. No real enquiries, messages or bookings are delivered to the institute. <a href="https://jntu.nareshit.com/courses/" target="_blank" rel="noopener noreferrer">View the official catalogue ↗</a></div>
     <section class="view active" id="view-overview" aria-label="Overview">
       <div class="banner"><div><h2>Answer student questions. Capture the right enquiries.</h2><p>Preview a safe, scripted FAQ assistant for website visitors, then manage enquiries and follow-ups. Offline data stays in this browser; optional private Sheets mode is not deployed.</p></div><div class="banner-actions"><button class="btn primary" type="button" data-jump="assistant">✦ Try assistant</button><button class="btn dark" type="button" data-jump="intake">＋ New enquiry</button></div></div>
       <div class="stats">
@@ -68,10 +70,10 @@
       </div>
       <div class="assistant-grid">
         <div class="panel assistant-chat-panel">
-          <div class="panel-head"><div><h3>Website assistant — fictitious institute</h3><p>Private browser simulation · no network calls · no messages sent</p></div><button class="btn small" type="button" id="assistantReset">Reset chat</button></div>
+          <div class="panel-head"><div><h3>Website assistant — NareshIT JNTU public data</h3><p>Independent simulation · not an official institute service · no messages sent</p></div><button class="btn small" type="button" id="assistantReset">Reset chat</button></div>
           <div id="assistantMessages" class="assistant-messages" aria-live="polite" aria-label="Example assistant conversation"></div>
           <div class="assistant-bottom">
-            <p class="chat-disclaimer">Do not enter personal details. This simulator uses a fixed FAQ decision tree; it cannot retrieve actual institute fees, batch schedules or staff availability.</p>
+            <p class="chat-disclaimer">Use fictional contact details only. This scripted FAQ simulator uses real published course details and listed fees. It cannot check live batches, register students or reserve seats.</p>
             <div class="prompt-chips"><button type="button" class="prompt-chip" data-question="What courses are available?">Courses</button><button type="button" class="prompt-chip" data-question="What are the fees for DevOps?">Fees</button><button type="button" class="prompt-chip" data-question="Do you have weekend batches for Python?">Batches</button><button type="button" class="prompt-chip" data-question="Can I book a demo class?">Demo class</button></div>
             <form id="assistantForm" class="assistant-compose"><label class="sr-only" for="assistantInput">Ask the demo assistant</label><input id="assistantInput" class="field" maxlength="500" placeholder="Ask about courses, fees, batches..." autocomplete="off" required><button type="submit" class="btn primary" id="assistantSend">Ask</button></form>
             <button type="button" id="assistantHandoff" class="btn handoff-btn">Request staff follow-up →</button>
@@ -80,12 +82,12 @@
         <div class="assistant-side">
           <div class="panel"><div class="panel-head"><h3>What this demonstrates</h3></div><div class="panel-body">
             <div class="how-row"><span class="how-num">1</span><b>Instant FAQ response</b><p>Classifies a typed question and retrieves a reviewed answer.</p></div>
-            <div class="how-row"><span class="how-num">2</span><b>No made-up facts</b><p>Fees, batches and placement promises need verified staff-supplied data.</p></div>
+            <div class="how-row"><span class="how-num">2</span><b>No made-up facts</b><p>Published fees have official source links; current pricing, batches and placement terms need direct institute confirmation.</p></div>
             <div class="how-row"><span class="how-num">3</span><b>Qualified handoff</b><p>Prefills the existing website intake with selected course and question topic.</p></div>
             <div class="how-row"><span class="how-num">4</span><b>Human confirmation</b><p>Demo bookings are requests, never automatically confirmed.</p></div>
           </div></div>
-          <div class="notice warning"><b>Demo integrity:</b> This is deterministic FAQ simulation, not a connected large language model. A real AI release needs a server-side API integration, verified institute knowledge base, privacy controls, costs and quality testing.</div>
-          <div class="panel"><div class="panel-head"><h3>Example knowledge base</h3></div><div class="panel-body"><p class="muted">Fictional course categories: Python, Java Full Stack, Cloud &amp; DevOps, Data Analytics.</p><p class="muted">Not supplied: fees, schedules, course syllabi, trainer identities, address, admissions policy or placement guarantees. All are escalated to staff.</p></div></div>
+          <div class="notice warning"><b>Demo integrity:</b> This is a scripted FAQ simulation, not a connected large language model or an official NareshIT assistant. Published facts are real; current availability is not checked. A real AI release requires secure integration, consent and quality testing.</div>
+          <div class="panel"><div class="panel-head"><h3>Verified public institute profile</h3></div><div class="panel-body"><p class="muted"><strong>Naresh i Technologies — JNTU Hyderabad.</strong> Published information checked 22 November 2026. Pricing requires confirmation.</p><div id="instituteKnowledge"></div><p class="muted">No live batch or seat availability checks. All real admission queries should go to the institute.</p><p><a href="https://jntu.nareshit.com/new-batches/" target="_blank" rel="noopener noreferrer">Official batches ↗</a> · <a href="https://jntu.nareshit.com/contact/" target="_blank" rel="noopener noreferrer">Official contact ↗</a></p></div></div>
         </div>
       </div>
     </section>
@@ -105,7 +107,7 @@
             <div class="form-group"><label for="interest">Interested course *</label><select class="field" name="interest" id="interest" required><option value="">Choose a course</option><option>Python</option><option>Java Full Stack</option><option>Cloud &amp; DevOps</option><option>Data Analytics</option><option>Other</option></select></div>
             <div class="form-group"><label for="source">Enquiry source *</label><select class="field" name="source" id="source" required><option value="">Choose a source</option><option>Website</option><option>Walk-in</option><option>Referral</option><option>Instagram</option><option>Other</option></select></div>
             <div class="form-group full"><label for="notes">Notes (optional)</label><textarea class="field" id="notes" name="notes" rows="3" maxlength="500" placeholder="Interested in weekend classes"></textarea></div>
-            <div class="form-group full"><label class="consent-line"><input type="checkbox" value="yes" name="consent" required> I confirm that all submitted information is fictional test data. Do not enter actual student information.</label><span class="form-help">Do not enter real personal information during internal testing.</span></div>
+            <div class="form-group full"><label class="consent-line"><input type="checkbox" value="yes" name="consent" required> I confirm all contact information is fictional (Demo/Test name and example.com email). This does not contact NareshIT.</label><span class="form-help">Public demo: real student contact details are not accepted or transmitted.</span></div>
           </div><div class="form-actions"><button class="btn primary" id="addBtn" type="submit">Save enquiry</button><button class="btn" type="reset">Clear form</button></div></form>
         </div></div>
         <div><div class="panel"><div class="panel-head"><h3>What happens after submit?</h3></div><div class="panel-body"><div class="how-row"><span class="how-num">1</span><b>Saved</b><p>New enquiry appears in the pipeline.</p></div><div class="how-row"><span class="how-num">2</span><b>Follow-up created</b><p>A callback reminder is set for tomorrow.</p></div><div class="how-row"><span class="how-num">3</span><b>Owner alert simulated</b><p>The activity log records the notification that a production workflow could send. Nothing is actually sent.</p></div><div class="how-row"><span class="how-num">4</span><b>Dashboard refreshed</b><p>Metrics and course-interest counts are recalculated instantly.</p></div></div></div><div class="notice warning" style="margin-top:12px">For a real client, use client-owned Google Sheets and restrict all dashboard access. Customer-facing email and WhatsApp are not included in this prototype.</div></div>
@@ -116,7 +118,7 @@
       <div class="toolbar"><div class="toolbar-start"><button class="btn primary" type="button" id="previewBtn2">◷ Simulate daily follow-ups</button></div><div class="toolbar-end"><button class="btn" id="resetBtn" type="button">Reset sample data</button></div></div>
       <div class="panel"><div class="panel-head"><div><h3>Recent activity events</h3><p>Saved locally in the browser (or in the private Google Sheet after authorized deployment)</p></div></div><div class="panel-body activity"><div id="activityListFull"></div><div class="notice" style="margin-top:18px">No messages are dispatched by this activity viewer. Simulation and actual delivery are kept separate.</div></div></div>
     </section>
-    <footer class="footer">EnquiryFlow v2 · Public demo · FAQ simulation is not generative AI · Use fictional data only</footer>
+    <footer class="footer">EnquiryFlow v2 · Independent institute-data showcase · Not affiliated · All leads fictional · Not generative AI</footer>
   </div>
 </main>
 </div>
@@ -147,6 +149,8 @@
     const errors = [];
     if (clean(value.name).length < 2 || clean(value.name).length > 80) errors.push('Enter a name between 2 and 80 characters.');
     if (!isValidEmail(value.email)) errors.push('Enter a valid contact email.');
+    if(!/^[^@\s]+@example\.(com|org|net)$/i.test(clean(value.email))) errors.push('Use an @example.com, @example.org or @example.net test email only.');
+    if(!/^(demo|test|sample)\b/i.test(clean(value.name))) errors.push('Start the fictional name with Demo, Test or Sample.');
     if (!INTERESTS.includes(value.interest)) errors.push('Choose a valid course.');
     if (!SOURCES.includes(value.source)) errors.push('Choose a valid lead source.');
     if (!value.consent) errors.push('Confirm permission to store the enquiry for this demo.');
@@ -251,6 +255,7 @@
   return {COURSES,TERMS,MAX_INPUT,detectCourse,answer};
 });
 </script>
+<script src="./verified-institute.js"></script>
 <script>(function(){
   'use strict';
   const C = window.EnquiryCore;
@@ -298,18 +303,18 @@
     $('activityListFull').innerHTML=activityMarkup(state.events.slice(0,40));
   }
   function switchView(name){view=name;document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));$('pageTitle').textContent=({overview:'Overview',assistant:'Assistant preview',leads:'Enquiries',intake:'Website intake demo',automation:'Automation log'})[name]||'Dashboard';render();window.scrollTo({top:0,behavior:'instant'})}
-  function addChatMessage(role, body, label){
+  function addChatMessage(role, body, label, sourceUrl){
     const container=$('assistantMessages');
     const bubble=document.createElement('div');
     bubble.className='chat-bubble '+role;
     const meta=document.createElement('div');meta.className='meta';meta.textContent=label;
     const content=document.createElement('div');content.textContent=body;
-    bubble.append(meta,content);container.appendChild(bubble);container.scrollTop=container.scrollHeight;
+    bubble.append(meta,content);if(sourceUrl&&/^https:\/\/jntu\.nareshit\.com\//.test(sourceUrl)){const a=document.createElement('a');a.href=sourceUrl;a.target='_blank';a.rel='noopener noreferrer';a.className='chat-source';a.textContent='Official source ↗';bubble.appendChild(a)}container.appendChild(bubble);container.scrollTop=container.scrollHeight;
   }
   function resetAssistant(){
     assistantContext={course:null,lastIntent:null};
     $('assistantMessages').replaceChildren();
-    addChatMessage('bot','Hello! I can show how an institute might answer common website questions. My answers use sample FAQ rules, not a connected AI model. Ask about courses, fees, batches or a demo class.','FAQ simulator');
+    addChatMessage('bot','Hello! This independent demo explains published NareshIT JNTU courses, prices and durations. It is not the institute and cannot book a class. No generative AI is connected.','Public-information FAQ');
     $('assistantInput').value='';
   }
   function askAssistant(input){
@@ -319,7 +324,7 @@
     const result=A.answer(q,assistantContext);
     if(result.course)assistantContext.course=result.course;
     assistantContext.lastIntent=result.intent;
-    addChatMessage('bot',result.answer,result.needsStaff?'FAQ simulator · Staff confirmation needed':'FAQ simulator · Example answer');
+    addChatMessage('bot',result.answer,result.needsStaff?'Public information · Confirm with institute':'Public information · Source listed',result.sourceUrl);
     $('assistantHandoff').textContent=result.needsStaff?'Request staff follow-up →':'Create example enquiry →';
     $('assistantInput').value='';
   }
@@ -329,7 +334,7 @@
     const topic=assistantContext.lastIntent;
     $('notes').value=topic&&topic!=='unknown'?'Website FAQ topic: '+topic+' (fictional demo; no chat transcript saved).':'';
     switchView('intake');
-    toast('Website enquiry form prepared. Enter fictional details and check the consent box to test handoff.');
+    toast('Example form only: no real institute receives this enquiry. Use fictional details.');
   }
   function newId(){return 'DEMO-'+Math.random().toString(36).slice(2,8).toUpperCase()}
   async function onSubmit(event){event.preventDefault();const data=new FormData(event.target);const lead={name:C.clean(data.get('name')),email:C.clean(data.get('email')).toLowerCase(),interest:data.get('interest'),source:data.get('source'),notes:C.clean(data.get('notes')),consent:data.get('consent')==='yes'};
@@ -348,7 +353,7 @@
   async function reminders(){const due=state.leads.filter(x=>C.isDue(x));if(LIVE){try{const res=await backend('previewFollowups');toast(`Preview only: ${res.count} follow-ups due. No emails sent.`)}catch(e){toast('Preview failed: '+e.message,'error')}}else{record('FOLLOWUP_SIMULATION',`${due.length} follow-up(s) found as due. No emails or WhatsApp messages sent.`);render();toast(`${due.length} follow-up(s) due. This was a simulation; no messages sent.`)}switchView('automation')}
   function exportCsv(){const csv='\ufeff'+C.toCsv(state.leads);const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='smart-enquiries-demo.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('CSV exported. Keep customer data private if using live mode.')}
   function resetDemo(){if(LIVE)return;if(!window.confirm('Reset all browser-local demo data?'))return;state=DEFAULT();persist();render();toast('Fictional demo data restored.')}
-  function init(){state=LIVE?{leads:[],events:[]}:localRead();$('mode').textContent=LIVE?'LOADING PRIVATE DATA':'OFFLINE DEMO · NO EMAILS SENT';$('mode').className='chip '+(LIVE?'green':'');if(LIVE){$('resetBtn').hidden=true;refreshLive()}
+  function init(){if(window.renderInstituteKnowledge)window.renderInstituteKnowledge();state=LIVE?{leads:[],events:[]}:localRead();$('mode').textContent=LIVE?'LOADING PRIVATE DATA':'OFFLINE DEMO · NO EMAILS SENT';$('mode').className='chip '+(LIVE?'green':'');if(LIVE){$('resetBtn').hidden=true;refreshLive()}
     document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
     document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.jump)));
     $('enquiryForm').addEventListener('submit',onSubmit);
