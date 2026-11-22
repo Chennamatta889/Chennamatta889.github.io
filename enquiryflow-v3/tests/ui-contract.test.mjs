@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const student=readFileSync(new URL('../assets/student.js',import.meta.url),'utf8');
+const staff=readFileSync(new URL('../assets/staff.js',import.meta.url),'utf8');
+const css=readFileSync(new URL('../assets/app.css',import.meta.url),'utf8');
+const rules=readFileSync(new URL('../firestore.rules',import.meta.url),'utf8');
+test('course sort and mode filter are wired, not decorative',()=>{assert.match(student,/id="courseSort"/);assert.match(student,/addEventListener\('change',e=>\{sort=/);assert.match(student,/id="courseMode"/);});
+test('course comparison has selection, clear, native dialog and close',()=>{for(const id of ['compareTray','compareDialog','openComparison','clearComparison','closeCompareDialog'])assert.ok(student.includes(id));assert.match(student,/\.showModal\(\)/);});
+test('batch filters read public data only',()=>{assert.match(student,/filterUpcomingBatches\(data\.batches,data\.courses/);assert.match(student,/publicData\(\)/);});
+test('FAQ uses publicData FAQuently asked questions',()=>{assert.match(student,/data\.faqs/);assert.match(student,/id="faqList"/);});
+test('mobile menu has aria-expanded toggle and focus ring',()=>{assert.match(student,/setAttribute\('aria-expanded'/);assert.match(css,/:focus-visible/);});
+test('staff lead export stays behind staffData and stage UI',()=>{assert.match(staff,/staffData\(\)/);assert.match(staff,/buildEnquiriesCsv\(leads,names\)/);assert.match(staff,/id="exportLeads"/);assert.match(staff,/id="leadStatus"/);});
+test('Firestore rules deny fallback and avoid public list of leads',()=>{assert.match(rules,/allow read, write: if false/);assert.match(rules,/ef3_enquiries/);});

@@ -1,0 +1,11 @@
+{
+  "name": "enquiryflow-v3-single-institute",
+  "version": "0.3.4",
+  "private": true,
+  "type": "module",
+  "description": "EnquiryFlow v3.4 isolated student and staff portals with enhanced discovery, comparison and enquiry pipeline",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check.mjs"
+  }
+}

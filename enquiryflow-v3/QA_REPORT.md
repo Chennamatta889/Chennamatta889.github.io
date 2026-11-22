@@ -44,3 +44,14 @@ Date: 22 November 2026
 ## v3.3 generalized institution knowledge tests
 
 Added 18 regression tests covering institute introduction, accurate course totals, public-only counts, all published fees, missing prices, cross-course next batch, weekend filtering, expired batches, combined fee and schedule answers, staff privacy, approved/unapproved faculty FAQs, human handoff, course-context retention and bounded large catalogue responses. Full Node test suite: **68 tests passing**; static check: **8/8 expected RLS schema declarations present**. These results are local tests, **not** evidence that Firebase Firestore RLS/rules were deployed or that real students can safely submit enquiries.
+
+
+## v3.4 UI, student discovery, and staff experience
+
+- Added course search/category/mode/sort and fee/duration comparison, with nonpublic courses already excluded by the shared `publicData()` layer.
+- Added future-only, published batch filters using the `Asia/Kolkata` date.
+- Added display of only public approved FAQs, responsive mobile nav and opt-in answer copy.
+- Added staff-only enquiry filters, pipeline summary, next batches, and CSV export with formula-injection escaping.
+- All **90 automated tests passed**; static check passed, JavaScript syntax checked.
+- Real database integration remains **disabled** in the public v3 demo. The separate Firebase project exists but restrictive rules were not successfully published and live auth/role testing remains incomplete.
+- Attempted Playwright screenshot using local Chromium; `net::ERR_BLOCKED_BY_ADMINISTRATOR` prevents local page navigation. Live browser checks are needed after Pages deployment. Production release remains NO-GO for real student records.

@@ -84,7 +84,7 @@ export async function submitEnquiry(payload){
  const r=await fetch(`${origin()}/functions/v1/submit-enquiry`,{method:'POST',headers:headers(),body:JSON.stringify({...payload,institute_slug:CONFIG.instituteSlug})});const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error||'Unable to submit enquiry');return j;
 }
 export async function askAssistant(question,records,context={}){
- const {searchKnowledge}=await import('./utils.js?v=3.3');
+ const {searchKnowledge}=await import('./utils.js?v=3.4');
  if(isDemo)return {...searchKnowledge(question,records,context),mode:'approved-faq-simulator'};
  try{const r=await fetch(`${origin()}/functions/v1/ai-assistant`,{method:'POST',headers:headers(),body:JSON.stringify({question,institute_slug:CONFIG.instituteSlug})});if(!r.ok)throw Error(`Assistant service unavailable (${r.status})`);return await r.json()}catch{return {...searchKnowledge(question,records,context),mode:'approved-knowledge-fallback',note:'AI service unavailable: answer generated from approved records only.'}}
 }
