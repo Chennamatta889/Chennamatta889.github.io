@@ -1,0 +1,39 @@
+/* GharWatt solar workspace polish · 2026-11-23. Isolated to the homepage. */
+#solar-calculator .gw-solar-start-helper{border:1px solid #d7c3e7;background:linear-gradient(125deg,#fbf6ff,#fff9ef);border-radius:16px;padding:17px 19px;margin:16px 0 22px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.gw-solar-start-helper strong{display:block;font-size:1.08rem;color:#39244e}
+.gw-solar-start-helper p{margin:5px 0 0;color:#635872;font-size:.85rem;line-height:1.5}
+.gw-solar-helper-actions{display:flex;flex-direction:column;gap:9px;min-width:220px}
+.gw-solar-helper-actions a{display:block;background:#37254e;color:#fff;text-decoration:none;text-align:center;border-radius:11px;padding:11px 13px;min-height:44px;box-sizing:border-box;font-size:.82rem;font-weight:780;line-height:1.45}
+.gw-solar-helper-actions a:last-child{color:#523570;background:#fff;border:1px solid #c7b3da}
+.gw-solar-helper-actions a:hover{filter:brightness(1.08)}
+.gw-solar-assumptions{padding:14px 16px;margin-top:17px;background:#faf4ff;border:1px solid #e3d4ef;border-radius:13px;color:#42334f;display:flex;flex-direction:column;align-items:start;gap:10px}
+.gw-solar-assumptions span{font-size:.86rem;font-weight:740;line-height:1.6}
+.gw-solar-assumptions button{border:1px solid #ac92ce;background:#fff;color:#4e3077;border-radius:10px;cursor:pointer;padding:10px 14px;font-weight:800;min-height:44px;font-size:.81rem}
+.gw-solar-assumptions small{font-size:.76rem;line-height:1.6;color:#6b5c78}
+.gw-solar-assumptions a{color:#593c85;text-underline-offset:2px}
+.gw-solar-warning{margin-top:15px;padding:14px 16px;background:#fff4df;border:1px solid #edcc8c;border-left:4px solid #b4812c;border-radius:0 12px 12px 0;color:#664d28;font-size:.84rem;line-height:1.65}
+.gw-solar-warning[hidden]{display:none}
+.calc-result .mini-bars{border:1px solid #ffffff26;background:#ffffff0a;border-radius:16px;padding:17px 16px;margin-top:20px}
+.calc-result .mini-bars-head{align-items:center;gap:14px}
+.calc-result .mini-bars-head strong{color:#ffd59d;font-size:1.06rem;white-space:nowrap}
+.calc-result .bar-row{gap:9px;font-size:.78rem;margin:15px 0;line-height:1.35}
+.calc-result .bar-row>span{width:48px}
+.calc-result .bar-row>strong{min-width:74px;text-align:right;color:#f7e5ff;font-size:.83rem;font-variant-numeric:tabular-nums}
+.calc-result .bar-track{height:17px;border-radius:9px;border:1px solid #ffffff18;background:#4a4261;overflow:hidden}
+.calc-result .bar-fill{border-radius:8px;transition:width .22s ease}
+.gw-quote-starter{display:flex;align-items:center;justify-content:space-between;gap:17px;border-radius:16px;border:1px solid #d9c8e8;background:linear-gradient(125deg,#f5effe,#fffaf0);padding:18px 21px;margin:0 0 13px}
+.gw-quote-starter strong{color:#332343;font-size:1.05rem}
+.gw-quote-starter p{font-size:.86rem;line-height:1.55;color:#675970;margin:6px 0 0}
+.gw-quote-starter button{flex:none;border-radius:11px;min-height:47px;font-weight:820}
+.gw-quote-sample-status{font-size:.79rem;line-height:1.5;color:#695e75;margin:0 0 15px}
+.gw-quote-metric-label{color:#685c76;font-size:.85rem;margin:5px 0 15px;line-height:1.6}
+.quote-summary>div{background:#fff;border-color:#ddd0e5;min-width:0}
+.quote-summary b{overflow-wrap:anywhere}
+.quote-summary span[id^="qr-kw-"]{display:block;margin:9px 0 5px;padding:9px 10px;border:1px solid #e6d9eb;background:#faf4ff;border-radius:9px;color:#493266;font-size:.81rem;font-weight:850}
+.quote-summary span[id^="qr-tag-"]{display:block;color:#76677e;font-size:.76rem;line-height:1.45}
+.gw-quote-normalized-note{border-left:3px solid #9972c1;background:#faf6ff;padding:12px 14px;border-radius:0 10px 10px 0;color:#493360;margin:14px 0 10px;font-size:.83rem;line-height:1.55}
+.footer-bottom>span{line-height:1.75}
+@media(max-width:880px){#solar-calculator .gw-solar-start-helper{flex-direction:column;align-items:stretch}.gw-solar-helper-actions{flex-direction:row;min-width:0}.gw-solar-helper-actions a{flex:1}}
+@media(max-width:700px){.gw-solar-helper-actions{flex-direction:column}.gw-solar-start-helper{padding:15px!important}.gw-solar-start-helper strong{font-size:.97rem}.gw-solar-start-helper p{font-size:.8rem}.gw-solar-assumptions{padding:12px}.gw-solar-assumptions button{width:100%}.calc-result .mini-bars{padding:13px 11px}.calc-result .mini-bars-head{font-size:.73rem;align-items:start}.calc-result .mini-bars-head strong{font-size:.85rem}.calc-result .bar-row>span{width:42px}.calc-result .bar-row>strong{min-width:61px;font-size:.75rem}.gw-quote-starter{flex-direction:column;align-items:stretch;padding:16px}.gw-quote-starter button{width:100%}.quote-summary>div{padding:14px}}
+@media(max-width:370px){.calc-result .bar-row>strong{min-width:48px;font-size:.68rem}.calc-result .mini-bars-head{flex-wrap:wrap}.gw-solar-helper-actions a{font-size:.78rem}}
+@media(prefers-reduced-motion:reduce){.calc-result .bar-fill{transition:none}}
