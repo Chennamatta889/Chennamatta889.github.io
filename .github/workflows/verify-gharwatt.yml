@@ -32,8 +32,9 @@ jobs:
           node --check gharwatt/assets/toolkit-ui.js
           node --check gharwatt/assets/bill-advisor.js
           node --check gharwatt/assets/bill-crop.js
+          node --check gharwatt/assets/simple-bill.js
           python3 -m json.tool gharwatt/assets/affiliate-links.json > /dev/null
-          node --test gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs gharwatt/tests/energy-v2.test.cjs gharwatt/tests/energy-v2-extra.test.cjs gharwatt/tests/toolkit-ui.test.cjs gharwatt/tests/bill-advisor.test.cjs
+          node --test gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs gharwatt/tests/energy-v2.test.cjs gharwatt/tests/energy-v2-extra.test.cjs gharwatt/tests/toolkit-ui.test.cjs gharwatt/tests/bill-advisor.test.cjs gharwatt/tests/simple-bill.test.cjs
       - name: Validate local page references
         run: |
           python3 - <<'PY'
@@ -82,6 +83,10 @@ jobs:
           assert 'extractPdf' in script and 'application/pdf' in script, 'PDF support missing'
           assert 'assessBillText' in script, 'unreliable OCR guard missing'
           assert 'id="gw-advisor"' in photo_page, 'bill advisor missing'
+          assert 'id="gw-simple-bill"' in photo_page, 'instant calculator missing'
+          assert 'id="gw-simple-amount"' in photo_page and 'id="gw-simple-units"' in photo_page, 'two-number inputs missing'
+          assert 'id="gw-photo-details"' in photo_page, 'optional photo path missing'
+          assert re.search(r'src="\.\./assets/simple-bill\.js(?:\?[^"]*)?"',photo_page), 'quick calculator JS missing'
           assert 'id="v2-crop-canvas"' in photo_page, 'photo crop UI missing'
           assert 'id="v2-confirm-arrears"' in photo_page, 'bill arrears input missing'
           assert re.search(r'src="\.\./assets/bill-crop\.js(?:\?[^"]*)?"',photo_page), 'photo crop script not loaded'
