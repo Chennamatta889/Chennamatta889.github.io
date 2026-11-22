@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'live-job-discovery-v2.js'
+      - 'tests/live-job-discovery-v2.test.cjs'
       - '.github/workflows/verify-root.yml'
 
 permissions:
@@ -16,6 +18,19 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
+      - name: Check out live root source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Check live-search JavaScript syntax and regression tests
+        run: |
+          node --check live-job-discovery-v2.js
+          node --test tests/live-job-discovery-v2.test.cjs
+
       - name: Verify published homepage and preserved sites
         shell: bash
         run: |
