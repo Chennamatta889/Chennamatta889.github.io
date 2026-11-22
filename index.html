@@ -949,7 +949,7 @@ function render(){
  const q=field.value.trim()||"software developer";
  links.replaceChildren();
  for(const [label,fn] of sources)addLink(links,label,fn(q));
- const isDotnet=/(?:\\.net|dotnet|asp\\s*\\.?net|c#)/i.test(q);
+ const isDotnet=/(?:\.net|dotnet|asp\s*\.?net|c#)/i.test(q);
  dotnet.hidden=!isDotnet;
  dotnetLinks.replaceChildren();
  if(isDotnet)for(const [label,url] of dotnetSources)addLink(dotnetLinks,label,url);
