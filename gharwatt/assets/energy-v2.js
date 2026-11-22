@@ -29,14 +29,19 @@ function parseBillText(raw){
 /* A missing label or unreliable OCR must not become a fabricated zero. */
 function assessBillText(raw,result,confidence=null){
  const text=String(raw||'').trim();
- const recognized=['amount','units','days'].filter(k=>result?.[k]!==null&&result?.[k]!==undefined).length;
- const lowConfidence=confidence!==null&&Number.isFinite(Number(confidence))&&Number(confidence)<45;
- const readable=text.length>=12&&recognized>0&&!lowConfidence;
+ const recognized=['amount','units','days','currentCharges','arrears'].filter(k=>result?.[k]!==null&&result?.[k]!==undefined).length;
+ const scanned=confidence!==null&&Number.isFinite(Number(confidence));
+ const lowConfidence=scanned&&Number(confidence)<65;
+ // Recognizing one plausible-looking value is not enough to fill a bill automatically.
+ // A manually pasted/extracted PDF line can still display as a candidate.
+ const readable=text.length>=12&&recognized>=(scanned?2:1)&&!lowConfidence;
  return {readable,recognized,lowConfidence,
-  message:readable?'Possible values found. Check the original bill before confirming.':
-   lowConfidence?'The scanner is not confident about this photo. Do not trust the numbers; crop the amount or units section and retry, or enter them manually.':
-   'Could not reliably identify bill amount or units. The extracted text may be garbled. Crop a smaller section or enter details manually.'};
+  message:readable?'Possible values found. Check every number against your original bill.':
+   lowConfidence?'The photo is too unclear for reliable extraction. Ignore the scanned numbers and try a focused crop or manual entry.':
+   scanned?'The scanner did not reliably identify enough bill fields. Do not use this text for calculations. Select a smaller amount or meter area and retry, or enter details manually.':
+   'Could not identify bill amount or units in this text. The document may be garbled. Use a clearer image or enter the numbers manually.'};
 }
+function ocrPageSegMode(focused){return focused?'6':'11';}
 function compareBills(a,b){
  if(![a,b].every(x=>x&&valid(x.amount,0,500000)&&valid(x.days,1,120)))return null;
  const x=Number(a.amount),y=Number(b.amount),xd=Number(a.days),yd=Number(b.days);
@@ -304,6 +309,13 @@ function initReader(){
    const worker=await limit(getWorker(),75000,'The OCR engine took too long to start',job);
    if(job.cancelled)return;
    updateProgress(image.compressed?'Reading optimized photo…':'Reading photo…',0);
+   // Sparse text for a full multi-column bill; single text block for a focused region.
+   const focused=Boolean(window.GharWattCrop?.getSelection?.());
+   await limit(worker.setParameters({
+    tessedit_pageseg_mode:ocrPageSegMode(focused),
+    preserve_interword_spaces:'1'
+   }),10000,'OCR layout setup took too long',job);
+   if(job.cancelled)return;
    const result=await limit(worker.recognize(image.blob),70000,'Reading the photo took too long',job);
    if(job.cancelled)return;
    const fresh=String(result?.data?.text||'').trim();
@@ -502,5 +514,5 @@ function initWhatsApp(){
  wire('v2-change-whatsapp',()=> 'My GharWatt electricity bill comparison: '+$('v2-change-rupees').textContent+'. '+$('v2-change-explain').textContent+' https://chennamatta889.github.io/gharwatt/bill-change/');
 }
 initReader();initAppliances();initComparison();initGoal();initTracker();initFinance();initRoof();initCooling();initWhatsApp();
-window.GharWattV2=Object.freeze({parseBillText,assessBillText,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances,ocrResizePlan});
+window.GharWattV2=Object.freeze({parseBillText,assessBillText,ocrPageSegMode,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances,ocrResizePlan});
 })();
