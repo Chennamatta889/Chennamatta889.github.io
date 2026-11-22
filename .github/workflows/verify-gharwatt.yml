@@ -54,12 +54,13 @@ jobs:
           assert (root/'reduce-electricity-bill'/'index.html').exists(), 'missing electricity saving guide'
           assert (root/'discover'/'index.html').exists(), 'guided Discover page missing'
           discover=(root/'discover'/'index.html').read_text(encoding='utf-8')
-          for element in ['gw-bill-amount','gw-bill-units','gw-bill-start','gw-bill-result','gw-appliance-grid','gw-challenge-list','gw-myth-options','gw-compare-output','gw-product-result','gw-track-preview','gw-solar-guidance']:
+          for element in ['gw-bill-amount','gw-bill-units','gw-bill-start','gw-bill-result','gw-appliance-grid','gw-challenge-list','gw-myth-options','gw-compare-output','gw-product-result','gw-track-preview','gw-solar-guidance','gw-clear-appliances']:
               assert f'id="{element}"' in discover, f'missing Discover element {element}'
-          assert 'src="../assets/discover.js?v=20261123-discover1"' in discover, 'Discover JavaScript missing'
-          assert 'href="../assets/discover.css?v=20261123-discover1"' in discover, 'Discover styles missing'
+          assert re.search(r'src="\.\./assets/discover\.js(?:\?[^\"]*)?"', discover), 'Discover JavaScript missing'
+          assert re.search(r'href="\.\./assets/discover\.css(?:\?[^\"]*)?"', discover), 'Discover styles missing'
           home=(root/'index.html').read_text(encoding='utf-8')
           assert 'href="discover/"' in home and 'class="gw-home-discover"' in home, 'homepage journey missing'
+          assert 'applianceContext' in (root/'assets'/'discover.js').read_text(encoding='utf-8'), 'appliance bill reconciliation missing'
           assert 'https://chennamatta889.github.io/gharwatt/discover/' in (root/'sitemap.xml').read_text(encoding='utf-8'), 'Discover sitemap missing'
           for name in ['energy-tools','bill-reader','appliance-planner','bill-change','savings-goal','monthly-tracker','cooling-costs','solar-finance','roof-planner','appliance-star-compare','solar-vs-saving','smart-meter-csv','electricity-basics-telugu','electricity-basics-hindi']:
               assert (root/name/'index.html').exists(), f'missing page {name}'
