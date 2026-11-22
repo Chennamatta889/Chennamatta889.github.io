@@ -122,3 +122,7 @@ html{scroll-padding-top:96px}body{background:#fdfefd}::selection{background:#b8f
 .ctech-guide-enquire:hover,.ctech-guide-enquire:focus-visible{background:#075747}
 .ctech-guide-note{font-size:12px;line-height:1.6;color:#667e82;margin-top:14px}
 @media(max-width:650px){.ctech-guide-facts{grid-template-columns:1fr 1fr}.ctech-guide-section{padding-top:24px}.ctech-guide-search{max-width:none}}
+
+.ctech-general-help{margin-top:28px;padding-top:24px;border-top:1px solid #d9e8e4}
+.ctech-general-help h3{font-size:20px;margin-bottom:6px}
+.ctech-general-help>p{font-size:14px;color:#637d82;margin-bottom:14px;max-width:770px}
