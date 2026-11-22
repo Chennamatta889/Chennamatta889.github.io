@@ -24,11 +24,11 @@
  <p class="gw-advisor-hint">The bill amount per unit includes fixed charges and possible adjustments. <strong>It is not your tariff or the price saved per unit.</strong></p>
  <h4>Optional charge breakdown from your bill</h4><p class="gw-advisor-hint">We suggest amounts from the extracted text when possible. Please check each against your bill; leave unknown fields empty. This is not an official tariff audit.</p>
  <div class="gw-charge-grid">
-  <label>Energy charges (₹)<input id="gw-charge-energy" inputmode="decimal" type="number" min="0" max="500000" step=".01" placeholder="Not shown"></label>
-  <label>Fixed / service charges (₹)<input id="gw-charge-fixed" inputmode="decimal" type="number" min="0" max="500000" step=".01" placeholder="Not shown"></label>
-  <label>Taxes / duty (₹)<input id="gw-charge-tax" inputmode="decimal" type="number" min="0" max="500000" step=".01" placeholder="Not shown"></label>
-  <label>Previous dues (₹)<input id="gw-charge-arrears" inputmode="decimal" type="number" min="0" max="500000" step=".01" placeholder="Not shown"></label>
-  <label>Rebates / credits (₹, deduction)<input id="gw-charge-rebate" inputmode="decimal" type="number" min="0" max="500000" step=".01" placeholder="Not shown"></label>
+  <label>Energy charges (₹)<input id="gw-charge-energy" inputmode="decimal" type="number" min="0" max="500000" step=".01" placeholder="Not shown"><small>Electricity consumption cost, often calculated in slabs.</small></label>
+  <label>Fixed / service charges (₹)<input id="gw-charge-fixed" inputmode="decimal" type="number" min="0" max="500000" step=".01" placeholder="Not shown"><small>May apply even when you use very little power.</small></label>
+  <label>Taxes / duty (₹)<input id="gw-charge-tax" inputmode="decimal" type="number" min="0" max="500000" step=".01" placeholder="Not shown"><small>Taxes, electricity duty or surcharges listed on the bill.</small></label>
+  <label>Previous dues (₹)<input id="gw-charge-arrears" inputmode="decimal" type="number" min="0" max="500000" step=".01" placeholder="Not shown"><small>Older unpaid balance, not necessarily current usage.</small></label>
+  <label>Rebates / credits (₹, deduction)<input id="gw-charge-rebate" inputmode="decimal" type="number" min="0" max="500000" step=".01" placeholder="Not shown"><small>Credits that subtract from the bill amount.</small></label>
  </div>
  <p class="gw-advisor-remainder">Difference between amount due and entered charge items: <strong id="gw-remainder">Add line items to check</strong></p>
 </div>
