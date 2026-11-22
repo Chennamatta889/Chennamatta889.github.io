@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+  <title>EnquiryFlow — Student Firestore Pilot</title>
+  <link rel="stylesheet" href="./pilot.css?v=1">
+</head>
+<body>
+<main>
+  <header><span class="eyebrow">ENQUIRYFLOW · ISOLATED FIREBASE PILOT</span><a href="./pilot-staff.html" class="link secondary">Staff test inbox ↗</a></header>
+  <h1>Test a student enquiry across devices.</h1>
+  <p>This page is a <strong>fictional-data pilot</strong>, not an admissions website. It writes one fixed synthetic enquiry to Firestore. It never asks for your name, email, phone number, or payment details.</p>
+  <div class="banner"><strong>Test data only.</strong> The production EnquiryFlow student and staff websites remain unchanged and in local demo mode. This page does not send email or notify anyone.</div>
+  <section>
+    <h2>1. Confirm the public institute is available</h2>
+    <p id="instituteStatus" role="status" aria-live="polite">Checking the published fictional institute profile…</p>
+    <p id="courseStatus" class="small"></p>
+  </section>
+  <section>
+    <h2>2. Send one fictional student enquiry</h2>
+    <p>Press the button to save exactly these preset details in Firestore. <strong>Do not enter any personal information.</strong></p>
+    <dl><div><dt>Name</dt><dd>Test Pilot Student</dd></div><div><dt>Email</dt><dd>pilot.student@example.com</dd></div><div><dt>Question</dt><dd>Please confirm a fictional weekend demo class.</dd></div><div><dt>Course</dt><dd>General enquiry</dd></div></dl>
+    <button id="sendTest" type="button" disabled>Send fictional enquiry to Firebase</button>
+    <p id="sendStatus" class="status" role="status" aria-live="polite">The send button will unlock after institute access succeeds.</p>
+    <p id="reference" class="reference" hidden></p>
+  </section>
+  <section>
+    <h2>3. Confirm delivery in the staff pilot</h2>
+    <p>Open the authenticated staff test inbox on another device or browser, sign in with the account you created in Firebase, and select <strong>Refresh test enquiries</strong>. Look for the reference shown after submission.</p>
+    <a class="link" href="./pilot-staff.html">Open staff test inbox ↗</a>
+  </section>
+  <footer><a href="../">Back to existing student demo</a><span> · </span><a href="./firebase-check.html">Connection diagnostics</a></footer>
+</main>
+<script type="module" src="./pilot-student.js?v=1"></script>
+</body>
+</html>
