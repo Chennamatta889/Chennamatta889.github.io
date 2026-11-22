@@ -109,6 +109,10 @@ jobs:
           cp account-site/enquiryflow-v3/index.html site/enquiryflow-v3/
           cp account-site/enquiryflow-v3/staff/index.html site/enquiryflow-v3/staff/
           cp account-site/enquiryflow-v3/assets/* site/enquiryflow-v3/assets/
+          # Preserve the original fictional-only student and staff demo as a separate rollback route.
+          test -s account-site/enquiryflow-v3/demo/index.html
+          test -s account-site/enquiryflow-v3/demo/staff/index.html
+          cp -R account-site/enquiryflow-v3/demo site/enquiryflow-v3/demo
           # Career-Ops is now the site's index, not a frame or redirect.
           cp career-ops-source/index.html career-ops-source/styles.css \
              career-ops-source/match-engine.js career-ops-source/job-categories.js \
