@@ -18,6 +18,7 @@ on:
       - "resources/**"
       - "enquiryflow/**"
       - "enquiryflow-v3/**"
+      - "gharwatt/**"
       - "resource-styles.css"
       - "sitemap.xml"
       - "ads.txt"
@@ -100,6 +101,9 @@ jobs:
           test -s account-site/enquiryflow/index.html
           mkdir -p site/enquiryflow
           cp account-site/enquiryflow/index.html site/enquiryflow/index.html
+          # Publish isolated GharWatt solar tools without changing existing website assets.
+          test -s account-site/gharwatt/index.html
+          cp -R account-site/gharwatt site/gharwatt
           # Preserve and publish isolated EnquiryFlow v3 demo; no changes to v2.
           mkdir -p site/enquiryflow-v3/staff site/enquiryflow-v3/assets
           cp account-site/enquiryflow-v3/index.html site/enquiryflow-v3/
