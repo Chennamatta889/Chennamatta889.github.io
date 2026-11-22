@@ -63,19 +63,62 @@ function makeShare(buttonId,textFunction,statusId){
   catch(e){if(e&&e.name!=='AbortError')set(statusId,'Could not share; please copy the results manually.');}
  });
 }
+/* Resize very large bill photos before OCR to reduce mobile memory and processing time.
+   Never upscale smaller images: tiny text still needs a sufficiently clear source. */
+function ocrResizePlan(width,height,maxEdge=2400,maxPixels=3600000){
+ const w=Number(width),h=Number(height);
+ if(!Number.isFinite(w)||!Number.isFinite(h)||w<=0||h<=0||w>50000||h>50000)return null;
+ const scale=Math.min(1,Number(maxEdge)/Math.max(w,h),Math.sqrt(Number(maxPixels)/(w*h)));
+ return Object.freeze({width:Math.max(1,Math.round(w*scale)),height:Math.max(1,Math.round(h*scale)),resized:scale<0.999});
+}
 function initReader(){
  if(!$('v2-reader'))return;
+ const status=$('v2-ocr-status'),button=$('v2-read-photo'),cancel=$('v2-ocr-cancel'),progress=$('v2-ocr-progress');
+ let scriptLoad=null,sharedWorker=null,workerLoad=null,currentJob=null;
  function show(){
   const r=parseBillText(read('v2-ocr-text'));
   set('v2-ocr-amount',r.amount===null?'Not found — enter manually':money(r.amount));
   set('v2-ocr-units',r.units===null?'Not found — check your bill':number(r.units)+' units');
   set('v2-ocr-days',r.days===null?'Not found':r.days+' days');
-  if(r.amount!==null) $('v2-confirm-amount').value=r.amount;
-  if(r.units!==null) $('v2-confirm-units').value=r.units;
-  set('v2-ocr-status','Review every value against the bill. Reading errors are possible.');
+  if(r.amount!==null)$('v2-confirm-amount').value=r.amount;
+  if(r.units!==null)$('v2-confirm-units').value=r.units;
+  set('v2-ocr-status','Review every value against the original bill. Reading errors are possible.');
  }
  $('v2-extract').addEventListener('click',show);
- let scriptLoad=null;
+ function updateProgress(message,value){
+  if(!currentJob)return;
+  status.textContent=message;
+  if(!progress)return;
+  progress.hidden=false;
+  if(typeof value==='number'){progress.value=Math.max(0,Math.min(100,Math.round(value)))}
+  else progress.removeAttribute('value'); // indeterminate while downloading/initializing
+ }
+ function showIdle(){
+  button.disabled=false;
+  if(cancel)cancel.hidden=true;
+  if(progress)progress.hidden=true;
+ }
+ function discardWorker(){
+  const worker=sharedWorker,loading=workerLoad;
+  sharedWorker=null;workerLoad=null;
+  if(worker){try{Promise.resolve(worker.terminate()).catch(()=>{})}catch{}}
+  else if(loading){loading.then(w=>w?.terminate?.()).catch(()=>{})}
+ }
+ function stopReading(message){
+  const job=currentJob;if(!job)return;
+  job.cancelled=true;
+  job.rejectCancel?.(new Error('stopped'));
+  currentJob=null;
+  discardWorker();
+  showIdle();
+  set('v2-ocr-status',message||'Photo reading stopped. You can type the amount and units manually below.');
+ }
+ if(cancel)cancel.addEventListener('click',()=>stopReading('Stopped. You can choose a smaller photo or enter the bill numbers manually.'));
+ function limit(promise,ms,label,job){
+  let timeout;
+  const deadline=new Promise((_,reject)=>{timeout=setTimeout(()=>reject(new Error(label)),ms)});
+  return Promise.race([Promise.resolve(promise),deadline,job.cancelPromise]).finally(()=>clearTimeout(timeout));
+ }
  async function library(){
   if(window.Tesseract?.createWorker)return;
   if(scriptLoad)return scriptLoad;
@@ -83,32 +126,131 @@ function initReader(){
    const script=document.createElement('script');
    script.src='https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js';
    script.referrerPolicy='no-referrer';
-   script.onload=()=>window.Tesseract?.createWorker?resolve():reject(new Error('OCR library did not initialize'));
-   script.onerror=()=>reject(new Error('OCR download failed'));
+   script.onload=()=>window.Tesseract?.createWorker?resolve():reject(new Error('OCR library unavailable'));
+   script.onerror=()=>reject(new Error('OCR library download blocked'));
    document.head.appendChild(script);
   }).catch(e=>{scriptLoad=null;throw e});
   return scriptLoad;
  }
- $('v2-read-photo').addEventListener('click',async()=>{
-  const file=$('v2-photo').files?.[0];
-  if(!file){set('v2-ocr-status','Choose a photograph first, or paste bill text below.');return;}
-  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>9*1024*1024){set('v2-ocr-status','Use a JPG, PNG or WebP photo smaller than 9 MB. PDF files are not supported.');return;}
-  $('v2-read-photo').disabled=true;set('v2-ocr-status','Reading on your device. The first use downloads an OCR library and language data; this may take time.');
-  let worker;
+ function getWorker(){
+  if(sharedWorker)return Promise.resolve(sharedWorker);
+  if(workerLoad)return workerLoad;
+  let started;
+  const initializing=window.Tesseract.createWorker('eng',1,{logger:e=>{
+   const job=currentJob;
+   if(!job||job.cancelled||!e)return;
+   if(e.status==='recognizing text'&&Number.isFinite(e.progress)){
+    const pct=Math.max(0,Math.min(100,Math.round(e.progress*100)));
+    if(progress){progress.hidden=false;progress.value=pct;}
+    if(pct===100||pct>=job.lastReported+10){
+     job.lastReported=pct;
+     status.textContent='Reading your bill: '+pct+'% complete. Keep this tab open.';
+    }
+   }else if(e.status&&/loading language|loading tesseract|initializing|core/i.test(e.status)){
+    updateProgress('Preparing the text reader: '+String(e.status).slice(0,65)+'…');
+   }
+  }});
+  // A cancelled initialisation must not resurrect a terminated worker during the next attempt.
+  started=initializing.then(w=>{
+   if(workerLoad!==started){
+    try{Promise.resolve(w.terminate()).catch(()=>{})}catch{}
+    throw new Error('OCR initialization cancelled');
+   }
+   sharedWorker=w;
+   return w;
+  }).catch(e=>{if(workerLoad===started)workerLoad=null;throw e});
+  workerLoad=started;
+  return started;
+ }
+ async function preparedPhoto(file){
+  let bitmap=null,image=null,objectURL=null;
   try{
-   await library();worker=await window.Tesseract.createWorker('eng');
-   const result=await worker.recognize(file);
-   $('v2-ocr-text').value=String(result.data.text||'').slice(0,16000);
-   show();set('v2-ocr-status','Reading finished locally. Check and correct the values because OCR is not always accurate.');
-  }catch(e){set('v2-ocr-status','Photo reading did not work. Try a clearer English-language photo, or type the amount and units manually.');}
-  finally{if(worker)try{await worker.terminate()}catch{}$('v2-read-photo').disabled=false;}
+   if(typeof createImageBitmap==='function'){
+    bitmap=await createImageBitmap(file);
+    image=bitmap;
+   }else{
+    objectURL=URL.createObjectURL(file);
+    image=await new Promise((resolve,reject)=>{
+     const i=new Image();
+     i.onload=()=>resolve(i);
+     i.onerror=()=>reject(new Error('Could not open photo'));
+     i.src=objectURL;
+    });
+   }
+   const w=image.width||image.naturalWidth,h=image.height||image.naturalHeight;
+   const plan=ocrResizePlan(w,h);
+   if(!plan)throw new Error('Invalid image dimensions');
+   if(!plan.resized&&file.size<=2000000)return {blob:file,compressed:false,plan};
+   const canvas=document.createElement('canvas');canvas.width=plan.width;canvas.height=plan.height;
+   const ctx=canvas.getContext('2d',{alpha:false});
+   if(!ctx)throw new Error('Image resizing not supported');
+   ctx.fillStyle='#fff';ctx.fillRect(0,0,plan.width,plan.height);
+   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+   ctx.drawImage(image,0,0,plan.width,plan.height);
+   const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Photo processing failed')),'image/jpeg',.9));
+   canvas.width=0;canvas.height=0;
+   return {blob,compressed:true,plan};
+  }finally{
+   if(bitmap&&typeof bitmap.close==='function')bitmap.close();
+   if(objectURL)URL.revokeObjectURL(objectURL);
+  }
+ }
+ button.addEventListener('click',async()=>{
+  if(currentJob)return;
+  const file=$('v2-photo').files?.[0];
+  if(!file){set('v2-ocr-status','Choose a photo, or enter the amount and units manually below.');return;}
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>9*1024*1024){
+   set('v2-ocr-status','Use a JPG, PNG or WebP photo smaller than 9 MB. PDFs are not supported.');return;
+  }
+  let rejectCancel;
+  const job={cancelled:false,lastReported:-10,cancelPromise:new Promise((_,reject)=>{rejectCancel=reject})};
+  job.rejectCancel=rejectCancel;currentJob=job;
+  button.disabled=true;if(cancel)cancel.hidden=false;
+  try{
+   updateProgress('Optimizing the photo so it is faster to read…',undefined);
+   const image=await limit(preparedPhoto(file),20000,'Photo preparation took too long',job);
+   if(job.cancelled)return;
+   updateProgress('Loading the OCR reader (first use downloads language data)…',undefined);
+   await limit(library(),30000,'OCR download was too slow or blocked',job);
+   if(job.cancelled)return;
+   updateProgress('Starting the text-recognition engine…',undefined);
+   const worker=await limit(getWorker(),75000,'The OCR engine took too long to start',job);
+   if(job.cancelled)return;
+   updateProgress(image.compressed?'Reading optimized photo…':'Reading photo…',0);
+   const result=await limit(worker.recognize(image.blob),70000,'Reading the photo took too long',job);
+   if(job.cancelled)return;
+   $('v2-ocr-text').value=String(result?.data?.text||'').slice(0,16000);
+   if(progress){progress.value=100;}
+   show();
+   set('v2-ocr-status','Finished reading the photo locally. Please check the amount and units because OCR can make mistakes.');
+  }catch(e){
+   if(job.cancelled)return;
+   discardWorker();
+   const detail=String(e?.message||'').toLowerCase();
+   if(/slow|long|blocked|unavailable|download/.test(detail))
+    set('v2-ocr-status','The reader could not finish. Your network or phone may be slowing it down. Try cropping the photo to the bill details, changing network, or typing the amount and units below.');
+   else set('v2-ocr-status','Could not read this photo. Try a clearer, cropped photo or enter your bill amount and units manually.');
+  }finally{
+   if(currentJob===job){currentJob=null;showIdle();}
+  }
  });
- $('v2-clear').addEventListener('click',()=>{['v2-ocr-text','v2-confirm-amount','v2-confirm-units'].forEach(id=>$(id).value='');$('v2-photo').value='';['v2-ocr-amount','v2-ocr-units','v2-ocr-days'].forEach(id=>set(id,'—'));set('v2-ocr-status','Photo and recognized text cleared from this page.');});
+ $('v2-photo').addEventListener('change',()=>{
+  if(currentJob)stopReading('Photo selection changed; choose Read photo to start again.');
+  else set('v2-ocr-status','Photo selected. We will resize it on your device before reading. Or type bill numbers manually.');
+ });
+ $('v2-clear').addEventListener('click',()=>{
+  if(currentJob)stopReading('Photo reading stopped and cleared.');
+  ['v2-ocr-text','v2-confirm-amount','v2-confirm-units'].forEach(id=>$(id).value='');
+  $('v2-photo').value='';
+  ['v2-ocr-amount','v2-ocr-units','v2-ocr-days'].forEach(id=>set(id,'—'));
+  set('v2-ocr-status','Photo and recognized text cleared from this page.');
+ });
  $('v2-confirm').addEventListener('click',()=>{
   const a=read('v2-confirm-amount'),u=read('v2-confirm-units');
   if(!valid(a,0,500000)){set('v2-ocr-status','Please enter a valid amount in rupees.');return;}
-  set('v2-ocr-status','Confirmed: '+money(Number(a))+(valid(u,0,100000)?' and '+number(Number(u))+' units':'')+'. This page does not save your photo or values. Use the comparison or appliance tools to investigate savings.');
+  set('v2-ocr-status','Confirmed: '+money(Number(a))+(valid(u,0,100000)?' and '+number(Number(u))+' units':'')+'. Nothing is uploaded or saved by GharWatt.');
  });
+ window.addEventListener('pagehide',()=>{if(currentJob)stopReading();else discardWorker()},{once:true});
 }
 function initAppliances(){
  if(!$('v2-appliances'))return;
@@ -263,5 +405,5 @@ function initWhatsApp(){
  wire('v2-change-whatsapp',()=> 'My GharWatt electricity bill comparison: '+$('v2-change-rupees').textContent+'. '+$('v2-change-explain').textContent+' https://chennamatta889.github.io/gharwatt/bill-change/');
 }
 initReader();initAppliances();initComparison();initGoal();initTracker();initFinance();initRoof();initCooling();initWhatsApp();
-window.GharWattV2=Object.freeze({parseBillText,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances});
+window.GharWattV2=Object.freeze({parseBillText,compareBills,applianceUse,savingsGoal,loanEmi,sampleAppliances,ocrResizePlan});
 })();

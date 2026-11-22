@@ -111,3 +111,12 @@ body{background:#faf8f7}
 @media(max-width:620px){.gw-dashboard-copy h1{font-size:clamp(2.38rem,10vw,3.55rem)}.gw-dashboard-hero-grid{padding-block:43px 52px}.gw-dashboard-kicker{font-size:.67rem}.gw-dashboard-copy>p{font-size:1rem}.gw-dashboard-hero-actions{align-items:stretch;flex-direction:column;gap:15px}.gw-dashboard-hero-actions .btn{width:100%}.gw-dashboard-secondary{text-align:center}.gw-dashboard-trust{font-size:.74rem}.gw-dashboard-fast{padding:31px 0}.gw-directory{padding:42px 0 56px}.gw-directory-heading{align-items:flex-start}.gw-directory-count-chip{padding:9px}.gw-directory-count-chip strong{font-size:1.2rem}.gw-directory-count-chip span{display:none}.gw-filter-strip{flex-wrap:nowrap;overflow:auto;scrollbar-width:none;width:100%;padding-bottom:7px}.gw-filter-strip::-webkit-scrollbar{display:none}.gw-filter-chip{flex-shrink:0}.gw-directory-grid{grid-template-columns:1fr;gap:12px}.gw-directory-card{padding:19px}.gw-directory-card-top{margin-bottom:13px}.gw-directory-card p{margin-bottom:15px}.gw-directory-guidance{padding:19px}.gw-directory-guidance-link{white-space:normal}.gw-tool-page .content-hero{padding:30px 0 38px}.gw-tool-page .content-head h1{font-size:clamp(2.03rem,8vw,2.65rem)}.gw-tool-page .article{padding-block:24px 55px}.gw-tool-hero-flags{gap:7px}.gw-tool-hero-flags span{font-size:.73rem}.gw-tool-next-wrap>a{width:100%;text-align:center}.gw-tool-page .v2-related{flex-direction:column;align-items:stretch}.gw-tool-page .v2-related a{width:100%}}
 @media(max-width:380px){.gw-directory-count-chip{display:none}}
 @media(prefers-reduced-motion:reduce){.gw-fast-card,.gw-directory-card{transition:none}.gw-fast-card:hover,.gw-directory-card:hover{transform:none}}
+
+/* Faster photo OCR feedback: stage indicator, cancellation and prominent manual fallback */
+.v2-ocr-progress{width:100%;height:13px;display:block;accent-color:#7154b7;border-radius:9px;overflow:hidden;margin:10px 0 12px}
+#v2-ocr-progress[hidden],#v2-ocr-cancel[hidden]{display:none!important}
+.v2-ocr-status{border-left:3px solid #7656bb;background:#f7f1ff;padding:12px 14px;border-radius:0 10px 10px 0;line-height:1.6;overflow-wrap:anywhere}
+.v2-manual-shortcut{background:#fff8ec;padding:12px 14px;border:1px solid #ecd9b7;border-radius:12px;font-size:.88rem;line-height:1.6}
+.v2-manual-shortcut a{font-weight:770;text-underline-offset:3px;color:#53358e}
+.v2-ocr-manual-help{color:#655a70;margin:8px 0 17px}
+#v2-manual-entry{scroll-margin-top:100px}
