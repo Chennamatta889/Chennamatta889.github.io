@@ -66,7 +66,7 @@ jobs:
           assert 'src="../assets/toolkit-ui.js"' in hub, 'filter script missing'
           for name in ['energy-tools','bill-reader','appliance-planner','bill-change','savings-goal','monthly-tracker','cooling-costs','solar-finance','roof-planner','appliance-star-compare','solar-vs-saving','smart-meter-csv','electricity-basics-telugu','electricity-basics-hindi','electricity-bill','reduce-electricity-bill']:
               html=(root/name/'index.html').read_text(encoding='utf-8')
-              assert 'href="../assets/ui-refresh.css"' in html, name
+              assert re.search(r'href="\.\./assets/ui-refresh\.css(?:\?[^\"]*)?"',html), name
               if name!='energy-tools':
                   assert 'class="gw-tool-page"' in html, name
                   assert 'aria-label="Breadcrumb"' in html, name
@@ -78,6 +78,8 @@ jobs:
           script=(root/'assets'/'energy-v2.js').read_text(encoding='utf-8')
           assert 'ocrResizePlan' in script and 'function stopReading' in script, 'OCR optimization/cancellation missing'
           assert (root/'assets'/'ui-refresh.css').exists(), 'missing UI design stylesheet'
-          assert 'href="assets/ui-refresh.css"' in (root/'index.html').read_text(encoding='utf-8')
+          assert re.search(r'href="assets/ui-refresh\.css(?:\?[^\"]*)?"',(root/'index.html').read_text(encoding='utf-8')), 'homepage stylesheet missing'
+          assert 'wireMobileDock' in (root/'assets'/'app.js').read_text(encoding='utf-8'), 'mobile navigation is missing'
+          assert '.gw-mobile-dock' in (root/'assets'/'ui-refresh.css').read_text(encoding='utf-8'), 'mobile navigation styling is missing'
           print('Validated',len(htmls),'HTML pages, clean links and old redirects')
           PY
