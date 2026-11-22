@@ -54,6 +54,8 @@ $('gw-simple-calc').addEventListener('click',update);
 [amount,units,rate,dues].forEach(el=>el.addEventListener('input',()=>{if(current){update();}else status.textContent='Enter your bill amount and consumed units, then tap See result.'}));
 toDetails.addEventListener('click',()=>{
  if(!current)return;
+ const photoDetails=$('gw-photo-details');
+ if(photoDetails)photoDetails.open=true;
  $('v2-confirm-amount').value=current.amount;
  $('v2-confirm-units').value=current.units;
  if(current.oldDues!==null)$('v2-confirm-arrears').value=current.oldDues;
