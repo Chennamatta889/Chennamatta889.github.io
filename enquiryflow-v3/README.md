@@ -1,3 +1,13 @@
+## v3.6 hotfix — Add Course now works in actual browsers
+
+Fixed a DOM form submission bug: the form's hidden `name="id"` field shadows its `.id` property. The old handler failed to intercept Save, resulting in a page navigation rather than a saved course. The updated delegated handler matches the form with `element.matches('#recordForm')` and prevents default navigation.
+
+**To test:** Staff website → Courses & fees → + Add course → enter a fictional course title, fee and duration → **Save & publish**. The new published course appears in the staff table and the student catalogue **in the same browser**. **Save draft** saves privately without showing on the student page. This remains a fictional-data preview with browser-local storage; real cross-device institute data requires approved backend and RLS deployment.
+
+Run `npm test`, `npm run check`, and `python tests/staff_browser_regression.py` for automated checks. Browser regression uses a self-contained classic-script harness purely for offline testing where page navigation is blocked; the deployed website continues using its original ES modules.
+
+---
+
 # EnquiryFlow v3 — Single Institute Pilot
 
 **Status: isolated implementation / demonstration. NOT DEPLOYED.** This bundle is independent of Career-Ops and the existing EnquiryFlow v2 site. The default mode contains **only fictional institute and student records** and stores changes in this browser's `localStorage` (not a secure shared database). Real student data must never be entered in demo mode.
@@ -148,3 +158,10 @@ This release enhances the **existing isolated v3 demo**; it does not overwrite t
 - The existing browser localStorage key remains unchanged (`enquiryflow_v3_demo_state`) so prior fictional edits in that browser are preserved.
 - The Firebase project is created, but public v3 stays in `demoMode: true` while Firestore rules and staff-account provisioning require independent verification. Do not use real student contact information.
 - Graphic browser tests are unavailable in this environment due to a Chromium administrator policy; Node tests and GitHub deployment checks are not a substitute for cross-browser interaction testing.
+
+
+## v3.7 — enquiry delivery status (22 Nov 2026)
+
+The public GitHub Pages pilot remains in **demoMode:true**. A student test enquiry is saved ONLY in the browser's `localStorage`, not emailed or stored in Firebase, and cannot appear across browsers/devices. The student form is now explicitly labelled "Save fictional enquiry locally", gives a demo reference and a link to `/enquiryflow-v3/staff/?view=enquiries`, and displays "NOT sent to the institute" on success. Staff Enquiries visibly identifies the same-browser-only inbox.
+
+A live, shared inbox for **real student contacts is NOT ready**. To enable actual delivery, the dedicated `enquiryflow-v3-pilot` Firebase project must have reviewed Firestore security rules deployed and tested, an authenticated owner role provisioned, production anti-abuse and privacy controls, and `demoMode:false` only after end-to-end security and delivery verification. Never present test records as delivered or turn off demo mode without these checks.

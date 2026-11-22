@@ -1,3 +1,20 @@
+# EnquiryFlow v3.6 — Confirmed browser form-submission repair
+
+**Root cause:** `staff.js` compared `e.target.id === 'recordForm'`, but the form contains an `<input name="id">`. In real browsers, the named input shadows `HTMLFormElement.id`, so the test fails. The submit handler skipped `preventDefault()` and the form performed a native GET navigation, losing the course entry. Earlier unit tests missed this actual DOM behavior.
+
+**Fix:** Detect the form via `e.target instanceof HTMLFormElement && e.target.matches('#recordForm')` (also updated `#importForm` for consistency). Bumped staff page/module cache-busting query to `v=3.6` while retaining local storage key and user test data.
+
+**Verified:**
+- 103/103 Node automated unit/regression tests passed.
+- A real headless Chromium DOM test passed using the actual production HTML and bundled source modules rendered without external page navigation: a published new course persisted, a ₹0 draft persisted without public disclosure, and a new student page displayed the published course and hid the draft.
+- Same test passed adding/publishing a new course on a 390px mobile viewport.
+- The browser no longer navigates to `?id=&title=...` when the Save button is clicked; no JavaScript page errors were observed.
+- Static integrity check passed: 8 prepared SQL tables with RLS, no service secrets.
+
+**Scope:** Still a fictional-data localStorage preview; not yet a shared live Firebase backend. Browser-local records are not shared across separate devices or browser profiles. No real student details should be entered. This release makes the already-present demo add/publish functionality actually work.
+
+---
+
 # EnquiryFlow v3 — QA and deployment gate
 
 Date: 22 November 2026
@@ -65,3 +82,13 @@ Added 18 regression tests covering institute introduction, accurate course total
 - Cause 4: saving errors and CSV import approvals were not displayed persistently near the form; prior success messages could be misleading.
 - Added `staff-form.js` pure input normalization, `Save draft` / `Save & publish` controls, explicit browser-only storage messaging, inline validation errors, duplicate-submission prevention, read-after-write verification, new saved-record IDs, and specific import approval guidance.
 - `npm test`: **103/103 passing**; `node scripts/check.mjs`: static checks pass. Browser E2E remains blocked by environment admin policy. **Do not treat the real Firebase backend as configured.**
+
+
+## v3.7 — enquiry intake delivery clarity
+
+- Confirmed live prior code routed `submitEnquiry()` to same-browser `localStorage` while `CONFIG.demoMode:true` and never sent email or server requests.
+- New UX explicitly separates successful local-only test saving from a verified backend receipt. Demo success includes the local `DEMO-` reference, no-delivery warning, and a same-browser Staff → Enquiries link.
+- Pending and error states now disable duplicate submits and keep failure visible.
+- Staff Enquiries now labels the inbox as browser-local simulation.
+- Verified using headless Chromium with actual student form submission, persisted localStorage state, staff inbox read, invalid real-data rejection and no page errors; no TinyFish used.
+- The Firestore rules were not deployed through this change. Real cross-device or email delivery is **not** provided.

@@ -1,4 +1,4 @@
-import {publicData,submitEnquiry,askAssistant,isDemo} from './firebase-platform.js?v=3.5';
+import {publicData,submitEnquiry,askAssistant,isDemo} from './firebase-platform.js?v=3.6';
 import {$,$$,esc,money,shortDate,str,safeUrl} from './utils.js?v=3.4';
 import {filterCourses,filterUpcomingBatches,compareSelection,todayIndia} from './discovery.js';
 let data,selectedCourse='',messages=[],query='',category='All',courseMode='All',sort='featured',batchCourse='All',batchMode='All',compared=[],chatContext={courseId:null},asking=false;
@@ -13,7 +13,7 @@ function shell(){
  <section class="section" id="assistant"><div class="wrap two-col"><div class="assistant-intro"><span class="eyebrow">KNOWLEDGE ASSISTANT</span><h2>Ask a question.<br>Get a grounded answer.</h2><p>Ask about the institute, how many courses it offers, all published fees, the next batch or approved staff information. Answers use the published catalogue and FAQs. Unverified answers are escalated instead of invented.</p><div class="sample-questions"><button data-question="Tell me about the institute">About institute</button><button data-question="How many courses are available?">Course count</button><button data-question="Show all course fees">All fees</button><button data-question="When is the next batch?">Next batch</button><button data-question="Who are the trainers?">Staff information</button></div><div class="fineprint">${isDemo?'FAQ retrieval simulation (not a generative AI model).':'An AI response is only available when its secure server integration is configured.'}</div></div><div class="chat"><div class="chat-heading"><span class="bot-icon">✦</span><div><b>Course assistant</b><small>Answers grounded in approved knowledge</small></div><button id="clearChat" type="button" class="chat-clear" aria-label="Clear chat history" title="Clear chat">Clear</button><span class="online-dot"></span></div><div class="chat-messages" id="chatMessages" aria-live="polite"></div><div class="chat-suggestions" id="chatSuggestions" aria-label="Suggested follow-up questions"></div><form id="chatForm" class="chat-form"><input name="question" maxlength="500" placeholder="Ask about a course or batch…" aria-label="Ask the course assistant" required><button class="button primary" type="submit">Send</button></form><div class="chat-utilities"><button type="button" id="copyAnswer" class="text-button" aria-label="Copy latest assistant answer">⧉ Copy latest answer</button><span id="chatUtilityStatus" role="status"></span></div><div class="chat-disclaimer">${isDemo?'Fictional course data • No messages leave your device.':'Do not share sensitive personal information in the chat.'}</div></div></div></section>
  <section class="section faq-section soft" id="faq"><div class="wrap"><div class="section-title"><div><span class="eyebrow">GOOD TO KNOW</span><h2>Frequently asked questions</h2><p>Answers reviewed by the institute. Unpublished details are never shown.</p></div><a class="text-button" href="#assistant">Ask a different question ↗</a></div><div id="faqList" class="faq-list"></div></div></section>
  <section class="section soft" id="about"><div class="wrap about-grid"><div><span class="eyebrow">ABOUT THE INSTITUTE</span><h2 id="instituteTitle">A modern learning experience.</h2><p id="instituteDescription"></p><div class="about-details" id="instituteDetails"></div></div><div class="about-panel"><span class="eyebrow">BEFORE ENROLLING</span><h3>Know the details, then decide.</h3><p>Check fees, course duration, delivery format and syllabus. When something is not published, contact the institute before making a payment.</p><div class="about-icons"><span>✦ Transparent course details</span><span>✦ Staff-managed knowledge</span><span>✦ No invented admission guarantees</span></div></div></div></section>
- <section class="section" id="enquire"><div class="wrap enquiry-grid"><div><span class="eyebrow">GET IN TOUCH</span><h2>Need more information?</h2><p>Ask for a callback or demo-class details. Your request goes to the institute's authorized staff once the live backend is enabled.</p><div class="info-box">${isDemo?'<b>Demo-only intake.</b> Use a name beginning Demo/Test and an @example.com email. Nothing is sent to any institution.':'Only submit information you agree to share with the institution. Enquiries are private to authorized staff.'}</div></div><div class="form-card"><h3>Send an enquiry</h3><form id="enquiryForm" class="stack"><label>Full name<input name="full_name" placeholder="${isDemo?'Demo Learner':'Your name'}" required maxlength="90"></label><label>Email<input name="email" type="email" placeholder="${isDemo?'demo@example.com':'you@example.com'}" required maxlength="180"></label><label>Course<select name="course_id" id="enquiryCourse"><option value="">General enquiry</option></select></label><label>Preferred batch<select name="batch_id" id="enquiryBatch"><option value="">Not decided</option></select></label><label>Question or preferred callback time<textarea name="question" rows="3" maxlength="1500" placeholder="Tell us what you'd like to know"></textarea></label><label class="checkboxline"><input type="checkbox" name="consent" required><span>I agree to the use of my details to respond to this enquiry.</span></label><div style="display:none" aria-hidden="true"><label>Do not fill<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div><button type="submit" class="button primary fill">Submit enquiry ↗</button><div id="formResponse" class="response" role="status"></div></form></div></div></section></main>
+ <section class="section" id="enquire"><div class="wrap enquiry-grid"><div><span class="eyebrow">GET IN TOUCH</span><h2>Need more information?</h2><p>${isDemo?'Test the enquiry workflow with fictional details. This does NOT contact staff or send email; submissions remain in this browser.':'Ask for a callback or demo-class details. Your request will be saved for authorized institute staff.'}</p><div class="info-box">${isDemo?'<b>Demo-only intake.</b> Use a name beginning Demo/Test and an @example.com email. Nothing is sent to any institution.':'Only submit information you agree to share with the institution. Enquiries are private to authorized staff.'}</div></div><div class="form-card"><h3>${isDemo?'Test an enquiry':'Send an enquiry'}</h3><form id="enquiryForm" class="stack"><label>Full name<input name="full_name" placeholder="${isDemo?'Demo Learner':'Your name'}" required maxlength="90"></label><label>Email<input name="email" type="email" placeholder="${isDemo?'demo@example.com':'you@example.com'}" required maxlength="180"></label><label>Course<select name="course_id" id="enquiryCourse"><option value="">General enquiry</option></select></label><label>Preferred batch<select name="batch_id" id="enquiryBatch"><option value="">Not decided</option></select></label><label>Question or preferred callback time<textarea name="question" rows="3" maxlength="1500" placeholder="Tell us what you'd like to know"></textarea></label><label class="checkboxline"><input type="checkbox" name="consent" required><span>I agree to the use of my details to respond to this enquiry.</span></label><div style="display:none" aria-hidden="true"><label>Do not fill<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div><button type="submit" class="button primary fill">${isDemo?'Save fictional enquiry locally':'Submit enquiry'} ↗</button><div id="formResponse" class="response" role="status" aria-live="polite"></div></form></div></div></section></main>
  <footer class="site-footer"><div class="wrap footer-grid"><span><b>✦ EnquiryFlow</b><small>Independent training institute platform demonstration.</small></span><a href="./staff/">Institution staff ↗</a><small>${isDemo?'Demo institute and fees are illustrative only.':'Information supplied by institution staff; confirm current details.'}</small></div></footer>`;
 }
 function renderCourses(){
@@ -97,7 +97,49 @@ function bind(){
  $('#enquiryCourse').addEventListener('change',()=>{selectedCourse=$('#enquiryCourse').value;renderSelects()});
  $('#chatForm').addEventListener('submit',async e=>{e.preventDefault();const input=$('#chatForm [name=question]');const q=str(input.value);if(!q||asking)return;input.value='';await sendChatQuestion(q);});$('#clearChat').addEventListener('click',()=>{if(asking)return;chatContext={courseId:null};messages=[{role:'bot',text:'Conversation cleared. Ask about the institute, total courses, fees, next batches or staff information.',suggestions:['About the institute','How many courses are available?','Show all course fees','When is the next batch?']}];renderChat()});
  $('#copyAnswer').addEventListener('click',async()=>{const last=[...messages].reverse().find(m=>m.role==='bot');if(!last)return;const status=$('#chatUtilityStatus');try{await navigator.clipboard.writeText(last.text);status.textContent='Copied';}catch{status.textContent='Copy not available in this browser';}});
- $('#enquiryForm').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,r=$('#formResponse');const fields=Object.fromEntries(new FormData(form));const payload={...fields,consent:form.elements.consent.checked};if(fields.website){r.textContent='Submission rejected.';return;}r.textContent='Submitting…';try{const result=await submitEnquiry(payload);r.textContent=result.demo?'Demo enquiry recorded locally. Open the staff portal in this browser to see it.':`Enquiry received. Reference: ${result.id||'received'}`;form.reset();selectedCourse='';renderSelects()}catch(error){r.textContent=error.message}});
+ $('#enquiryForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const form=e.currentTarget, r=$('#formResponse');
+  const button=form.querySelector('button[type=submit]');
+  if(button.disabled)return;
+  const fields=Object.fromEntries(new FormData(form));
+  const payload={...fields,consent:form.elements.consent.checked};
+  r.replaceChildren();r.className='response';
+  if(fields.website){r.textContent='Submission rejected.';r.classList.add('enquiry-error');return;}
+  button.disabled=true;
+  button.textContent=isDemo?'Saving test enquiry…':'Sending enquiry…';
+  r.textContent=isDemo?'Saving fictional enquiry in this browser…':'Sending to institute…';
+  try{
+    const result=await submitEnquiry(payload);
+    r.replaceChildren();
+    const heading=document.createElement('strong');
+    const description=document.createElement('span');
+    if(result.demo){
+      r.classList.add('enquiry-local');
+      r.dataset.delivery='local-only';
+      heading.textContent='Saved locally — NOT sent to the institute.';
+      description.textContent=` Test reference: ${result.id||'DEMO'}. Nothing was emailed or delivered. Test records are only visible on this browser and device.`;
+      const staffLink=document.createElement('a');
+      staffLink.href='./staff/?view=enquiries';
+      staffLink.textContent='View the test enquiry in Staff → Enquiries ↗';
+      r.append(heading,description,staffLink);
+    }else{
+      r.classList.add('enquiry-success');
+      r.dataset.delivery='staff-backend';
+      heading.textContent='Enquiry saved to the institute backend.';
+      description.textContent=` Reference: ${result.id||'received'}. Staff can review it in their authenticated dashboard.`;
+      r.append(heading,description);
+    }
+    form.reset();selectedCourse='';renderSelects();
+  }catch(error){
+    r.replaceChildren();r.classList.add('enquiry-error');
+    delete r.dataset.delivery;
+    r.textContent=`Enquiry was not saved or sent: ${error.message}`;
+  }finally{
+    button.disabled=false;
+    button.textContent=isDemo?'Save fictional enquiry locally ↗':'Submit enquiry ↗';
+  }
+});
  window.addEventListener('storage',async e=>{if(isDemo&&e.key==='enquiryflow_v3_demo_state'){data=await publicData();refresh()}})
 }
 function refresh(){renderBatchFilterOptions();renderCourses();renderBatches();renderAbout();renderSelects();renderFaqs()}

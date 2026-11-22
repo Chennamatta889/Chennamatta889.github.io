@@ -70,3 +70,6 @@ html{scroll-padding-top:96px}body{background:#fdfefd}::selection{background:#b8f
 .form-feedback{margin:12px 0;border:1px solid #a7ccdf;background:#eaf6fc;border-radius:10px;padding:10px 12px;color:#244f6b;font-size:13px;line-height:1.5}
 .form-feedback.save-error{border-color:#e7b8ad;background:#fff0eb;color:#913d2e}
 @media(max-width:620px){.save-actions{display:grid;grid-template-columns:1fr}.save-actions .button{width:100%;text-align:center}}
+
+/* Enquiry delivery states. Explicitly separate local demo saving from verified backend submission. */
+.response.enquiry-local,.response.enquiry-error,.response.enquiry-success{padding:15px 16px;border-radius:12px;line-height:1.65;font-weight:500}.response.enquiry-local{background:#fff7e5;border:1px solid #e9cd87;color:#75531d}.response.enquiry-success{background:#e7f8ef;border:1px solid #a8dfc3;color:#176544}.response.enquiry-error{background:#fff0ec;border:1px solid #eec0b3;color:#a23828}.response strong,.response span,.response a{display:block}.response strong{font-weight:800}.response a{color:#0b7467;text-decoration:underline;font-weight:800;margin-top:9px}.response a:hover{text-decoration:none}#enquiryForm button:disabled{opacity:.65;cursor:progress}
