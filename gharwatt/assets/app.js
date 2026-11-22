@@ -44,7 +44,7 @@
     const links=[
       {id:'home',href:'',label:'Home',icon:'⌂',description:'GharWatt home'},
       {id:'bill',href:'electricity-bill/',label:'My bill',icon:'₹',description:'Electricity bill calculator'},
-      {id:'photo',href:'bill-reader/',label:'Photo',icon:'▣',description:'Read electricity bill photo'},
+      {id:'explore',href:'discover/',label:'Explore',icon:'✦',description:'Explore practical electricity savings'},
       {id:'solar',href:'#calculator',label:'Solar',icon:'☀',description:'Solar savings calculator'},
       {id:'tools',href:'energy-tools/',label:'Tools',icon:'▦',description:'Browse all energy tools'}
     ];
@@ -72,7 +72,8 @@
       let selected='tools';
       if(path===rootPath)selected=window.location.hash==='#calculator'?'solar':'home';
       else if(path.startsWith(rootPath+'electricity-bill/'))selected='bill';
-      else if(path.startsWith(rootPath+'bill-reader/'))selected='photo';
+      else if(path.startsWith(rootPath+'discover/'))selected='explore';
+      else if(path.startsWith(rootPath+'bill-reader/'))selected='bill';
       for(const a of anchors){
         if(a.dataset.gwDock===selected)a.setAttribute('aria-current','page');
         else a.removeAttribute('aria-current');
