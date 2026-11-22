@@ -15,7 +15,7 @@ async function firebase(){
     import(`https://www.gstatic.com/firebasejs/${v}/firebase-auth.js`),
     import(`https://www.gstatic.com/firebasejs/${v}/firebase-firestore.js`)
   ]);
-  const studentPage=location.pathname.endsWith('/production-student.html');
+  const studentPage=location.pathname.endsWith('/production-student.html') || /^\/enquiryflow-v3\/(?:index\.html)?$/.test(location.pathname);
   const app=initializeApp(CONFIG.firebase,studentPage?'enquiryflow-v3-real-student':'enquiryflow-v3-real-staff');
   // Student auth is tab-local; it never replaces the owner's persisted staff login.
   const auth=studentPage?initializeAuth(app,{persistence:inMemoryPersistence,popupRedirectResolver:browserPopupRedirectResolver}):getAuth(app);
