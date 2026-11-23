@@ -23,8 +23,8 @@
   const path=window.location?.pathname||'';
   // The full buying guide already shows the smart-meter card.
   if(/\/solar-products\/(?:index\.html)?$/.test(path))return;
-  // Never overlay the primary solar calculator or bill-reading form.
-  if(/\/gharwatt\/(?:index\.html)?$/.test(path)||/\/gharwatt\/bill-reader\/(?:index\.html)?$/.test(path))return;
+  // Calculator and bill-reader pages keep the optional card inline after their content, never floating over inputs.
+  const inlineOffer=/\/gharwatt\/(?:index\.html)?$/.test(path)||/\/gharwatt\/bill-reader\/(?:index\.html)?$/.test(path);
   if(!document.body||!document.currentScript?.src||typeof fetch!=='function')return;
   const source=document.currentScript.src;
   function stored(key){try{return window.sessionStorage.getItem(key)}catch{return null}}
@@ -35,7 +35,7 @@
     if(stored(SHOWN_KEY)==='1'||document.getElementById('ghw-offer-popup'))return;
     const popup=document.createElement('aside');
     popup.id='ghw-offer-popup';
-    popup.className='ghw-offer-popup';
+    popup.className='ghw-offer-popup'+(inlineOffer?' gw-offer-inline':'');
     popup.setAttribute('role','complementary');
     popup.setAttribute('aria-label','Optional smart energy meter product suggestion');
     popup.innerHTML='<button class="ghw-offer-close" type="button" aria-label="Dismiss product suggestion">×</button>'+
