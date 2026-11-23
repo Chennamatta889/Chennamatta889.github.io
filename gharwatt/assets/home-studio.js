@@ -175,11 +175,22 @@ async function sendQuotesToAI(){
 }
 function renderActions(){
  const actions=$('gw-plan-actions');actions.replaceChildren();
- const ol=document.createElement('ol');
- for(const key of ['action1','action2','action3']){
+ const ol=document.createElement('ol'),u=current?.now?.units??null;
+ const keys=['action1'];
+ if(u===null)keys.push('action2');
+ else if(u<=100)keys.push('planLow');
+ else if(u<=250)keys.push('planMedium');
+ else keys.push('planHigh');
+ const roof=Number($('gw-roof').value),kw=Number($('gw-kw').value);
+ if(current&&roof>=0&&roof<kw*10)keys.push('planRoof');
+ else if(current&&current.payback!==null&&current.payback>12)keys.push('planPayback');
+ else keys.push('action3');
+ for(const key of keys){
   const li=document.createElement('li');li.textContent=T(key);ol.appendChild(li);
  }
  actions.appendChild(ol);
+ const guide=document.createElement('a');guide.href='../discover/#appliances';
+ guide.textContent=T('planApplianceLink');actions.appendChild(guide);
 }
 function renderReport(){
  const summary=$('gw-report-summary'),lines=$('gw-report-quote-lines');
