@@ -22,6 +22,9 @@ jobs:
       - name: Syntax and calculator tests
         run: |
           node --check gharwatt/assets/app.js
+          node --check gharwatt/assets/home-studio-math.js
+          node --check gharwatt/assets/home-studio-i18n.js
+          node --check gharwatt/assets/home-studio.js
           node --check gharwatt/assets/decision-tools.js
           node --check gharwatt/assets/bill-only.js
           node --check gharwatt/assets/product-showcase.js
@@ -38,7 +41,7 @@ jobs:
           node --check gharwatt/assets/gharwatt-ai.js
           node --check gharwatt/assets/gharwatt-ai-upload.js
           python3 -m json.tool gharwatt/assets/affiliate-links.json > /dev/null
-          node --test gharwatt/tests/solar-ui.test.cjs gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs gharwatt/tests/energy-v2.test.cjs gharwatt/tests/energy-v2-extra.test.cjs gharwatt/tests/toolkit-ui.test.cjs gharwatt/tests/bill-advisor.test.cjs gharwatt/tests/simple-bill.test.cjs gharwatt/tests/discover.test.cjs gharwatt/tests/verdict.test.cjs gharwatt/tests/gharwatt-ai.test.cjs
+          node --test gharwatt/tests/home-studio.test.cjs gharwatt/tests/solar-ui.test.cjs gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs gharwatt/tests/energy-v2.test.cjs gharwatt/tests/energy-v2-extra.test.cjs gharwatt/tests/toolkit-ui.test.cjs gharwatt/tests/bill-advisor.test.cjs gharwatt/tests/simple-bill.test.cjs gharwatt/tests/discover.test.cjs gharwatt/tests/verdict.test.cjs gharwatt/tests/gharwatt-ai.test.cjs
       - name: Validate local page references
         run: |
           python3 - <<'PY'
@@ -56,6 +59,9 @@ jobs:
           assert not bad,bad
           assert (root/'reduce-electricity-bill'/'index.html').exists(), 'missing electricity saving guide'
           assert (root/'discover'/'index.html').exists(), 'guided Discover page missing'
+          assert (root/'home-energy-studio'/'index.html').exists(), 'Home Energy Studio page missing'
+          assert (root/'assets'/'home-studio-math.js').exists(), 'State-aware tariff engine missing'
+          assert 'home-energy-studio/' in (root/'sitemap.xml').read_text(encoding='utf-8'), 'New studio sitemap entry missing'
           discover=(root/'discover'/'index.html').read_text(encoding='utf-8')
           for element in ['gw-bill-amount','gw-bill-units','gw-bill-start','gw-bill-result','gw-appliance-grid','gw-challenge-list','gw-myth-options','gw-compare-output','gw-product-result','gw-track-preview','gw-solar-guidance','gw-clear-appliances']:
               assert f'id="{element}"' in discover, f'missing Discover element {element}'
