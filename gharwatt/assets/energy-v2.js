@@ -525,7 +525,7 @@ function initRoof(){
  if(!$('v2-roof'))return;
  function update(){
   const area=read('v2-roof-area'),space=read('v2-roof-clear');
-  if(!valid(area,1,10000)||!valid(space,0,100)){set('v2-roof-result','Check inputs');return;}
+  if(!valid(area,1,10000)||!valid(space,0,100)){set('v2-roof-result','Check inputs');set('v2-roof-note','Enter a roof area from 1 to 10,000 m² and a clear-space percentage from 0 to 100. No result is calculated from invalid inputs.');return;}
   const usable=Number(area)*Number(space)/100;
   set('v2-roof-result',number(usable/12)+'–'+number(usable/9)+' kW (rough area range)');
   set('v2-roof-note','Using '+number(usable)+' m² assumed clear area and 9–12 m² per kW. Orientation, structural load, walkways, shade, setbacks and panel models require a professional roof survey.');
