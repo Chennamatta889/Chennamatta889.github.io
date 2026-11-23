@@ -181,7 +181,9 @@ window.GharWattStudioI18n = Object.freeze({
     "planHigh": "Your higher monthly use makes checking AC/pump hours and a roof survey worthwhile; compare genuine installation quotes.",
     "planRoof": "The selected system may exceed the usable roof area. Prioritize efficiency and a qualified site survey.",
     "planPayback": "The modeled payback is long under these assumptions. Compare low-cost saving steps and refine solar costs before choosing.",
-    "planApplianceLink": "Explore my appliance-specific savings plan →"
+    "planApplianceLink": "Explore my appliance-specific savings plan →",
+    "modelWhy": "Why is the homepage solar payback different?",
+    "modelCompare": "The homepage quick calculator uses a flat tariff and up to 85% of estimated solar output as bill offset by default. This Studio recalculates domestic electricity slabs, assumes 50% direct solar self-use, uses zero export credit unless provided and includes 1% annual maintenance. The models are intentionally different; neither guarantees actual savings. A residential central subsidy is only included here if you select the eligibility assumption."
   },
   "te": {
     "skip": "విషయానికి వెళ్లండి",
@@ -364,7 +366,9 @@ window.GharWattStudioI18n = Object.freeze({
     "planHigh": "మీ వినియోగం ఎక్కువగా ఉంది. AC/మోటార్ గంటలు, పైకప్పు సర్వే, అసలు కొటేషన్లు పరిశీలించండి.",
     "planRoof": "ఈ సోలార్ సైజుకు పైకప్పు సరిపోకపోవచ్చు. ముందు వినియోగం తగ్గించి సర్వే చేయించండి.",
     "planPayback": "ప్రస్తుత అంచనాతో ఖర్చు తిరిగి రావడానికి ఎక్కువ సమయం పడుతుంది. ముందుగా తక్కువ ఖర్చుతో ఆదా మార్గాలను పోల్చండి.",
-    "planApplianceLink": "నా పరికరాల కోసం ఆదా ప్లాన్ →"
+    "planApplianceLink": "నా పరికరాల కోసం ఆదా ప్లాన్ →",
+    "modelWhy": "ప్రధాన పేజీ సోలార్ ఖర్చు తిరిగి వచ్చే సమయం ఎందుకు భిన్నంగా ఉంది?",
+    "modelCompare": "ప్రధాన పేజీ ఒకే యూనిట్ రేటుతో, సోలార్ ఉత్పత్తిలో గరిష్ఠంగా 85% బిల్లు తగ్గింపుగా తీసుకుంటుంది. ఈ స్టూడియో వేర్వేరు విద్యుత్ స్లాబ్‌లు, ఇంట్లో నేరుగా 50% సోలార్ వినియోగం, డిఫాల్ట్ ఎగుమతి క్రెడిట్ ₹0, సంవత్సరానికి 1% నిర్వహణ ఖర్చును తీసుకుంటుంది. అందుకే అంచనాలు వేర్వేరుగా ఉంటాయి. సబ్సిడీ అర్హతను ఎంచుకుంటేనే ఇక్కడ కేంద్ర సబ్సిడీ లెక్కలో చేరుతుంది."
   },
   "hi": {
     "skip": "सामग्री पर जाएँ",
@@ -547,6 +551,8 @@ window.GharWattStudioI18n = Object.freeze({
     "planHigh": "अधिक खपत में AC/पंप के घंटे, छत का सर्वे और वास्तविक कोटेशन जाँचना उपयोगी होगा।",
     "planRoof": "चुनी क्षमता के लिए छत छोटी हो सकती है। पहले खपत घटाएँ और साइट सर्वे कराएँ।",
     "planPayback": "इन अनुमानों पर लागत वसूली लंबी है। पहले कम खर्च वाले बचत उपायों और सोलर लागत की तुलना करें।",
-    "planApplianceLink": "उपकरणों के हिसाब से बचत योजना →"
+    "planApplianceLink": "उपकरणों के हिसाब से बचत योजना →",
+    "modelWhy": "मुख्य पृष्ठ पर सोलर की लागत वसूली अलग क्यों है?",
+    "modelCompare": "मुख्य पृष्ठ एक समान प्रति यूनिट दर और सोलर उत्पादन के 85% तक बिल में कमी मानता है। यह स्टूडियो बिजली के स्लैब, घर में सीधे 50% सोलर उपयोग, डिफ़ॉल्ट ₹0 एक्सपोर्ट क्रेडिट और सालाना 1% रखरखाव लागत मानता है। इसलिए दोनों अनुमानों में अंतर हो सकता है। केंद्रीय सब्सिडी तभी जोड़ी जाती है जब आप पात्रता का विकल्प चुनते हैं।"
   }
 });
