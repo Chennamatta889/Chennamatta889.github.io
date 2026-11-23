@@ -55,9 +55,9 @@ export async function publicData(){
   f.getDocs(f.query(f.collection(f.db,'ef3_batches'),f.where('published','==',true),f.limit(200))),
   f.getDocs(f.query(f.collection(f.db,'ef3_faqs'),f.where('published','==',true),f.limit(200)))
  ]);
- // Draft proposal descriptions must never be shown as confirmed offerings.
- const courses=rows(co).filter(c=>c.verified_at&&c.institute_id===institutionId()
-  && !/^a proposed\b/i.test(String(c.description||'').trim()));
+ // Only explicitly published, verified courses appear publicly. Description wording
+ // is editorial content, not a publication-state flag; staff controls approval.
+ const courses=rows(co).filter(c=>c.verified_at&&c.institute_id===institutionId());
  const ids=new Set(courses.map(c=>c.id));
  const batches=rows(ba).filter(b=>b.institute_id===institutionId()&&ids.has(b.course_id));
  // Published batch records can fill missing delivery mode metadata.
