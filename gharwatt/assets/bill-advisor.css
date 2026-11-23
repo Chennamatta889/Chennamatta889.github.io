@@ -133,3 +133,12 @@
  .gw-photo-details-inner{padding:7px}
  .gw-simple-metrics>div{padding:10px}
 }
+
+/* GW-08: consistent privacy notice, quick-result card and optional scanner rhythm. */
+#v2-reader>.v2-notice{padding:17px 19px;background:#fff7e8;border:1px solid #ead4aa;border-radius:14px;margin:18px 0}
+#v2-reader .gw-simple-bill{margin-top:16px;margin-bottom:18px}
+#v2-reader .gw-photo-details{margin-top:19px;margin-bottom:25px}
+#v2-reader .gw-photo-details-inner>.v2-panel{padding-top:17px}
+#gw-simple-calc{min-height:48px;margin-top:12px}
+#gw-simple-status{padding-left:2px}
+@media(max-width:650px){#v2-reader>.v2-notice{padding:14px 15px;margin:12px 0}#v2-reader .gw-simple-bill{margin-top:12px;margin-bottom:15px}#v2-reader .gw-photo-details{margin-top:14px}}
