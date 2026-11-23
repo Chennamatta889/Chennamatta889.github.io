@@ -67,7 +67,7 @@ function renderBill(outcome){
  }
  txt('gw-tariff-status',T(bill.region==='TG'?'statusTG':bill.region==='AP'?'statusAP':'statusOTHER'));
 }
-function renderSolar(outcome,rec){
+function renderSolar(outcome,rec,opts){
  const o=outcome;
  txt('gw-after-cost',fmt(o.modeledAfter));
  txt('gw-monthly-saving',fmt(o.modeledSaving));
@@ -85,8 +85,17 @@ function renderSolar(outcome,rec){
  txt('gw-payback',Number.isFinite(o.payback)?num(o.payback)+' '+T('years'):T('notReached'));
  txt('gw-solar-method',T('noteSim'));
  const warn=$('gw-connection-note');
- warn.hidden=o.warnings.length===0;
- if(o.warnings.length)warn.textContent=o.warnings.join(' ');
+ const warnings=language==='en'?o.warnings.slice():[];
+ if(language!=='en'){
+  const kw=Number(opts.kw),load=Number(opts.load),roof=Number(opts.roof);
+  if(kw>load)warnings.push(T('warnLoad'));
+  if(Number.isFinite(roof)&&roof>=0&&kw*10>roof)warnings.push(T('warnRoof'));
+  if(opts.phase==='single'&&(opts.region==='TG'||opts.region==='AP')&&kw>5)warnings.push(T('warnSingle'));
+  if(opts.phase==='unknown'&&kw>3)warnings.push(T('warnUnknown'));
+  if(!opts.subsidyEligible)warnings.push(T('warnNotEligible'));
+ }
+ warn.hidden=warnings.length===0;
+ if(warnings.length)warn.textContent=warnings.join(' ');
  const recommendation=$('gw-size-recommendation');recommendation.replaceChildren();
  if(rec.ok&&rec.recommendedKw!==null){
   p(recommendation,T('recommendPrefix')+' '+rec.recommendedKw+' kW. '+T('recommendSuffix'));
@@ -172,7 +181,7 @@ function renderReport(){
  if(!current){p(summary,T('invalid'));return;}
  const o=current;
  const fields=[
-  [T('state'),M.REGIONS[o.now.region].label],
+  [T('state'),T(o.now.region==='TG'?'tg':o.now.region==='AP'?'ap':'other')],
   [T('units'),num(o.now.units)],
   [T('before'),fmt(o.now.total)],
   [T('kw'),num(Number($('gw-kw').value))+' kW'],
@@ -204,7 +213,7 @@ function render(){
  }else{
   current=result;
   renderBill(result);
-  renderSolar(result,M.recommendation(opts));
+  renderSolar(result,M.recommendation(opts),opts);
  }
  renderQuotes();renderActions();renderReport();
 }
