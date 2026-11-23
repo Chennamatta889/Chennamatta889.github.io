@@ -175,7 +175,13 @@ window.GharWattStudioI18n = Object.freeze({
     "cfaSpecial": "Special-category state or UT",
     "cfaUnknown": "Not sure — exclude CFA",
     "cfaHelp": "For other states, verify the official subsidy category. Special-category states/UTs include eligible northeastern and Himalayan states and island UTs. Check MNRE guidance.",
-    "warnCategory": "Select and verify the applicable CFA region category before including subsidy."
+    "warnCategory": "Select and verify the applicable CFA region category before including subsidy.",
+    "planLow": "Your usage is relatively low. Check minimum, customer and fixed charges before spending on a large solar system.",
+    "planMedium": "Try the appliance planner to identify repeated use and compare efficient fans, lighting and cooling before investing.",
+    "planHigh": "Your higher monthly use makes checking AC/pump hours and a roof survey worthwhile; compare genuine installation quotes.",
+    "planRoof": "The selected system may exceed the usable roof area. Prioritize efficiency and a qualified site survey.",
+    "planPayback": "The modeled payback is long under these assumptions. Compare low-cost saving steps and refine solar costs before choosing.",
+    "planApplianceLink": "Explore my appliance-specific savings plan →"
   },
   "te": {
     "skip": "విషయానికి వెళ్లండి",
@@ -352,7 +358,13 @@ window.GharWattStudioI18n = Object.freeze({
     "cfaSpecial": "ప్రత్యేక వర్గ రాష్ట్రం / కేంద్ర పాలిత ప్రాంతం",
     "cfaUnknown": "తెలియదు — సబ్సిడీ మినహాయించండి",
     "cfaHelp": "ఇతర రాష్ట్రాల్లో సబ్సిడీ వర్గాన్ని అధికారికంగా ధృవీకరించండి. కొన్ని ఈశాన్య, హిమాలయ, దీవుల ప్రాంతాలకు ప్రత్యేక వర్గం వర్తిస్తుంది.",
-    "warnCategory": "సబ్సిడీ లెక్కించడానికి ముందు అధికారిక ప్రాంత వర్గాన్ని ధృవీకరించండి."
+    "warnCategory": "సబ్సిడీ లెక్కించడానికి ముందు అధికారిక ప్రాంత వర్గాన్ని ధృవీకరించండి.",
+    "planLow": "మీ వినియోగం తక్కువగా ఉంది. పెద్ద సోలార్ పెట్టే ముందు స్థిర, కస్టమర్ ఛార్జీలను పరిశీలించండి.",
+    "planMedium": "తరచుగా వాడే పరికరాలు, ఫ్యాన్, లైటింగ్, కూలింగ్ ఖర్చులను పోల్చండి.",
+    "planHigh": "మీ వినియోగం ఎక్కువగా ఉంది. AC/మోటార్ గంటలు, పైకప్పు సర్వే, అసలు కొటేషన్లు పరిశీలించండి.",
+    "planRoof": "ఈ సోలార్ సైజుకు పైకప్పు సరిపోకపోవచ్చు. ముందు వినియోగం తగ్గించి సర్వే చేయించండి.",
+    "planPayback": "ప్రస్తుత అంచనాతో ఖర్చు తిరిగి రావడానికి ఎక్కువ సమయం పడుతుంది. ముందుగా తక్కువ ఖర్చుతో ఆదా మార్గాలను పోల్చండి.",
+    "planApplianceLink": "నా పరికరాల కోసం ఆదా ప్లాన్ →"
   },
   "hi": {
     "skip": "सामग्री पर जाएँ",
@@ -529,6 +541,12 @@ window.GharWattStudioI18n = Object.freeze({
     "cfaSpecial": "विशेष श्रेणी राज्य / केंद्रशासित प्रदेश",
     "cfaUnknown": "पता नहीं — सब्सिडी शामिल न करें",
     "cfaHelp": "अन्य राज्यों के लिए आधिकारिक सब्सिडी श्रेणी जाँचें। पात्र पूर्वोत्तर, हिमालयी और द्वीपीय क्षेत्रों में विशेष श्रेणी हो सकती है।",
-    "warnCategory": "सब्सिडी जोड़ने से पहले आधिकारिक क्षेत्र श्रेणी जाँचें।"
+    "warnCategory": "सब्सिडी जोड़ने से पहले आधिकारिक क्षेत्र श्रेणी जाँचें।",
+    "planLow": "आपकी खपत अपेक्षाकृत कम है। बड़े सोलर सिस्टम से पहले फिक्स्ड और ग्राहक शुल्क जाँचें।",
+    "planMedium": "बार-बार उपयोग होने वाले उपकरण, पंखे, लाइट और कूलिंग की लागत की तुलना करें।",
+    "planHigh": "अधिक खपत में AC/पंप के घंटे, छत का सर्वे और वास्तविक कोटेशन जाँचना उपयोगी होगा।",
+    "planRoof": "चुनी क्षमता के लिए छत छोटी हो सकती है। पहले खपत घटाएँ और साइट सर्वे कराएँ।",
+    "planPayback": "इन अनुमानों पर लागत वसूली लंबी है। पहले कम खर्च वाले बचत उपायों और सोलर लागत की तुलना करें।",
+    "planApplianceLink": "उपकरणों के हिसाब से बचत योजना →"
   }
 });
