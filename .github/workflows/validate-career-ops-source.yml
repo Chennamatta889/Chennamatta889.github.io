@@ -1,0 +1,51 @@
+name: Validate Career-Ops root source synchronization
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/publish-career-ops.yml"
+      - ".github/workflows/validate-career-ops-source.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out proposed root workflow
+        uses: actions/checkout@v4
+        with:
+          path: account-site
+      - name: Check out pinned Career-Ops source
+        uses: actions/checkout@v4
+        with:
+          repository: Chennamatta889/career-ops-cloud
+          ref: f63886e0b2a33d1ac20c892d51a4b7fccee85661
+          path: career-ops-source
+          persist-credentials: false
+      - name: Validate workflow source pin
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'ref: f63886e0b2a33d1ac20c892d51a4b7fccee85661' account-site/.github/workflows/publish-career-ops.yml
+          test -s career-ops-source/scripts/universal-job-scan.mjs
+          test -s career-ops-source/scripts/guard-public-feed.mjs
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Run Phase 12 source and publication regressions
+        working-directory: career-ops-source
+        run: |
+          node --check scripts/universal-job-scan.mjs
+          node --check scripts/guard-public-feed.mjs
+          node --test scripts/india-jobs.test.cjs scripts/report-published-coverage.test.mjs scripts/enterprise-careers.test.cjs scripts/guard-public-feed.test.mjs scripts/universal-job-scan.test.mjs
+      - name: Validate root search regressions
+        working-directory: account-site
+        run: |
+          node --check job-search.js
+          node --check live-job-discovery-v2.js
+          node --test tests/job-search-relevance.test.cjs tests/live-job-discovery-v2.test.cjs
