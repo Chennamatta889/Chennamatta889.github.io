@@ -77,3 +77,22 @@ test('GW-08: affiliate popup never overlays bill reader or homepage; bill placeh
  assert.match(bill,/tap See result/);
  assert.match(css,/#v2-reader>\.v2-notice/);
 });
+
+test('GW-06: roof planner clears stale note on invalid percentage and recovers on valid input',()=>{
+ const vm=require('node:vm');
+ const listeners={};
+ const nodes=new Map();
+ for(const id of ['v2-roof','v2-roof-area','v2-roof-clear','v2-roof-result','v2-roof-note']){
+  const node={value:id==='v2-roof-area'?'40':id==='v2-roof-clear'?'70':'',textContent:'',
+   addEventListener(event,fn){listeners[id+':'+event]=fn;}};
+  nodes.set(id,node);
+ }
+ const document={getElementById:id=>nodes.get(id)||null,querySelectorAll:selector=>selector==='#v2-roof input'?[nodes.get('v2-roof-area'),nodes.get('v2-roof-clear')]:[]};
+ vm.runInNewContext(source('assets/energy-v2.js'),{document,window:{},Intl});
+ assert.match(nodes.get('v2-roof-note').textContent,/Using 28 m²/);
+ nodes.get('v2-roof-clear').value='150';listeners['v2-roof-clear:input']();
+ assert.equal(nodes.get('v2-roof-result').textContent,'Check inputs');
+ assert.doesNotMatch(nodes.get('v2-roof-note').textContent,/Using 28 m²/);
+ nodes.get('v2-roof-clear').value='70';listeners['v2-roof-clear:input']();
+ assert.match(nodes.get('v2-roof-note').textContent,/Using 28 m²/);
+});
