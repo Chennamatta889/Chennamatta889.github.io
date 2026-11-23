@@ -48,10 +48,11 @@ test('Solar simulator avoids guaranteed bill elimination and export credit',()=>
  assert.ok(Number.isFinite(e.payback));
 });
 test('phase and load checks are advisory, not hidden constraints',()=>{
- const s=M.simulate({region:'TG',units:500,load:3,extra:0,kw:6,yieldRate:4.2,shading:0,selfUse:60,exportRate:0,pricePerKw:60000,phase:'single'});
+ const s=M.simulate({region:'TG',units:500,load:3,roof:40,extra:0,kw:6,yieldRate:4.2,shading:0,selfUse:60,exportRate:0,pricePerKw:60000,phase:'single'});
  assert.equal(s.ok,true);
  assert.match(s.warnings.join(' '),/sanctioned load/);
  assert.match(s.warnings.join(' '),/single.phase/i);
+ assert.match(s.warnings.join(' '),/roof area/);
 });
 test('Solar sizing honors roof area and sanctioned load',()=>{
  const normal=M.recommendation({units:300,roof:40,yieldRate:4.2,load:3});
@@ -81,7 +82,7 @@ test('input constraints prevent invalid values and impossible costs',()=>{
 });
 test('complete HTML, script and language assets are linked and localized',()=>{
  const page=read('home-energy-studio/index.html');
- const requiredIds=['gw-region','gw-discom','gw-units','gw-load','gw-phase','gw-extra','gw-kw','gw-roof','gw-yield','gw-shade','gw-self','gw-export','gw-eligible','gw-samples','gw-q-price-0','gw-q-kw-0','gw-q-normalized-0','gw-ocr-file','gw-ocr-read','gw-ocr-review','gw-ocr-accept','gw-print-report','gw-print','gw-download','gw-save','gw-restore','gw-clear-saved'];
+ const requiredIds=['gw-ai-quote-consent','gw-ai-quote-send','gw-ai-quote-preview','gw-ai-quote-answer','gw-region','gw-discom','gw-units','gw-load','gw-phase','gw-extra','gw-kw','gw-roof','gw-yield','gw-shade','gw-self','gw-export','gw-eligible','gw-samples','gw-q-price-0','gw-q-kw-0','gw-q-normalized-0','gw-ocr-file','gw-ocr-read','gw-ocr-review','gw-ocr-accept','gw-print-report','gw-print','gw-download','gw-save','gw-restore','gw-clear-saved'];
  for(const id of requiredIds)assert.ok(page.includes('id="'+id+'"'),id);
  assert.match(page,/home-studio-math\.js/);assert.match(page,/home-studio-i18n\.js/);assert.match(page,/home-studio\.js/);assert.match(page,/home-studio\.css/);
  const context={window:{}};
@@ -103,6 +104,11 @@ test('quote file text stays in browser and report save is opt-in',()=>{
  assert.match(ui,/readImage\(file\)/);
  assert.match(ui,/M\.parseQuoteText\(text\)/);
  assert.match(ui,/gw-ocr-accept/);
- assert.ok(!ui.includes('POST'));
- assert.ok(!ui.includes('fetch(') || ui.includes('affiliate-links.json'));
+ assert.match(ui,/gw-ai-quote-consent/);
+ assert.match(ui,/promptForQuotes/);
+ assert.match(ui,/getOrCreateBrowserId/);
+ assert.match(ui,/shareBill:false,context:null,message,history:\[\]/);
+ assert.match(ui,/const message=promptForQuotes\(\)/);
+ assert.match(ui,/gw-ai-quote-preview/);
+ assert.ok(!ui.includes('FormData('));
 });
