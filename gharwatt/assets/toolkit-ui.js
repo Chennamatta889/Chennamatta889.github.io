@@ -3,7 +3,7 @@
 const normalize=s=>String(s||'').normalize('NFKC').toLocaleLowerCase().trim();
 function matchTool(category,search,activeCategory,query){
  const cat=normalize(category),filter=normalize(activeCategory),q=normalize(query);
- return (filter==='all'||filter===''||cat===filter)&&(!q||normalize(search).includes(q));
+ return (filter==='all'||filter===''||cat.split(/\s+/).includes(filter))&&(!q||normalize(search).includes(q));
 }
 const root=document.getElementById('gw-directory-grid');
 if(root){
@@ -11,6 +11,8 @@ if(root){
  const input=document.getElementById('gw-tool-search');
  const buttons=[...document.querySelectorAll('[data-gw-filter]')];
  const result=document.getElementById('gw-result-count');
+ const countBadge=document.getElementById('gw-directory-total');
+ if(countBadge)countBadge.textContent=String(cards.length);
  const empty=document.getElementById('gw-no-results');
  const clear=document.getElementById('gw-clear-filters');
  let category='all';
