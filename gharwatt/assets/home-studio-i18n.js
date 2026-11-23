@@ -153,7 +153,18 @@ window.GharWattStudioI18n = Object.freeze({
     "quoteNote": "Not a vendor endorsement. Match equipment, GST, work scope and warranty before judging price.",
     "perKw": "Cost per kW",
     "pdfFallback": "This PDF may contain scanned pages or protected text. Enter the details manually if extraction fails.",
-    "docTooLarge": "File too large or unsupported; select a PDF under 12 MB or JPG/PNG/WebP under 8 MB."
+    "docTooLarge": "File too large or unsupported; select a PDF under 12 MB or JPG/PNG/WebP under 8 MB.",
+    "aiQuoteTitle": "Ask GharWatt AI to explain reviewed quote numbers",
+    "aiQuoteIntro": "Optional: only the prices, DC sizes and calculated ₹/kW in this preview are sent to Gemini after you opt in. The uploaded PDF/photo and OCR text stay on your device.",
+    "aiPreview": "Exactly what would be shared",
+    "aiConsent": "I agree to send only this preview for one AI explanation. Counts toward my 5 requests per browser per UTC day (400/day globally; at most 10/minute). No automatic sending.",
+    "aiSend": "Analyze reviewed numbers with AI",
+    "aiExternal": "Or discuss the numbers in ChatGPT ↗",
+    "aiNeedQuotes": "Enter at least one complete quote with price and DC size first.",
+    "aiNeedConsent": "Review and check the consent box before sending anything to AI.",
+    "aiThinking": "Sending only reviewed numerical quote details. The daily request limit applies.",
+    "aiReady": "AI explanation provided. Verify it against your written vendor offers.",
+    "aiUnavailable": "AI service is unavailable; manual comparison and local reports still work."
   },
   "te": {
     "skip": "విషయానికి వెళ్లండి",
@@ -308,7 +319,18 @@ window.GharWattStudioI18n = Object.freeze({
     "quoteNote": "ఇది వెండర్ సిఫార్సు కాదు. పరికరాలు, GST, పని, వారంటీ కూడా పరిశీలించండి.",
     "perKw": "ఒక్కో kW ధర",
     "pdfFallback": "ఈ PDFలో స్కాన్ పేజీలు ఉండవచ్చు. వివరాలు మాన్యువల్‌గా ఇవ్వండి.",
-    "docTooLarge": "PDF 12 MBలోపు లేదా ఫోటో 8 MBలోపు ఎంచుకోండి."
+    "docTooLarge": "PDF 12 MBలోపు లేదా ఫోటో 8 MBలోపు ఎంచుకోండి.",
+    "aiQuoteTitle": "ధృవీకరించిన కొటేషన్ సంఖ్యలను GharWatt AIతో అర్థం చేసుకోండి",
+    "aiQuoteIntro": "ఐచ్ఛికం. మీరు అంగీకరించిన తర్వాత ఇక్కడ చూపిన ధరలు, సైజులు, ₹/kW మాత్రమే Geminiకి వెళ్తాయి. PDF/ఫోటో, స్కాన్ టెక్స్ట్ మీ పరికరంలోనే ఉంటాయి.",
+    "aiPreview": "AIకి పంపే సమాచారం ఇదే",
+    "aiConsent": "ఈ సమాచారాన్ని ఒక్కసారి AIకి పంపడానికి అంగీకరిస్తున్నాను. ఒక్క బ్రౌజర్‌కు UTC రోజుకు 5 అభ్యర్థనలు (మొత్తం 400/రోజు, 10/నిమిషం). స్వయంచాలకంగా పంపబడదు.",
+    "aiSend": "ధృవీకరించిన సంఖ్యలను AIతో విశ్లేషించండి",
+    "aiExternal": "లేదా ChatGPTలో అడగండి ↗",
+    "aiNeedQuotes": "ముందుగా కనీసం ఒక పూర్తి కొటేషన్ నమోదు చేయండి.",
+    "aiNeedConsent": "AIకి పంపే ముందు అంగీకారాన్ని ఎంచుకోండి.",
+    "aiThinking": "ధృవీకరించిన సంఖ్యలు మాత్రమే AIకి పంపుతున్నాం. రోజువారీ పరిమితి వర్తిస్తుంది.",
+    "aiReady": "AI వివరణ వచ్చింది. అసలు కొటేషన్‌తో ధృవీకరించండి.",
+    "aiUnavailable": "AI అందుబాటులో లేదు; ఇతర లెక్కలు పని చేస్తాయి."
   },
   "hi": {
     "skip": "सामग्री पर जाएँ",
@@ -463,6 +485,17 @@ window.GharWattStudioI18n = Object.freeze({
     "quoteNote": "यह विक्रेता की सिफारिश नहीं है। उपकरण, GST, काम और वारंटी भी जाँचें।",
     "perKw": "प्रति kW कीमत",
     "pdfFallback": "PDF में स्कैन पेज हो सकते हैं। जरूरत हो तो विवरण खुद दर्ज करें।",
-    "docTooLarge": "PDF 12 MB या फोटो 8 MB से छोटा चुनें।"
+    "docTooLarge": "PDF 12 MB या फोटो 8 MB से छोटा चुनें।",
+    "aiQuoteTitle": "जाँची हुई कोटेशन संख्याएँ GharWatt AI से समझें",
+    "aiQuoteIntro": "वैकल्पिक। आपकी सहमति के बाद केवल दिख रही कीमतें, DC क्षमताएँ और ₹/kW Gemini को भेजे जाएँगे। PDF/फोटो और OCR टेक्स्ट आपके डिवाइस पर ही रहेंगे।",
+    "aiPreview": "AI को ठीक यही जानकारी भेजी जाएगी",
+    "aiConsent": "मैं केवल इस जानकारी को एक AI जवाब के लिए भेजने की सहमति देता/देती हूँ। प्रति ब्राउज़र 5 अनुरोध/UTC दिन (सभी के लिए 400/दिन, अधिकतम 10/मिनट)। कोई स्वतः भेजना नहीं।",
+    "aiSend": "जाँची गई संख्याओं का AI विश्लेषण",
+    "aiExternal": "या ChatGPT में पूछें ↗",
+    "aiNeedQuotes": "पहले कम से कम एक कोटेशन की कीमत और आकार दर्ज करें।",
+    "aiNeedConsent": "AI को भेजने से पहले सहमति चुनें।",
+    "aiThinking": "केवल जाँची हुई संख्याएँ भेजी जा रही हैं। दैनिक सीमा लागू है।",
+    "aiReady": "AI का जवाब मिला। मूल कोटेशन से पुष्टि करें।",
+    "aiUnavailable": "AI सेवा उपलब्ध नहीं; स्थानीय तुलना और रिपोर्ट चलती रहेंगी।"
   }
 });
