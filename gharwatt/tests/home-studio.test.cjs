@@ -82,7 +82,7 @@ test('input constraints prevent invalid values and impossible costs',()=>{
 });
 test('complete HTML, script and language assets are linked and localized',()=>{
  const page=read('home-energy-studio/index.html');
- const requiredIds=['gw-ai-quote-consent','gw-ai-quote-send','gw-ai-quote-preview','gw-ai-quote-answer','gw-region','gw-discom','gw-units','gw-load','gw-phase','gw-extra','gw-kw','gw-roof','gw-yield','gw-shade','gw-self','gw-export','gw-eligible','gw-samples','gw-q-price-0','gw-q-kw-0','gw-q-normalized-0','gw-ocr-file','gw-ocr-read','gw-ocr-review','gw-ocr-accept','gw-print-report','gw-print','gw-download','gw-save','gw-restore','gw-clear-saved'];
+ const requiredIds=['gw-ai-quote-consent','gw-ai-quote-send','gw-ai-quote-preview','gw-ai-quote-answer','gw-cfa-category','gw-region','gw-discom','gw-units','gw-load','gw-phase','gw-extra','gw-kw','gw-roof','gw-yield','gw-shade','gw-self','gw-export','gw-eligible','gw-samples','gw-q-price-0','gw-q-kw-0','gw-q-normalized-0','gw-ocr-file','gw-ocr-read','gw-ocr-review','gw-ocr-accept','gw-print-report','gw-print','gw-download','gw-save','gw-restore','gw-clear-saved'];
  for(const id of requiredIds)assert.ok(page.includes('id="'+id+'"'),id);
  assert.match(page,/home-studio-math\.js/);assert.match(page,/home-studio-i18n\.js/);assert.match(page,/home-studio\.js/);assert.match(page,/home-studio\.css/);
  const context={window:{}};
@@ -111,4 +111,13 @@ test('quote file text stays in browser and report save is opt-in',()=>{
  assert.match(ui,/const message=promptForQuotes\(\)/);
  assert.match(ui,/gw-ai-quote-preview/);
  assert.ok(!ui.includes('FormData('));
+});
+
+test('other-state special CFA requires verified, explicit assumption',()=>{
+ const base={region:'OTHER',units:300,load:3,flatRate:7.5,extra:0,kw:3,yieldRate:4,shading:10,selfUse:50,exportRate:0,pricePerKw:60000};
+ const none=M.simulate({...base,subsidyEligible:false});
+ const special=M.simulate({...base,subsidyEligible:true,special:true});
+ assert.equal(none.ok,true);assert.equal(none.subsidy,0);
+ assert.equal(special.subsidy,85800);
+ assert.equal(special.net,94200);
 });
