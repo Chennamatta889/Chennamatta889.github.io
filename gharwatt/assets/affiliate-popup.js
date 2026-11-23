@@ -23,6 +23,8 @@
   const path=window.location?.pathname||'';
   // The full buying guide already shows the smart-meter card.
   if(/\/solar-products\/(?:index\.html)?$/.test(path))return;
+  // Never overlay the primary solar calculator or bill-reading form.
+  if(/\/gharwatt\/(?:index\.html)?$/.test(path)||/\/gharwatt\/bill-reader\/(?:index\.html)?$/.test(path))return;
   if(!document.body||!document.currentScript?.src||typeof fetch!=='function')return;
   const source=document.currentScript.src;
   function stored(key){try{return window.sessionStorage.getItem(key)}catch{return null}}
