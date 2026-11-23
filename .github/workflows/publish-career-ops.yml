@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Chennamatta889/career-ops-cloud
-          ref: cf224193691c3030752a5e0663bdb70f45c0379a
+          ref: f63886e0b2a33d1ac20c892d51a4b7fccee85661
           path: career-ops-source
           persist-credentials: false
 
