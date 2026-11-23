@@ -16,8 +16,10 @@ test('student metric counts are dynamic and correctly distinguish upcoming batch
  assert.match(student,/guideMetric'\)\.textContent=guides\.length/);
  assert.match(student,/batchMetric'\)\.textContent=filterUpcomingBatches/);
 });
-test('proposed descriptions do not masquerade as published courses',()=>{
- assert.match(adapter,/!\/\^a proposed/);
+test('staff-approved courses remain visible regardless of description wording',()=>{
+ assert.match(adapter,/f\.where\('published','==',true\)/);
+ assert.match(adapter,/courses=rows\(co\)\.filter\(c=>c\.verified_at&&c\.institute_id===institutionId\(\)\)/);
+ assert.doesNotMatch(adapter,/!\/\^a proposed/);
  assert.match(adapter,/enrichedCourses/);
  assert.match(adapter,/batches\.filter\(b=>b\.course_id===c\.id/);
 });
