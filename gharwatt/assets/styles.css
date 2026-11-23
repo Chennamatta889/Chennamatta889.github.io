@@ -88,6 +88,8 @@
 
 
 /* Small, dismissible smart-meter offer; leaves page content unobscured. */
+/* GW-08: keep the card available but place it below the main content on the homepage and bill reader. */
+.ghw-offer-popup.gw-offer-inline{position:relative;inset:auto;width:min(680px,calc(100% - 32px));margin:22px auto;z-index:1;box-shadow:0 6px 20px rgba(25,20,48,.11)}
 .ghw-offer-popup{position:fixed;right:18px;bottom:18px;width:min(330px,calc(100vw - 28px));z-index:45;box-sizing:border-box;padding:17px 18px 15px;border:1px solid #d8cbe4;border-radius:17px;background:#fff;box-shadow:0 14px 50px rgba(25,20,48,.22);color:#231b35;line-height:1.4;animation:ghw-offer-appear .24s ease-out}
 .ghw-offer-eyebrow{font-size:.64rem;letter-spacing:.085em;font-weight:850;color:#67519d;padding-right:24px}
 .ghw-offer-close{position:absolute;right:8px;top:7px;border:0;background:#f0edf6;border-radius:50%;height:28px;width:28px;display:grid;place-items:center;color:#433456;font-size:1.4rem;line-height:1}
