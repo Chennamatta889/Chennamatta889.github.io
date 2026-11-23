@@ -169,7 +169,13 @@ window.GharWattStudioI18n = Object.freeze({
     "warnRoof": "The selected system may need more shade-free roof area; allow roughly 10 m² per kW and get a roof survey.",
     "warnSingle": "Above the published 5 kW single-phase guidance for Telangana/AP; verify three-phase requirements.",
     "warnUnknown": "Confirm supply phase and DISCOM approval before choosing this system size.",
-    "warnNotEligible": "Central subsidy is excluded until you choose the conditional eligibility assumption."
+    "warnNotEligible": "Central subsidy is excluded until you choose the conditional eligibility assumption.",
+    "cfaCategory": "Central CFA region category",
+    "cfaStandard": "Standard category (TG/AP)",
+    "cfaSpecial": "Special-category state or UT",
+    "cfaUnknown": "Not sure — exclude CFA",
+    "cfaHelp": "For other states, verify the official subsidy category. Special-category states/UTs include eligible northeastern and Himalayan states and island UTs. Check MNRE guidance.",
+    "warnCategory": "Select and verify the applicable CFA region category before including subsidy."
   },
   "te": {
     "skip": "విషయానికి వెళ్లండి",
@@ -340,7 +346,13 @@ window.GharWattStudioI18n = Object.freeze({
     "warnRoof": "ఎంచుకున్న సోలార్ సైజుకు పైకప్పు స్థలం తక్కువగా ఉండవచ్చు. ప్రతి kWకి సుమారు 10 m² తీసుకుని సర్వే చేయించండి.",
     "warnSingle": "తెలంగాణ/APలో సింగిల్ ఫేజ్ కోసం ఉన్న 5 kW మార్గదర్శక పరిమితి మించిపోయింది. త్రీ ఫేజ్ అవసరాన్ని ధృవీకరించండి.",
     "warnUnknown": "ఈ సైజు ఎంచుకునే ముందు మీ కనెక్షన్ ఫేజ్, DISCOM అనుమతి తెలుసుకోండి.",
-    "warnNotEligible": "మీరు అర్హత అంచనాను ఎంచుకునే వరకు కేంద్ర సబ్సిడీ లెక్కించము."
+    "warnNotEligible": "మీరు అర్హత అంచనాను ఎంచుకునే వరకు కేంద్ర సబ్సిడీ లెక్కించము.",
+    "cfaCategory": "కేంద్ర సబ్సిడీ ప్రాంత వర్గం",
+    "cfaStandard": "సాధారణ వర్గం (తెలంగాణ/AP)",
+    "cfaSpecial": "ప్రత్యేక వర్గ రాష్ట్రం / కేంద్ర పాలిత ప్రాంతం",
+    "cfaUnknown": "తెలియదు — సబ్సిడీ మినహాయించండి",
+    "cfaHelp": "ఇతర రాష్ట్రాల్లో సబ్సిడీ వర్గాన్ని అధికారికంగా ధృవీకరించండి. కొన్ని ఈశాన్య, హిమాలయ, దీవుల ప్రాంతాలకు ప్రత్యేక వర్గం వర్తిస్తుంది.",
+    "warnCategory": "సబ్సిడీ లెక్కించడానికి ముందు అధికారిక ప్రాంత వర్గాన్ని ధృవీకరించండి."
   },
   "hi": {
     "skip": "सामग्री पर जाएँ",
@@ -511,6 +523,12 @@ window.GharWattStudioI18n = Object.freeze({
     "warnRoof": "चुने गए सिस्टम के लिए छत का क्षेत्र कम हो सकता है। लगभग 10 m² प्रति kW मानकर सर्वे कराएँ।",
     "warnSingle": "तेलंगाना/AP के प्रकाशित 5 kW सिंगल-फेज मार्गदर्शन से अधिक है। थ्री-फेज आवश्यकता जाँचें।",
     "warnUnknown": "यह क्षमता चुनने से पहले अपना कनेक्शन फेज और DISCOM अनुमति जाँचें।",
-    "warnNotEligible": "जब तक आप पात्रता मान्यता नहीं चुनते, केंद्रीय सब्सिडी शामिल नहीं की जाती।"
+    "warnNotEligible": "जब तक आप पात्रता मान्यता नहीं चुनते, केंद्रीय सब्सिडी शामिल नहीं की जाती।",
+    "cfaCategory": "केंद्रीय सब्सिडी का क्षेत्र वर्ग",
+    "cfaStandard": "सामान्य वर्ग (तेलंगाना/AP)",
+    "cfaSpecial": "विशेष श्रेणी राज्य / केंद्रशासित प्रदेश",
+    "cfaUnknown": "पता नहीं — सब्सिडी शामिल न करें",
+    "cfaHelp": "अन्य राज्यों के लिए आधिकारिक सब्सिडी श्रेणी जाँचें। पात्र पूर्वोत्तर, हिमालयी और द्वीपीय क्षेत्रों में विशेष श्रेणी हो सकती है।",
+    "warnCategory": "सब्सिडी जोड़ने से पहले आधिकारिक क्षेत्र श्रेणी जाँचें।"
   }
 });
