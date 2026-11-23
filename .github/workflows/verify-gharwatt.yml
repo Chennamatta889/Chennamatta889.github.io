@@ -120,7 +120,7 @@ jobs:
           assert 'id="gw-tool-search"' in hub, 'missing searchable tool directory'
           assert 'data-gw-filter="all"' in hub, 'missing filter controls'
           assert hub.count('data-gw-tool-card')>=15, 'tool cards are missing'
-          assert 'src="../assets/toolkit-ui.js"' in hub, 'filter script missing'
+          assert re.search(r'src="\.\./assets/toolkit-ui\.js(?:\?[^"]*)?"',hub), 'filter script missing'
           for name in ['energy-tools','bill-reader','appliance-planner','bill-change','savings-goal','monthly-tracker','cooling-costs','solar-finance','roof-planner','appliance-star-compare','solar-vs-saving','smart-meter-csv','electricity-basics-telugu','electricity-basics-hindi','electricity-bill','reduce-electricity-bill']:
               html=(root/name/'index.html').read_text(encoding='utf-8')
               assert re.search(r'href="\.\./assets/ui-refresh\.css(?:\?[^\"]*)?"',html), name
