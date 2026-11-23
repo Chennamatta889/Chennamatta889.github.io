@@ -221,7 +221,7 @@
   // Product link and dismiss frequency are handled independently.
   if(document.currentScript?.src){
     const offerScript=document.createElement('script');
-    offerScript.src=new URL('affiliate-popup.js',document.currentScript.src).href;
+    offerScript.src=new URL('affiliate-popup.js?v=20261123-qa8',document.currentScript.src).href;
     offerScript.async=true;
     document.head.appendChild(offerScript);
   }
