@@ -41,7 +41,7 @@ jobs:
           node --check gharwatt/assets/gharwatt-ai.js
           node --check gharwatt/assets/gharwatt-ai-upload.js
           python3 -m json.tool gharwatt/assets/affiliate-links.json > /dev/null
-          node --test gharwatt/tests/home-studio.test.cjs gharwatt/tests/solar-ui.test.cjs gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs gharwatt/tests/energy-v2.test.cjs gharwatt/tests/energy-v2-extra.test.cjs gharwatt/tests/toolkit-ui.test.cjs gharwatt/tests/bill-advisor.test.cjs gharwatt/tests/simple-bill.test.cjs gharwatt/tests/discover.test.cjs gharwatt/tests/verdict.test.cjs gharwatt/tests/gharwatt-ai.test.cjs
+          node --test gharwatt/tests/qa-eight.test.cjs gharwatt/tests/home-studio.test.cjs gharwatt/tests/solar-ui.test.cjs gharwatt/tests/decision-tools.test.cjs gharwatt/tests/bill-only.test.cjs gharwatt/tests/product-showcase.test.cjs gharwatt/tests/affiliate-popup.test.cjs gharwatt/tests/electricity-guide.test.cjs gharwatt/tests/energy-v2.test.cjs gharwatt/tests/energy-v2-extra.test.cjs gharwatt/tests/toolkit-ui.test.cjs gharwatt/tests/bill-advisor.test.cjs gharwatt/tests/simple-bill.test.cjs gharwatt/tests/discover.test.cjs gharwatt/tests/verdict.test.cjs gharwatt/tests/gharwatt-ai.test.cjs
       - name: Validate local page references
         run: |
           python3 - <<'PY'
