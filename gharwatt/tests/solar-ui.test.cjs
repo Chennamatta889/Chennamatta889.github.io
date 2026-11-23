@@ -16,7 +16,7 @@ function harness(){
   };
   add('solar-calculator');add('solar-state','TG');add('capacity',3);add('monthly-units',300);
   add('unit-rate',7.7);add('install-price',60000);add('generation',4.2);add('effective-offset',85);
-  add('connection-phase','unknown');add('sanctioned-load','');add('solar-assumption-note');
+  add('connection-phase','unknown');add('sanctioned-load','');add('solar-assumption-note');add('solar-capacity-error');
   add('solar-use-state-example');add('solar-connection-warning');add('solar-bars-chart');
   for(const id of ['solar-savings','solar-gross','solar-subsidy','solar-net','solar-generation',
    'solar-offset','solar-payback','solar-annual','subsidy-category','solar-grid-after',
@@ -90,4 +90,24 @@ test('cost per kW is normalized and empty prices do not rank as free',()=>{
   assert.equal(nodes.get('qr-kw-1').textContent,'Cost per kW: ₹60,000/kW');
   assert.match(nodes.get('quote-normalized-note').textContent,/Lowest displayed/);
   assert.match(nodes.get('quote-sample-status').textContent,/not real installer offers/);
+});
+
+
+test('GW-06: zero or empty solar capacity is rejected, never silently clamped to 0.5 kW',()=>{
+ const {nodes,math}=harness();
+ assert.equal(math.validSolarCapacity('0'),false);
+ assert.equal(math.validSolarCapacity(''),false);
+ assert.equal(math.validSolarCapacity('.5'),true);
+ assert.equal(math.validSolarCapacity('20.1'),false);
+ const cap=nodes.get('capacity');
+ cap.value='0';nodes.get('solar-state').events.change();
+ assert.equal(nodes.get('solar-savings').textContent,'—');
+ assert.equal(nodes.get('solar-payback').textContent,'—');
+ assert.match(nodes.get('calc-status').textContent,/between 0.5 and 20/);
+ assert.equal(nodes.get('solar-capacity-error').hidden,false);
+ assert.equal(cap.attrs['aria-invalid'],'true');
+ cap.value='3';nodes.get('solar-state').events.change();
+ assert.equal(nodes.get('solar-capacity-error').hidden,true);
+ assert.equal(nodes.get('solar-savings').textContent,'₹2,310');
+ assert.equal(cap.attrs['aria-invalid'],'false');
 });
