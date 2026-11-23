@@ -140,3 +140,13 @@
 .gw-studio-ai-answer{margin-top:13px;padding:16px;white-space:pre-wrap;background:#fff;border:1px solid #dcd2e9;border-left:4px solid #9770c3;border-radius:0 10px 10px 0;font-size:.85rem;line-height:1.68;color:#423250}
 .gw-studio-ai-answer[hidden]{display:none}
 @media(max-width:610px){.gw-studio-ai-review{padding:15px}.gw-studio-ai-actions{flex-direction:column;align-items:stretch}.gw-studio-ai-actions button{width:100%}}
+
+/* Audit GW-01/GW-07: readable Indic select labels and visible methodology difference. */
+.gw-studio-page{font-family:"Noto Sans Telugu","Noto Sans Devanagari","Nirmala UI",Gautami,Mangal,system-ui,Arial,sans-serif}
+.gw-studio-lang select,.gw-studio-lang option{min-width:155px;font-family:"Noto Sans Telugu","Noto Sans Devanagari","Nirmala UI",Gautami,Mangal,system-ui,Arial,sans-serif;font-weight:700}
+.gw-studio-lang option{color:#2d2143;background:#fff}
+.gw-studio-comparison-explainer{margin:17px 0 7px;background:#fff9ed;border:1px solid #ebd6b4;border-radius:13px;overflow:hidden}
+.gw-studio-comparison-explainer>summary{font-size:.85rem;padding:14px 16px;font-weight:800;color:#4d315f;cursor:pointer;line-height:1.5}
+.gw-studio-comparison-explainer>p{font-size:.81rem;line-height:1.8;color:#665a6a;margin:0;padding:0 16px 15px}
+.gw-studio-comparison-explainer>summary:focus-visible{outline:3px solid #79579f;outline-offset:-3px}
+@media(max-width:610px){.gw-studio-lang select{min-width:138px;max-width:none}}
