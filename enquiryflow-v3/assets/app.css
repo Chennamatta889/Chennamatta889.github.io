@@ -126,3 +126,35 @@ html{scroll-padding-top:96px}body{background:#fdfefd}::selection{background:#b8f
 .ctech-general-help{margin-top:28px;padding-top:24px;border-top:1px solid #d9e8e4}
 .ctech-general-help h3{font-size:20px;margin-bottom:6px}
 .ctech-general-help>p{font-size:14px;color:#637d82;margin-bottom:14px;max-width:770px}
+
+/* EnquiryFlow QA repairs 2026-11-23 */
+html{scroll-padding-top:108px}
+#courses,#learning-guides,#batches,#assistant,#faq,#about,#enquire{scroll-margin-top:108px}
+.brand-icon{font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:900;letter-spacing:-.04em;white-space:nowrap}
+.chat-suggestions{flex-wrap:wrap;overflow-x:visible;align-items:flex-start}
+.chat-suggestions button{flex:0 1 auto;max-width:min(100%,270px);overflow-wrap:anywhere}
+.icon-close,.drawer .surface-head [data-cancel]{min-width:60px;min-height:38px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #d5e2df;border-radius:8px;background:#f9fdfb;color:#154c4a;font-size:12px;font-weight:800;white-space:nowrap}
+.staff-page .action-delete,.staff-page .faq-item .action-delete{border:1px solid #ebbbbb!important;border-radius:7px;background:#fff1f1!important;color:#982a2a!important;padding:8px 11px;font-size:11px;font-weight:800}
+.staff-page .action-delete:hover{background:#ffe2e2!important}
+.staff-page .action-edit{border:1px solid #d8e5dd;border-radius:7px;background:#edf5f2;color:#0a7763;padding:8px 11px;font-size:11px;font-weight:800}
+.staff-page [data-searchable][hidden]{display:none!important}
+.drawer-overlay{overflow:hidden}
+.drawer{overscroll-behavior:contain;overflow-y:auto;overflow-x:hidden}
+.drawer .editor-form{max-height:none;overflow:visible}
+.drawer .surface-head{position:sticky;top:-28px;background:#fff;z-index:1}
+.staff-tools input[data-catalog-search]{width:min(420px,100%)}
+.staff-page #toast[hidden]{display:none!important}
+@media(max-width:680px){
+ html{scroll-padding-top:78px}
+ #courses,#learning-guides,#batches,#assistant,#faq,#about,#enquire{scroll-margin-top:78px}
+ .chat-suggestions{padding:9px;gap:6px}
+ .chat-suggestions button{max-width:100%;font-size:11px}
+ .drawer{padding:17px 15px}
+ .drawer .surface-head{top:-17px}
+ .drawer .save-actions{display:flex;flex-wrap:wrap;gap:8px}
+}
+
+/* Keep hidden auth actions truly invisible even with button display styles. */
+[hidden]{display:none!important}
+button:disabled{opacity:.55;cursor:not-allowed}
+.sidebar .side-icon{font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:900;min-width:22px;text-align:center;letter-spacing:0}

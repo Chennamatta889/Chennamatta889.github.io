@@ -1,0 +1,38 @@
+name: Verify EnquiryFlow v3
+on:
+  push:
+    branches:
+      - main
+      - 'fix/enquiryflow-*'
+    paths:
+      - 'enquiryflow-v3/**'
+      - '.github/workflows/verify-enquiryflow.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'enquiryflow-v3/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify JavaScript syntax
+        working-directory: enquiryflow-v3
+        run: |
+          node --check assets/production-adapter.js
+          node --check assets/production-staff.js
+          node --check assets/production-student.js
+      - name: Run EnquiryFlow regression tests
+        working-directory: enquiryflow-v3
+        run: |
+          npm test
+          npm run check
