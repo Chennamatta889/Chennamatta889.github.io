@@ -53,7 +53,8 @@ test('GW-06: invalid input does not keep stale roof note or silently clamp to mi
  assert.match(home,/id="solar-capacity-error"/);
  assert.match(js,/function validSolarCapacity/);
  assert.match(js,/if\(!capacityValid\)/);
- assert.match(js,/\$\('solar-savings'\)/);
+ assert.match(js,/solar-savings/);
+ assert.match(js,/textContent='—'/);
  assert.match(roof,/set\('v2-roof-note','Enter a roof area from 1 to 10,000 m²/);
 });
 
@@ -67,8 +68,10 @@ test('GW-07: user-facing payback difference explanation exists on homepage and s
 
 test('GW-08: affiliate popup never overlays bill reader or homepage; bill placeholders and copy agree',()=>{
  const popup=source('assets/affiliate-popup.js'),bill=source('bill-reader/index.html'),css=source('assets/bill-advisor.css');
- assert.match(popup,/if\(\/\\\/gharwatt/);
+ assert.match(popup,/const inlineOffer=/);
  assert.match(popup,/bill-reader/);
+ assert.match(popup,/gw-offer-inline/);
+ assert.match(source('assets/styles.css'),/\.ghw-offer-popup\.gw-offer-inline\{position:relative/);
  assert.match(bill,/placeholder="e\.g\. 280"/);
  assert.match(bill,/id="gw-simple-calc" type="button">See result<\/button>/);
  assert.match(bill,/tap See result/);
