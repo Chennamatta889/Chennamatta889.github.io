@@ -8,16 +8,16 @@
 <meta name="theme-color" content="#151729">
 <link rel="stylesheet" href="../assets/styles.css">
 <link rel="stylesheet" href="../assets/ui-refresh.css?v=20261123-premium-ui2">
-<link rel="stylesheet" href="../assets/home-studio.css?v=20261123-phase1-4">
+<link rel="stylesheet" href="../assets/home-studio.css?v=20261123-phase1-4bb">
 <meta property="og:title" content="Home Energy Studio | GharWatt India">
 <meta property="og:description" content="Understand your electricity charges and rooftop solar options, compare local quotes and export a free report.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://chennamatta889.github.io/gharwatt/home-energy-studio/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"GharWatt Home Energy Studio","url":"https://chennamatta889.github.io/gharwatt/home-energy-studio/","applicationCategory":"FinanceApplication","operatingSystem":"Any","isAccessibleForFree":true,"inLanguage":["en-IN","te-IN","hi-IN"],"provider":{"@type":"Organization","name":"GharWatt India"}}</script>
-<script src="../assets/home-studio-math.js?v=20261123-phase1-4" defer></script>
-<script src="../assets/home-studio-i18n.js?v=20261123-phase1-4" defer></script>
+<script src="../assets/home-studio-math.js?v=20261123-phase1-4b" defer></script>
+<script src="../assets/home-studio-i18n.js?v=20261123-phase1-4b" defer></script>
 <script src="../assets/gharwatt-ai.js?v=20261123-existing-quota" defer></script>
-<script src="../assets/home-studio.js?v=20261123-phase1-4" defer></script>
+<script src="../assets/home-studio.js?v=20261123-phase1-4b" defer></script>
 </head><body class="gw-studio-page">
 <a class="sr-only" href="#main" data-i18n="skip">Skip to content</a>
 <header class="gw-studio-top"><div class="wrap gw-studio-top-row"><a class="logo" href="../" aria-label="GharWatt India home"><span class="logo-mark">⌂</span><span>Ghar<span>Watt</span></span></a><nav aria-label="Studio quick navigation"><a href="#bill" data-i18n="navBill">Bill</a><a href="#solar" data-i18n="navSolar">Solar</a><a href="#quotes" data-i18n="navQuotes">Quotes</a><a href="#report" data-i18n="navReport">Report</a><a href="../discover/" data-i18n="navGuide">Guided help</a></nav><label class="gw-studio-lang" for="gw-studio-language"><span data-i18n="language">Language</span><select id="gw-studio-language" aria-label="Choose language"><option value="en">English</option><option value="te">తెలుగు</option><option value="hi">हिंदी</option></select></label></div></header>
@@ -48,6 +48,7 @@
 <label class="gw-studio-field"><span data-i18n="self">Solar production used at home (%)</span><input id="gw-self" type="number" min="0" max="100" step="5" value="50" inputmode="decimal"><small data-i18n="selfHelp">Different from how much of your electricity solar supplies.</small></label>
 <label class="gw-studio-field"><span data-i18n="export">Export-credit assumption (₹/unit)</span><input id="gw-export" type="number" min="0" max="30" step="0.5" value="0" inputmode="decimal"><small data-i18n="exportHelp">0 by default. Change only if you know your DISCOM settlement terms.</small></label>
 <label class="gw-studio-field"><span data-i18n="price">Installed cost assumption (₹/kW)</span><input id="gw-price" type="number" min="10000" max="200000" step="1000" value="60000" inputmode="decimal"></label>
+<label class="gw-studio-field"><span data-i18n="cfaCategory">Central CFA region category</span><select id="gw-cfa-category"><option value="standard" selected data-i18n="cfaStandard">Standard category (TG/AP)</option><option value="special" data-i18n="cfaSpecial">Special-category state or UT</option><option value="unknown" data-i18n="cfaUnknown">Not sure — exclude CFA</option></select><small data-i18n="cfaHelp">For other states, verify your scheme category: special-category states/UTs include eligible northeastern and Himalayan states and island UTs. Check official MNRE guidance.</small></label>
 <label class="gw-studio-field gw-studio-eligible"><span data-i18n="eligibleTitle">Potential central subsidy illustration</span><span class="gw-studio-checkbox"><input id="gw-eligible" type="checkbox"><span data-i18n="eligible">I am planning for an eligible residential system; show conditional central CFA.</span></span></label>
 </div>
 <div class="gw-studio-recommend" id="gw-size-recommendation" aria-live="polite"></div>
