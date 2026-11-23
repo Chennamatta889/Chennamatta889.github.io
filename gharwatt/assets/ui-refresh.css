@@ -299,3 +299,21 @@ body{background:#faf8f7}
 }
 @media(max-width:350px){.gw-home-discover-grid{grid-template-columns:1fr}.gw-home-discover-grid>a{min-height:0;display:grid;grid-template-columns:42px 1fr;gap:5px 11px}.gw-home-discover-grid strong{grid-row:1/3}}
 @media(prefers-reduced-motion:reduce){.hero-actions .btn,.gw-home-discover-grid>a{transition:none}.hero-actions .btn:hover,.gw-home-discover-grid>a:hover{transform:none}}
+
+/* QA audit repair: GW-01..GW-08 · Indic readability, anchor alignment, and nav stability. */
+:root{--gw-indic-font:"Noto Sans Telugu","Noto Sans Devanagari","Nirmala UI",Gautami,Mangal,"Lohit Telugu","Lohit Devanagari",sans-serif}
+.gw-indic-text,[lang="te"],[lang="hi"]{font-family:var(--gw-indic-font);font-synthesis:weight;unicode-bidi:isolate}
+.gw-language-fallback{font-family:Inter,system-ui,Arial,sans-serif;color:#6a5879;font-size:.86em;font-weight:750;white-space:normal}
+.v2-home-mini a:has([lang="te"]),.v2-home-mini a:has([lang="hi"]){display:inline-flex;align-items:center;gap:5px;min-height:39px}
+.gw-directory-card .gw-language-fallback{display:inline;font-size:.75em;color:#715e7e;line-height:1.55}
+.gw-directory-icon.gw-language-icon{font-family:Inter,Arial,sans-serif;font-size:1.03rem;letter-spacing:.05em;line-height:1}
+.gw-directory-card .gw-indic-text{font-family:var(--gw-indic-font);font-weight:800;font-size:1em}
+.main-nav{gap:clamp(9px,1.3vw,21px)}
+.main-nav a{white-space:nowrap}
+#calculator,#compare,#guides{scroll-margin-top:104px}
+html{scroll-padding-top:96px}
+.gw-inline-validation{font-size:.79rem;color:#9c2029;background:#fff0ed;border-left:3px solid #cc4a46;line-height:1.5;margin-top:7px;padding:9px 11px;border-radius:0 8px 8px 0}
+.gw-inline-validation[hidden]{display:none!important}
+#capacity[aria-invalid="true"]{border:2px solid #b83040!important;background:#fff9f7}
+.feature-icon svg{width:26px;height:26px;display:block}
+@media(max-width:700px){#calculator,#compare,#guides{scroll-margin-top:77px}html{scroll-padding-top:75px}.gw-directory-card .gw-language-fallback{display:block}}
