@@ -164,7 +164,12 @@ window.GharWattStudioI18n = Object.freeze({
     "aiNeedConsent": "Review and check the consent box before sending anything to AI.",
     "aiThinking": "Sending only reviewed numerical quote details. The daily request limit applies.",
     "aiReady": "AI explanation provided. Verify it against your written vendor offers.",
-    "aiUnavailable": "AI service is unavailable; manual comparison and local reports still work."
+    "aiUnavailable": "AI service is unavailable; manual comparison and local reports still work.",
+    "warnLoad": "The selected system exceeds your sanctioned load; check DISCOM approval or load enhancement.",
+    "warnRoof": "The selected system may need more shade-free roof area; allow roughly 10 m² per kW and get a roof survey.",
+    "warnSingle": "Above the published 5 kW single-phase guidance for Telangana/AP; verify three-phase requirements.",
+    "warnUnknown": "Confirm supply phase and DISCOM approval before choosing this system size.",
+    "warnNotEligible": "Central subsidy is excluded until you choose the conditional eligibility assumption."
   },
   "te": {
     "skip": "విషయానికి వెళ్లండి",
@@ -330,7 +335,12 @@ window.GharWattStudioI18n = Object.freeze({
     "aiNeedConsent": "AIకి పంపే ముందు అంగీకారాన్ని ఎంచుకోండి.",
     "aiThinking": "ధృవీకరించిన సంఖ్యలు మాత్రమే AIకి పంపుతున్నాం. రోజువారీ పరిమితి వర్తిస్తుంది.",
     "aiReady": "AI వివరణ వచ్చింది. అసలు కొటేషన్‌తో ధృవీకరించండి.",
-    "aiUnavailable": "AI అందుబాటులో లేదు; ఇతర లెక్కలు పని చేస్తాయి."
+    "aiUnavailable": "AI అందుబాటులో లేదు; ఇతర లెక్కలు పని చేస్తాయి.",
+    "warnLoad": "ఎంచుకున్న సోలార్ సైజు మీ మంజూరైన లోడ్‌ కంటే ఎక్కువ. DISCOM అనుమతి లేదా లోడ్ పెంపు తెలుసుకోండి.",
+    "warnRoof": "ఎంచుకున్న సోలార్ సైజుకు పైకప్పు స్థలం తక్కువగా ఉండవచ్చు. ప్రతి kWకి సుమారు 10 m² తీసుకుని సర్వే చేయించండి.",
+    "warnSingle": "తెలంగాణ/APలో సింగిల్ ఫేజ్ కోసం ఉన్న 5 kW మార్గదర్శక పరిమితి మించిపోయింది. త్రీ ఫేజ్ అవసరాన్ని ధృవీకరించండి.",
+    "warnUnknown": "ఈ సైజు ఎంచుకునే ముందు మీ కనెక్షన్ ఫేజ్, DISCOM అనుమతి తెలుసుకోండి.",
+    "warnNotEligible": "మీరు అర్హత అంచనాను ఎంచుకునే వరకు కేంద్ర సబ్సిడీ లెక్కించము."
   },
   "hi": {
     "skip": "सामग्री पर जाएँ",
@@ -496,6 +506,11 @@ window.GharWattStudioI18n = Object.freeze({
     "aiNeedConsent": "AI को भेजने से पहले सहमति चुनें।",
     "aiThinking": "केवल जाँची हुई संख्याएँ भेजी जा रही हैं। दैनिक सीमा लागू है।",
     "aiReady": "AI का जवाब मिला। मूल कोटेशन से पुष्टि करें।",
-    "aiUnavailable": "AI सेवा उपलब्ध नहीं; स्थानीय तुलना और रिपोर्ट चलती रहेंगी।"
+    "aiUnavailable": "AI सेवा उपलब्ध नहीं; स्थानीय तुलना और रिपोर्ट चलती रहेंगी।",
+    "warnLoad": "चुनी गई सोलर क्षमता स्वीकृत लोड से अधिक है। DISCOM से अनुमति या लोड बढ़ाने की प्रक्रिया पूछें।",
+    "warnRoof": "चुने गए सिस्टम के लिए छत का क्षेत्र कम हो सकता है। लगभग 10 m² प्रति kW मानकर सर्वे कराएँ।",
+    "warnSingle": "तेलंगाना/AP के प्रकाशित 5 kW सिंगल-फेज मार्गदर्शन से अधिक है। थ्री-फेज आवश्यकता जाँचें।",
+    "warnUnknown": "यह क्षमता चुनने से पहले अपना कनेक्शन फेज और DISCOM अनुमति जाँचें।",
+    "warnNotEligible": "जब तक आप पात्रता मान्यता नहीं चुनते, केंद्रीय सब्सिडी शामिल नहीं की जाती।"
   }
 });
