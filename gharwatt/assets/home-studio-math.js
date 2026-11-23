@@ -99,6 +99,8 @@ function simulate(input={}){
  const payback=annualNet>0?net/annualNet:null;
  const load=current.sanctioned,phase=input.phase||'unknown',warnings=[];
  if(kw>load)warnings.push('System exceeds the entered sanctioned load; ask your DISCOM about eligibility or load enhancement.');
+ const availableRoof=finiteNumber(input.roof,0,10000);
+ if(availableRoof!==null&&kw*10>availableRoof)warnings.push('Selected system may not fit the shade-free roof area entered. Allow about 10 m² per kW as a rough planning guide and confirm with a roof survey.');
  if(phase==='single'&&(input.region==='TG'||input.region==='AP')&&kw>5)warnings.push('Above the published 5 kW single-phase guidance for this state: confirm whether a three-phase upgrade is required.');
  if(phase==='unknown'&&kw>3)warnings.push('Confirm your supply phase and DISCOM approvals before choosing this capacity.');
  if(input.subsidyEligible!==true)warnings.push('Central CFA is not included until you confirm eligible residential status.');
