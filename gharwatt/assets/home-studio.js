@@ -101,7 +101,7 @@ function renderSolar(outcome,rec,opts){
  warn.hidden=warnings.length===0;
  if(warnings.length)warn.textContent=warnings.join(' ');
  if(opts.region==='OTHER'&&$('gw-eligible').checked&&$('gw-cfa-category').value==='unknown'){
-  warn.hidden=false;warn.textContent=(warn.hidden?'':warn.textContent+' ')+T('warnCategory');
+  warn.textContent=[warnings.join(' '),T('warnCategory')].filter(Boolean).join(' ');warn.hidden=false;
  }
  const recommendation=$('gw-size-recommendation');recommendation.replaceChildren();
  if(rec.ok&&rec.recommendedKw!==null){
