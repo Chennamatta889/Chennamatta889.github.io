@@ -55,9 +55,17 @@ export async function publicData(){
   f.getDocs(f.query(f.collection(f.db,'ef3_batches'),f.where('published','==',true),f.limit(200))),
   f.getDocs(f.query(f.collection(f.db,'ef3_faqs'),f.where('published','==',true),f.limit(200)))
  ]);
- const courses=rows(co).filter(c=>c.verified_at&&c.institute_id===institutionId());
+ // Draft proposal descriptions must never be shown as confirmed offerings.
+ const courses=rows(co).filter(c=>c.verified_at&&c.institute_id===institutionId()
+  && !/^a proposed\b/i.test(String(c.description||'').trim()));
  const ids=new Set(courses.map(c=>c.id));
- return {institute:{...ins.data(),id:ins.id},courses,batches:rows(ba).filter(b=>b.institute_id===institutionId()&&ids.has(b.course_id)),faqs:rows(fa).filter(k=>k.institute_id===institutionId()&&(!k.course_id||ids.has(k.course_id))),enquiries:[],imports:[]};
+ const batches=rows(ba).filter(b=>b.institute_id===institutionId()&&ids.has(b.course_id));
+ // Published batch records can fill missing delivery mode metadata.
+ const enrichedCourses=courses.map(c=>({...c,delivery_modes:[...new Set([
+  ...(Array.isArray(c.delivery_modes)?c.delivery_modes:[]),
+  ...batches.filter(b=>b.course_id===c.id&&['Online','Classroom'].includes(b.mode)).map(b=>b.mode)
+ ])]}));
+ return {institute:{...ins.data(),id:ins.id},courses:enrichedCourses,batches,faqs:rows(fa).filter(k=>k.institute_id===institutionId()&&(!k.course_id||ids.has(k.course_id))),enquiries:[],imports:[]};
 }
 export async function staffData(){
  if(isDemo)return demo.staffData();
@@ -152,6 +160,21 @@ export async function signInStudentGoogle(){
  return {email:result.user.email,verified:true};
 }
 export async function signOutStudent(){const f=await firebase();await f.onSignOut(f.auth)}
+/** Delete only institute-owned managed catalogue records; preserve referential integrity. */
+export async function deleteManagedRecord(type,id){
+ if(!['courses','batches','faqs'].includes(type)||!id)throw Error('Invalid delete request.');
+ if(isDemo)throw Error('Catalogue deletion requires the authenticated workspace.');
+ if(!['owner','admin'].includes(await verifiedRole()))throw Error('Only owner/admin may delete catalogue records.');
+ const f=await firebase(),ref=f.doc(f.db,'ef3_'+type,id);
+ const current=await f.getDoc(ref);
+ if(!current.exists()||current.data().institute_id!==institutionId())throw Error('The record is unavailable for this institute.');
+ if(type==='courses'){
+  const linked=await f.getDocs(f.query(f.collection(f.db,'ef3_batches'),f.where('course_id','==',id),f.limit(1)));
+  if(!linked.empty)throw Error('Delete related batches before deleting this course.');
+ }
+ await f.deleteDoc(ref);
+}
+
 export async function deleteRealEnquiry(id){
  const role=await verifiedRole();if(!['owner','admin'].includes(role))throw Error('Only owner/admin can delete enquiries.');
  const f=await firebase();await f.deleteDoc(f.doc(f.db,'ef3_real_enquiries',id));
