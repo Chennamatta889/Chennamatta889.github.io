@@ -11,7 +11,8 @@ const currency=new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',ma
 const numeric=new Intl.NumberFormat('en-IN',{maximumFractionDigits:1});
 const STORAGE_KEY='gharwatt.home-energy-studio.plan.v1';
 const inputIds=['gw-region','gw-discom','gw-units','gw-load','gw-phase','gw-extra','gw-flat','gw-roof','gw-yield','gw-kw','gw-shade','gw-self','gw-export','gw-price'];
-let language='en',current=null,quoteResults=[],yieldTouched=false,lastRegion='TG',busy=false;
+let language='en',current=null,quoteResults=[],yieldTouched=false,lastRegion='TG',busy=false,busyAi=false;
+const AI_ENDPOINT='https://nnhzihcugvifhegsfmua.supabase.co/functions/v1/gharwatt-ai';
 const txt=(id,value)=>{const el=$(id);if(el)el.textContent=String(value)};
 const fmt=n=>Number.isFinite(n)?currency.format(n):'—';
 const num=n=>Number.isFinite(n)?numeric.format(n):'—';
@@ -99,6 +100,7 @@ function renderSolar(outcome,rec){
 }
 function renderQuotes(){
  quoteResults=quotes();const valid=quoteResults.filter(q=>q.costPerKw!==null);
+ refreshAiPreview();
  for(let i=0;i<3;i++){
   txt('gw-q-normalized-'+i,valid.some(q=>q.index===i)?T('perKw')+': '+fmt(quoteResults[i].costPerKw)+'/kW':T('perKw')+': —');
  }
@@ -108,6 +110,52 @@ function renderQuotes(){
  p(div,T('quoteLowest')+' '+fmt(lowest)+'/kW');
  for(const q of valid)p(div,q.name+': '+fmt(q.cost)+' · '+num(q.kw)+' kW · '+fmt(q.costPerKw)+'/kW');
  p(div,T('quoteNote'));
+}
+function promptForQuotes(){
+ const valid=quoteResults.filter(q=>q.costPerKw!==null);
+ if(!valid.length)return '';
+ const clean=valid.map((q,i)=>'Q'+(i+1)+': INR '+Math.round(q.cost)+', '+q.kw+' DC kWp, INR '+Math.round(q.costPerKw)+'/kW.').join(' ');
+ return ('Compare these Indian residential rooftop solar quotes using only the verified numeric details shown. No vendor endorsement, no invented specifications or savings. '+clean+' State which is lowest per kW, explain why cheapest is not always best, and give 3 checks: equipment, warranty, GST/metering scope. Do not claim subsidy eligibility.').slice(0,550);
+}
+function refreshAiPreview(){
+ const preview=$('gw-ai-quote-preview'),send=$('gw-ai-quote-send');
+ if(!preview||!send)return;
+ preview.value=promptForQuotes();
+ send.disabled=busyAi||!preview.value||!$('gw-ai-quote-consent').checked;
+}
+async function sendQuotesToAI(){
+ if(busyAi)return;
+ const message=promptForQuotes();
+ if(!message){txt('gw-ai-quote-status',T('aiNeedQuotes'));return;}
+ if(!$('gw-ai-quote-consent').checked){txt('gw-ai-quote-status',T('aiNeedConsent'));return;}
+ let visitorId=null;
+ try{
+  visitorId=window.GharWattAIClient?.getOrCreateBrowserId(
+   window.localStorage,()=>window.crypto.randomUUID());
+ }catch{}
+ if(!visitorId){txt('gw-ai-quote-status',T('storageError'));return;}
+ busyAi=true;refreshAiPreview();
+ $('gw-ai-quote-answer').hidden=true;
+ txt('gw-ai-quote-status',T('aiThinking'));
+ try{
+  const resp=await fetch(AI_ENDPOINT,{method:'POST',
+   headers:{'Content-Type':'application/json','Accept':'application/json'},
+   body:JSON.stringify({consent:true,visitorId,shareBill:false,context:null,message,history:[]}),
+   cache:'no-store',signal:AbortSignal.timeout(25000)});
+  const data=await resp.json();
+  if(!resp.ok||data?.ok!==true||typeof data.answer!=='string'){
+   txt('gw-ai-quote-status',typeof data?.error==='string'?data.error:T('aiUnavailable'));
+   return;
+  }
+  $('gw-ai-quote-answer').textContent=data.answer.slice(0,1700);
+  $('gw-ai-quote-answer').hidden=false;
+  txt('gw-ai-quote-status',T('aiReady')+' '+(Number.isFinite(data.remainingToday)?data.remainingToday+' requests remain today.':''));
+ }catch{
+  txt('gw-ai-quote-status',T('aiUnavailable'));
+ }finally{
+  $('gw-ai-quote-consent').checked=false;
+  busyAi=false;refreshAiPreview();
+ }
 }
 function renderActions(){
  const actions=$('gw-plan-actions');actions.replaceChildren();
@@ -315,6 +363,7 @@ async function loadAffiliate(){
 $('gw-studio-form').addEventListener('submit',event=>event.preventDefault());
 $('gw-studio-form').addEventListener('input',e=>{
  if(e.target.id==='gw-yield')yieldTouched=true;
+ if(e.target.closest('#gw-quote-cards'))$('gw-ai-quote-consent').checked=false;
  render();
 });
 $('gw-studio-form').addEventListener('change',e=>{
@@ -326,6 +375,8 @@ $('gw-studio-language').addEventListener('change',e=>{
  translate();render();
 });
 $('gw-samples').addEventListener('click',samples);
+$('gw-ai-quote-consent').addEventListener('change',refreshAiPreview);
+$('gw-ai-quote-send').addEventListener('click',sendQuotesToAI);
 $('gw-save').addEventListener('click',save);
 $('gw-restore').addEventListener('click',restore);
 $('gw-clear-saved').addEventListener('click',clearSaved);
