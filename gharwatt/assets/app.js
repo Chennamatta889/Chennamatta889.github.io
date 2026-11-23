@@ -27,9 +27,26 @@
     if(phase==='three'&&kw>5)notes.push('Confirm grid feasibility, sanctioned load and DISCOM approval for this system size.');
     return notes;
   }
+  function validSolarCapacity(raw){
+    if(raw===null||raw===undefined||String(raw).trim()==='')return false;
+    const n=Number(raw);
+    return Number.isFinite(n)&&n>=.5&&n<=20;
+  }
   function renderSolar(){
     if(!$('solar-calculator'))return;
-    const kw=clamp(read('capacity',3),.5,20),units=clamp(read('monthly-units',300),0,10000),price=clamp(read('unit-rate',8),0,30),installedRate=clamp(read('install-price',60000),10000,200000),yieldRate=clamp(read('generation',4),.5,8),credit=clamp(read('effective-offset',85),0,100)/100;
+    const capacityField=$('capacity'),capacityError=$('solar-capacity-error');
+    const capacityValid=validSolarCapacity(capacityField?.value);
+    if(capacityField)capacityField.setAttribute('aria-invalid',String(!capacityValid));
+    if(capacityError)capacityError.hidden=capacityValid;
+    if(!capacityValid){
+      for(const id of ['solar-savings','solar-gross','solar-subsidy','solar-net','solar-generation','solar-offset','solar-payback','solar-annual','subsidy-category','solar-grid-after','solar-grid-before','solar-grid-after-label','solar-reduction-percent'])if($(id))$(id).textContent='—';
+      if($('solar-bar-before'))$('solar-bar-before').style.width='0%';
+      if($('solar-bar-after'))$('solar-bar-after').style.width='0%';
+      if($('solar-connection-warning')){$('solar-connection-warning').hidden=true;$('solar-connection-warning').textContent='';}
+      if($('calc-status'))$('calc-status').textContent='Enter a system capacity between 0.5 and 20 kW. No estimate is calculated from invalid input.';
+      return;
+    }
+    const kw=Number(capacityField.value),units=clamp(read('monthly-units',300),0,10000),price=clamp(read('unit-rate',8),0,30),installedRate=clamp(read('install-price',60000),10000,200000),yieldRate=clamp(read('generation',4),.5,8),credit=clamp(read('effective-offset',85),0,100)/100;
     const state=$('solar-state').value,special=specialStates.has(state),gross=kw*installedRate,subsidy=centralSubsidy(kw,special),net=Math.max(0,gross-subsidy);
     const produced=kw*yieldRate*30,offset=Math.min(units,produced*credit),monthly=offset*price,annualGross=monthly*12,annualMaintenance=gross*.01,annualNet=Math.max(0,annualGross-annualMaintenance),payback=annualNet>0?net/annualNet:Infinity;
     const txt=(id,val)=>{$(id).textContent=val};
@@ -106,6 +123,49 @@
       const message=$('quote-sample-status');if(message)message.textContent='Illustrative examples loaded. They are not real installer offers; replace with your own quotations.';
     });
     renderQuotes();$('download-report').addEventListener('click',()=>{const blob=new Blob([report()],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='gharwatt-solar-quote-comparison.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)});$('copy-report').addEventListener('click',async()=>{const button=$('copy-report');try{await navigator.clipboard.writeText(report());button.textContent='Copied ✓';setTimeout(()=>button.textContent='Copy comparison',1700)}catch{button.textContent='Use download instead';setTimeout(()=>button.textContent='Copy comparison',2500)}})}
+  function wireSharedNavigation(){
+    const nav=$('main-nav');
+    if(!nav||!appScript?.src||typeof document.createDocumentFragment!=='function')return;
+    const root=new URL('../',appScript.src);
+    const links=[
+      ['Start here','discover/'],
+      ['Solar calculator','#calculator'],
+      ['Compare quotes','#compare'],
+      ['Bill analyzer','electricity-bill/'],
+      ['All tools','energy-tools/'],
+      ['Guides','#guides'],
+      ['Energy Studio ↗','home-energy-studio/']
+    ];
+    const fragment=document.createDocumentFragment();
+    const current=window.location?.pathname?.replace(/index\.html$/,'')||'';
+    for(let i=0;i<links.length;i++){
+      const a=document.createElement('a');
+      a.href=new URL(links[i][1],root).href;
+      a.textContent=links[i][0];
+      if(i===links.length-1)a.className='nav-cta';
+      if(i===0&&current===new URL('discover/',root).pathname)a.setAttribute('aria-current','page');
+      else if(i===3&&current===new URL('electricity-bill/',root).pathname)a.setAttribute('aria-current','page');
+      else if(i===4&&current===new URL('energy-tools/',root).pathname)a.setAttribute('aria-current','page');
+      fragment.appendChild(a);
+    }
+    nav.replaceChildren(fragment);
+  }
+  function stabilizeHomeAnchors(){
+    if(!appScript?.src||!window.location||typeof window.addEventListener!=='function')return;
+    const root=new URL('../',appScript.src);
+    if(window.location.pathname.replace(/index\.html$/,'')!==root.pathname)return;
+    const hash=window.location.hash;
+    if(!['#calculator','#compare','#guides'].includes(hash))return;
+    const target=$(hash.slice(1));
+    if(!target||typeof target.scrollIntoView!=='function')return;
+    let interrupted=false;
+    for(const event of ['wheel','touchstart','keydown'])window.addEventListener(event,()=>{interrupted=true;},{once:true,passive:true});
+    window.addEventListener('load',()=>{
+      const move=()=>{if(!interrupted&&window.location.hash===hash)target.scrollIntoView({block:'start',behavior:'instant'});};
+      window.requestAnimationFrame?.(()=>window.requestAnimationFrame?.(move));
+      window.setTimeout?.(move,280);
+    },{once:true});
+  }
   function wireMenu(){const b=$('menu-toggle'),nav=$('main-nav');if(!b||!nav)return;b.addEventListener('click',()=>{const open=!nav.classList.contains('open');nav.classList.toggle('open',open);b.setAttribute('aria-expanded',String(open));b.textContent=open?'Close':'Menu'});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu'}))}
   // Mobile-only quick navigation. URLs are based on this script path so subpages work.
   function wireMobileDock(){
@@ -153,10 +213,10 @@
     markCurrent();
     window.addEventListener('hashchange',markCurrent);
   }
-  function initGharWatt(){wireMenu();wireSolar();wireQuotes();wireMobileDock();}
+  function initGharWatt(){wireSharedNavigation();wireMenu();wireSolar();wireQuotes();wireMobileDock();stabilizeHomeAnchors();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initGharWatt,{once:true});
   else initGharWatt();
-  window.GharWattMath=Object.freeze({centralSubsidy,specialStates,regionalExamples,costPerKw,connectionGuidance});
+  window.GharWattMath=Object.freeze({centralSubsidy,specialStates,regionalExamples,costPerKw,connectionGuidance,validSolarCapacity});
   // Lazy-load the small GharWatt offer after existing calculator/menu setup.
   // Product link and dismiss frequency are handled independently.
   if(document.currentScript?.src){
