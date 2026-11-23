@@ -10,7 +10,7 @@ if(!M||!$('gw-studio-form'))return;
 const currency=new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0});
 const numeric=new Intl.NumberFormat('en-IN',{maximumFractionDigits:1});
 const STORAGE_KEY='gharwatt.home-energy-studio.plan.v1';
-const inputIds=['gw-region','gw-discom','gw-units','gw-load','gw-phase','gw-extra','gw-flat','gw-roof','gw-yield','gw-kw','gw-shade','gw-self','gw-export','gw-price'];
+const inputIds=['gw-region','gw-discom','gw-units','gw-load','gw-phase','gw-extra','gw-flat','gw-cfa-category','gw-roof','gw-yield','gw-kw','gw-shade','gw-self','gw-export','gw-price'];
 let language='en',current=null,quoteResults=[],yieldTouched=false,lastRegion='TG',busy=false,busyAi=false;
 const AI_ENDPOINT='https://nnhzihcugvifhegsfmua.supabase.co/functions/v1/gharwatt-ai';
 const txt=(id,value)=>{const el=$(id);if(el)el.textContent=String(value)};
@@ -27,7 +27,8 @@ function selected(){return {
  flatRate:$('gw-flat').value,roof:$('gw-roof').value,yieldRate:$('gw-yield').value,
  kw:$('gw-kw').value,shading:$('gw-shade').value,selfUse:$('gw-self').value,
  exportRate:$('gw-export').value,pricePerKw:$('gw-price').value,
- subsidyEligible:$('gw-eligible').checked
+ subsidyEligible:$('gw-eligible').checked&&($('gw-region').value!=='OTHER'||$('gw-cfa-category').value!=='unknown'),
+ special:$('gw-region').value==='OTHER'&&$('gw-cfa-category').value==='special'
 };}
 function quotes(){return M.compareQuotes([0,1,2].map(i=>({
  name:$('gw-q-name-'+i).value,cost:$('gw-q-price-'+i).value,
@@ -35,6 +36,9 @@ function quotes(){return M.compareQuotes([0,1,2].map(i=>({
 })));}
 function updateDiscom(preserve=false){
  const region=$('gw-region').value,group=M.REGIONS[region]||M.REGIONS.OTHER;
+ const category=$('gw-cfa-category');
+ if(!preserve&&lastRegion!==region)category.value=region==='OTHER'?'unknown':'standard';
+ category.disabled=region!=='OTHER';
  $('gw-discom').replaceChildren();
  for(const name of group.discoms){
   const option=document.createElement('option');option.value=name;option.textContent=name;
@@ -96,6 +100,9 @@ function renderSolar(outcome,rec,opts){
  }
  warn.hidden=warnings.length===0;
  if(warnings.length)warn.textContent=warnings.join(' ');
+ if(opts.region==='OTHER'&&$('gw-eligible').checked&&$('gw-cfa-category').value==='unknown'){
+  warn.hidden=false;warn.textContent=(warn.hidden?'':warn.textContent+' ')+T('warnCategory');
+ }
  const recommendation=$('gw-size-recommendation');recommendation.replaceChildren();
  if(rec.ok&&rec.recommendedKw!==null){
   p(recommendation,T('recommendPrefix')+' '+rec.recommendedKw+' kW. '+T('recommendSuffix'));
