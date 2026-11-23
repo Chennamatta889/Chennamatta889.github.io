@@ -23,7 +23,7 @@ test('Andhra Pradesh 2026-27 telescopic domestic rates',()=>{
  assert.equal(M.tariff({region:'AP',units:125,load:1}).energy,417);
  assert.equal(M.tariff({region:'AP',units:225,load:1}).energy,1017);
  assert.equal(M.tariff({region:'AP',units:300,load:3}).energy,1673.25);
- assert.equal(M.tariff({region:'AP',units:401,load:3}).energy,2558.75+9.75); // 30*1.9 + 45*3 + 50*4.5 +100*6 +175*8.75
+ assert.equal(M.tariff({region:'AP',units:401,load:3}).energy,2558); // 30*1.9 + 45*3 + 50*4.5 +100*6 +175*8.75
 });
 test('Other states require manually-entered tariff; no false state averages',()=>{
  assert.equal(M.tariff({region:'OTHER',units:300,load:3}).ok,false);
