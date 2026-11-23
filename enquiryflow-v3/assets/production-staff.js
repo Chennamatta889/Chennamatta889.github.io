@@ -1,18 +1,19 @@
-import {isDemo,staffData,session,signIn,signOut,saveRecord,queueImport,approveImport,resetDemo,olderEnquiries,deleteRealEnquiry,installCtechCatalogueDrafts} from './production-adapter.js?v=5.2-catalogue';
+import {isDemo,staffData,session,signIn,signOut,saveRecord,queueImport,approveImport,resetDemo,olderEnquiries,deleteRealEnquiry,deleteManagedRecord,installCtechCatalogueDrafts} from './production-adapter.js?v=5.2-catalogue';
 import {$,$$,esc,money,shortDate,str,slug,parseCsv} from './utils.js';
 import {filterEnquiries,buildEnquiriesCsv,filterUpcomingBatches,todayIndia} from './discovery.js';
 import {staffFormPayload} from './staff-form.js';
 import {courseTemplates,remainingCourseTemplates,faqTemplates,remainingFaqTemplates} from './ctech-catalogue.js?v=1.1';
 let catalogueImporting=false,catalogueAutoStarted=false;
-let state=null,tab=(new URLSearchParams(location.search).get('view')==='enquiries'?'enquiries':'overview'),selected=null,loadedEnquiries=0,leadQuery='',leadStatus='All';const app=$('#app');
+const staffTabs=['overview','courses','batches','enquiries','knowledge','imports','institute'];
+let state=null,tab=(staffTabs.includes(location.hash.slice(1))?location.hash.slice(1):new URLSearchParams(location.search).get('view')==='enquiries'?'enquiries':'overview'),selected=null,loadedEnquiries=0,leadQuery='',leadStatus='All';const app=$('#app');
 const editorRole=()=>['owner','admin','editor'].includes(state?.role);const publisher=()=>['owner','admin'].includes(state?.role);
 const alertText=message=>{const el=$('#toast');if(el){el.textContent=message;el.hidden=false;el.scrollIntoView({block:'nearest',behavior:'smooth'});setTimeout(()=>el.hidden=true,6500)}};
 function loginScreen(message=''){app.innerHTML=`<div class="login-screen"><div class="login-card"><div class="brand"><span class="brand-icon">✦</span> Enquiry<span class="accent">Flow</span></div><span class="eyebrow">INSTITUTION STAFF</span><h1>Sign in to your workspace.</h1><p>Only invited and authorized staff can access course management and private student enquiries.</p><form id="loginForm" class="stack"><label>Work email<input type="email" name="email" autocomplete="username" required></label><label>Password<input type="password" name="password" autocomplete="current-password" required></label><button type="submit" class="button primary fill">Sign in securely</button></form><div role="alert" id="loginError" class="response">${esc(message)}</div><a href="/enquiryflow-v3/">← Back to student website</a></div></div>`;$('#loginForm').addEventListener('submit',async e=>{e.preventDefault();const d=new FormData(e.target);try{await signIn(str(d.get('email')),String(d.get('password')));await refresh()}catch(err){$('#loginError').textContent=err.message}});}
 function shell(){app.innerHTML=`<div class="staff-layout"><aside class="sidebar"><a class="brand" href="/enquiryflow-v3/"><span class="brand-icon">✦</span><span>Enquiry<span class="accent">Flow</span><small>Institution workspace</small></span></a><div class="side-label">WORKSPACE</div><nav id="sideNav"><button data-tab="overview">▦ <span>Overview</span></button><button data-tab="courses">▣ <span>Courses & fees</span></button><button data-tab="batches">◷ <span>Batches</span></button><button data-tab="enquiries">✉ <span>Enquiries</span></button><button data-tab="knowledge">✧ <span>AI knowledge</span></button><button data-tab="imports">⇧ <span>Imports</span></button><button data-tab="institute">⌂ <span>Institute profile</span></button></nav><div class="side-footer"><div class="side-role">${isDemo?'LOCAL FICTIONAL DEMO':esc(state.role.toUpperCase())+' ACCESS'}</div><a href="/enquiryflow-v3/">Open student website ↗</a><button id="logout">${isDemo?'Reset demo records':'Sign out'}</button></div></aside><main class="workspace"><div class="staff-topbar"><div><span class="eyebrow">INSTITUTION CONTROL CENTER</span><h1 id="pageTitle">Overview</h1><p class="staff-subtitle">One workspace for the student journey, course content, and published knowledge.</p></div><div class="staff-top-actions"><a class="staff-site-link" href="/enquiryflow-v3/" target="_blank" rel="noopener noreferrer">Preview student site ↗</a><div class="staff-user"><span class="avatar">${esc(state.role[0].toUpperCase())}</span><span>${esc(state.institute.name)}<small>${esc(state.role)} · ${isDemo?'simulation':'authenticated'}</small></span></div></div></div><div id="toast" class="response" role="status" hidden></div><div class="staff-warning">${isDemo?'<strong>Safe demo mode.</strong> All students, fees and batches shown are fictional. Changes save only in local storage on THIS browser (not Firebase). Open the student website in the SAME browser to see published changes; other browsers/devices will not sync. Use fictional data only.':'<strong>CTECH ACADEMY · CONNECTED FIREBASE.</strong> Private real enquiries are visible only to authorized staff. Confirm all published fees and batches, process consent/deletion requests, and monitor abuse. Firestore security rules enforce roles; no email notifications are configured.'}</div><div id="pageBody"></div></main></div>`;
- $('#sideNav').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(b){tab=b.dataset.tab;selected=null;render()}});
+ $('#sideNav').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(b){tab=b.dataset.tab;selected=null;location.hash=tab;render()}});
  $('#logout').addEventListener('click',async()=>{if(isDemo){if(confirm('Reset all fictional demo changes?')){resetDemo();await refresh()}}else{await signOut();loginScreen()}});
 }
-function itemActions(type,record){return `<button data-edit="${esc(type)}:${esc(record.id||'institute')}">Edit</button>${type==='enquiries'&&publisher()?` <button type="button" data-delete-real="${esc(record.id)}" aria-label="Delete enquiry permanently">Delete</button>`:''}`}
+function itemActions(type,record){return `<button type="button" class="action-edit" data-edit="${esc(type)}:${esc(record.id||'institute')}">Edit</button>${publisher()&&type==='enquiries'?` <button type="button" class="action-delete" data-delete-real="${esc(record.id)}" aria-label="Delete enquiry permanently">Delete</button>`:''}${publisher()&&['courses','batches','faqs'].includes(type)?` <button type="button" class="action-delete" data-delete-record="${esc(type)}:${esc(record.id)}" aria-label="Delete ${esc(type)} record">Delete</button>`:''}`}
 function overview(){
  const s=state;
  const due=s.enquiries.filter(e=>e.status!=='closed'&&e.next_followup_at&&e.next_followup_at.slice(0,10)<=todayIndia()).length;
@@ -129,10 +130,22 @@ function bindEvents(){
   catch(err){alertText('Deletion failed: '+err.message)}
   return;
  }
- if(e.target.closest('#exportLeads')){exportLeadCsv();return}
- const jump=e.target.closest('[data-jump]');if(jump){tab=jump.dataset.jump;render();return}
+ const managedDelete=e.target.closest('[data-delete-record]');
+  if(managedDelete){
+    if(!publisher())return;
+    const [type,id]=managedDelete.dataset.deleteRecord.split(':');
+    const record=state[type]?.find(r=>r.id===id);
+    if(!record||!['courses','batches','faqs'].includes(type))return;
+    if(!confirm('Permanently delete '+(record.title||record.label||record.question||id)+'? '+(record.published?'This record is published. ':'')+'This cannot be undone.'))return;
+    managedDelete.disabled=true;
+    try{await deleteManagedRecord(type,id);state=await staffData();shell();render();alertText('Record deleted.');}
+    catch(err){managedDelete.disabled=false;alertText('Deletion failed: '+(err?.message||err));}
+    return;
+  }
+  if(e.target.closest('#exportLeads')){exportLeadCsv();return}
+ const jump=e.target.closest('[data-jump]');if(jump){tab=jump.dataset.jump;location.hash=tab;render();return}
  const n=e.target.closest('[data-new]');if(n){openEditor(n.dataset.new);return}
- const ed=e.target.closest('[data-edit]');if(ed){const [type,id]=ed.dataset.edit.split(':');if(type==='institute'){tab='institute';render()}else openEditor(type,id);return}
+ const ed=e.target.closest('[data-edit]');if(ed){const [type,id]=ed.dataset.edit.split(':');if(type==='institute'){tab='institute';location.hash=tab;render()}else openEditor(type,id);return}
  const cancel=e.target.closest('[data-cancel]');if(cancel){$('#editorOverlay')?.remove();return}
  const older=e.target.closest('#loadOlder');if(older){try{const more=await olderEnquiries(state.enquiries.length,80);state.enquiries.push(...more.filter(e=>!state.enquiries.some(x=>x.id===e.id)));render();if(more.length<80){alertText('All available enquiries loaded.')}}catch(err){alertText(err.message)}return;}
  const approve=e.target.closest('[data-approve]');if(approve){if(!confirm('Approve this import as UNPUBLISHED draft courses?'))return;const job=state.imports.find(j=>j.id===approve.dataset.approve);try{await approveImport(job,state.role);await refresh();alertText('Import approved as UNPUBLISHED draft courses. Open Courses & fees, edit each course, then select Save & publish to show it on the Ctech Academy student website.')}catch(err){alertText(err.message)}}
@@ -151,6 +164,12 @@ function bindEvents(){
     const entity=form.dataset.entity;
     const record=staffFormPayload(new FormData(form),entity,{canPublish:publisher(),forcePublish});
     const written=await saveRecord(entity,record,state.role);
+    if(entity==='enquiries'){
+      // Firestore acknowledged the update; avoid the extra whole-workspace read that can stall the drawer.
+      state.enquiries=state.enquiries.map(entry=>entry.id===record.id?{...entry,...record}:entry);
+      $('#editorOverlay')?.remove();render();alertText('Enquiry follow-up saved successfully.');
+      return;
+    }
     // Never tell the user a save succeeded until a fresh read contains the changed record.
     const updated=await staffData();
     const identity=written?.id||record.id;
@@ -181,6 +200,7 @@ function bindEvents(){
  }
  });
  window.addEventListener('storage',async e=>{if(isDemo&&e.key==='enquiryflow_v3_demo_state')await refresh()});
+ window.addEventListener('hashchange',()=>{const next=location.hash.slice(1);if(staffTabs.includes(next)&&next!==tab&&state){tab=next;$('#editorOverlay')?.remove();render()}});
 }
 async function init(){if(!isDemo&&!(await session()))loginScreen();else await refresh();bindEvents()}
 init();
