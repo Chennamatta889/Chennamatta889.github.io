@@ -23,16 +23,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Chennamatta889/career-ops-cloud
-          ref: f63886e0b2a33d1ac20c892d51a4b7fccee85661
+          ref: 253639ad14067af58634527631e065211e7dc313
           path: career-ops-source
           persist-credentials: false
       - name: Validate workflow source pin
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'ref: f63886e0b2a33d1ac20c892d51a4b7fccee85661' account-site/.github/workflows/publish-career-ops.yml
+          grep -Fq 'ref: 253639ad14067af58634527631e065211e7dc313' account-site/.github/workflows/publish-career-ops.yml
           test -s career-ops-source/scripts/universal-job-scan.mjs
           test -s career-ops-source/scripts/guard-public-feed.mjs
+          test -s career-ops-source/scripts/report-published-coverage.mjs
+          grep -Fq 'COVERAGE_OUTPUT=' account-site/.github/workflows/publish-career-ops.yml
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
