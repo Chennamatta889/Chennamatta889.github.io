@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Chennamatta889/career-ops-cloud
-          ref: f63886e0b2a33d1ac20c892d51a4b7fccee85661
+          ref: 253639ad14067af58634527631e065211e7dc313
           path: career-ops-source
           persist-credentials: false
 
@@ -196,6 +196,8 @@ jobs:
         run: |
           FEED_OUTPUT="$GITHUB_WORKSPACE/site/data/jobs.json" node scripts/universal-job-scan.mjs
           node scripts/guard-public-feed.mjs "$GITHUB_WORKSPACE/site/data/jobs.json"
+          COVERAGE_OUTPUT="$GITHUB_WORKSPACE/site/data/coverage-evidence.json" node scripts/report-published-coverage.mjs "$GITHUB_WORKSPACE/site/data/jobs.json"
+          test -s "$GITHUB_WORKSPACE/site/data/coverage-evidence.json"
 
       - name: Verify output and preserved portfolio
         shell: bash
@@ -204,7 +206,7 @@ jobs:
           for asset in index.html app.js live-job-discovery-v2.js ai-studio.js careerops-config.js \
             private-workspace.js job-text.js job-search.js india-jobs.js external-job-search.js enterprise-careers.js application-email.js health-check.js style.css styles.css \
             vendor/pdf.min.mjs vendor/pdf.worker.min.mjs \
-            vendor/mammoth.browser.min.js data/jobs.json data/enterprise-careers.json \
+            vendor/mammoth.browser.min.js data/jobs.json data/coverage-evidence.json data/enterprise-careers.json \
             portfolio/index.html portfolio/styles.css portfolio/script.js \
             enquiryflow/index.html enquiryflow-v3/index.html enquiryflow-v3/staff/index.html \
             enquiryflow-v3/assets/firebase-platform.js \
@@ -364,6 +366,8 @@ jobs:
           grep -Fq 'pub-4795680811840492' /tmp/career-ops-ads.txt
           curl -fsSL --max-time 15 "https://chennamatta889.github.io/sitemap.xml" -o /tmp/career-ops-sitemap.xml
           grep -Fq '/resources/' /tmp/career-ops-sitemap.xml
+          curl --retry 3 --retry-delay 2 -fsSL --max-time 40 "https://chennamatta889.github.io/data/coverage-evidence.json?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-coverage.json
+          cmp site/data/coverage-evidence.json /tmp/career-ops-live-coverage.json
           # A successful homepage is not enough: the job cards need the public
           # data file and the new browser script at the same root path.
           curl --retry 3 --retry-delay 2 -fsSL --max-time 40 "https://chennamatta889.github.io/data/jobs.json?verify=$GITHUB_RUN_ID" -o /tmp/career-ops-live-jobs.json
