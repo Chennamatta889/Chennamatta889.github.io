@@ -1,0 +1,36 @@
+/* Shared production shell. Scoped to avoid affecting individual calculator designs. */
+.site-header .header-inner{box-sizing:border-box;max-width:1240px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:72px}
+.site-header .brand,.mw-footer .brand{display:flex;align-items:center;gap:10px;white-space:nowrap;text-decoration:none;font-weight:850;letter-spacing:-.04em;font-size:18px;line-height:1.1}
+.site-header .brand{color:#553528}.site-header .brand small,.mw-footer .brand small{display:block;font-size:9px;letter-spacing:.02em;font-weight:650;margin-top:4px;text-transform:none}
+.site-header .brand-icon,.mw-footer .brand-icon{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:11px}
+.site-header .brand-icon img,.mw-footer .brand-icon img{width:32px;height:32px;object-fit:contain}
+.site-header .nav{display:flex;align-items:center;gap:12px;position:static;background:transparent;padding:0;box-shadow:none}
+.site-header .nav a{font-size:12px;color:#654538;font-weight:750;text-decoration:none;white-space:nowrap;padding:15px 0}
+.site-header .nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:5px}
+.site-header .nav-toggle{display:none}.site-header .nav-action{white-space:nowrap;font-size:12px;padding:9px 12px;border:1px solid #cda98f;border-radius:9px;text-decoration:none;color:#553528;background:#f9e7d7;font-weight:750}
+.mw-footer{background:#40271f;color:#f8e8d8;padding:40px 0 22px}.mw-footer .footer-inner{display:block;max-width:1200px;padding:0 20px;margin:auto}
+.mw-footer-main{display:grid;grid-template-columns:1.5fr 1.1fr 1fr 1fr;gap:24px;margin-bottom:28px}
+.mw-footer h3{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:#fff3e6;margin:0 0 14px}
+.mw-footer a{display:block;color:#ead4bf;font-size:13px;line-height:1.5;margin-bottom:9px;text-decoration:none;overflow-wrap:anywhere}
+.mw-footer a:hover{text-decoration:underline}.mw-footer .brand{color:#fff3e6;margin-bottom:12px}.mw-footer p{color:#e4cbb8;font-size:13px;line-height:1.65}
+.mw-footer-bottom{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;border-top:1px solid #ffffff26;padding-top:16px;font-size:11px;color:#dec4b3}
+.mw-gold-local-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px;padding:10px 16px;background:#fbece0;font-size:13px;color:#704631;font-weight:700}
+.mw-gold-source-note{padding:18px 20px;color:#765346;background:#f7e7d7;font-size:12px;line-height:1.5}.mw-gold-source-note .wrap{display:flex;flex-wrap:wrap;gap:8px 20px}
+.mw-field-limit{display:block;font-size:12px;line-height:1.4;color:#765346;margin-top:5px}
+@media(max-width:1100px){.site-header .nav-action{display:none}}
+@media(max-width:930px){.site-header .header-inner{position:relative;min-height:68px}.site-header .nav-toggle{display:inline-flex;align-items:center;justify-content:center;background:#fae6d6;color:#553528;border:1px solid #cda98f;border-radius:9px;min-width:44px;min-height:44px;font-size:20px;padding:8px}.site-header .nav{display:none;position:absolute;top:100%;left:0;right:0;padding:10px 18px;background:#fae9dc;border-bottom:1px solid #d9b69f;box-shadow:0 12px 20px #40271f20;max-height:calc(100dvh - 80px);overflow:auto}.site-header .nav.is-open{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 15px}.site-header .nav a{display:flex;align-items:center;min-height:44px;white-space:normal;padding:8px 2px}.mw-footer-main{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:530px){.site-header .header-inner{padding:0 15px}.site-header .brand{font-size:16px}.site-header .brand-icon{width:36px;height:36px}.site-header .brand-icon img{width:28px;height:28px}.mw-footer .footer-inner{padding:0 16px}.mw-footer-main{gap:20px}.mw-footer-main>div:first-child{grid-column:1/-1}}
+
+/* MK signature: a compact vector adaptation of the approved brand artwork. */
+.site-header .brand,.mw-footer .brand{text-decoration:none!important;font-weight:850;letter-spacing:-.035em}
+.site-header .brand-icon,.mw-footer .brand-icon{background:#fff4eb!important;box-shadow:none!important;width:64px;height:42px;border-radius:9px;padding:4px;overflow:hidden}
+.site-header .brand-icon img,.mw-footer .brand-icon img{width:100%;height:100%;object-fit:contain}
+.site-header .brand small,.mw-footer .brand small{font-weight:650;letter-spacing:.015em}
+@media(max-width:530px){.site-header .brand-icon{width:55px;height:36px}.site-header .brand{gap:8px;font-size:17px}}
+
+/* Consistent secondary action and invalid numeric field treatment across calculators. */
+button.mw-fin-reset,.mw-fin-card button.mw-fin-reset{background:#fffaf5;color:#553528;border:1px solid #b48b71;border-radius:9px;min-height:44px;max-width:100%;padding:10px 14px;font:inherit;font-size:13px;font-weight:700;margin:8px 0 8px 8px;cursor:pointer;white-space:normal;box-shadow:none}
+button.mw-fin-reset:disabled,.mw-fin-card button.mw-fin-reset:disabled{opacity:.5;cursor:default}
+button.mw-fin-reset:focus-visible{outline:3px solid #a76745;outline-offset:2px}
+input[type="number"][aria-invalid="true"]{border-color:#a33f32;outline:1px solid #a33f32;background:#fff6f2}
+@media(max-width:530px){button.mw-fin-reset,.mw-fin-card button.mw-fin-reset{margin-left:4px;padding-inline:12px}input[type="number"]{font-size:16px}}

@@ -19,6 +19,7 @@ on:
       - "enquiryflow/**"
       - "enquiryflow-v3/**"
       - "gharwatt/**"
+      - "moneykavach-preview/**"
       - "resource-styles.css"
       - "sitemap.xml"
       - "ads.txt"
@@ -101,6 +102,23 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p site/data site/vendor site/portfolio
+          # Standalone design review: public rendered homepage only, no private repo source.
+          if [ -d account-site/moneykavach-preview ]; then
+            cp -R account-site/moneykavach-preview site/moneykavach-preview
+            python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root=Path("site/moneykavach-preview")
+          manifest=json.loads((root/"manifest.json").read_text())
+          for name,digest in manifest.items():
+              p=root/name
+              assert p.is_file() and hashlib.sha256(p.read_bytes()).hexdigest()==digest, name
+          s=(root/"index.html").read_text()
+          assert 'noindex,nofollow,noarchive' in s and 'id="mk-burgundy-title"' in s
+          assert 'google-adsense-account' not in s and 'id="mk-analytics"' not in s
+          print("MoneyKavach review snapshot integrity verified.")
+          PY
+          fi
           # Original personal portfolio: https://chennamatta889.github.io/portfolio/
           cp -R account-site/portfolio/. site/portfolio/
           # Original DraftflowAI remains at /draftflowai/
@@ -424,4 +442,18 @@ jobs:
             fi
             echo "Search Console file available at /$verification_name"
           done
+          if [ -d site/moneykavach-preview ]; then
+            preview="https://chennamatta889.github.io/moneykavach-preview"
+            curl --retry 6 --retry-all-errors --retry-delay 5 -fsSL --max-time 30 "$preview/?verify=$GITHUB_RUN_ID" -o /tmp/mk-preview-live.html
+            cmp site/moneykavach-preview/index.html /tmp/mk-preview-live.html
+            python3 - <<'PY'
+          import hashlib,json,urllib.request
+          from pathlib import Path
+          root=Path("site/moneykavach-preview")
+          for name,digest in json.loads((root/"manifest.json").read_text()).items():
+              with urllib.request.urlopen("https://chennamatta889.github.io/moneykavach-preview/"+name,timeout=30) as response:
+                  assert response.status==200 and hashlib.sha256(response.read()).hexdigest()==digest, name
+          print("MoneyKavach preview HTML and all assets verified on public GitHub Pages.")
+          PY
+          fi
           echo "Homepage, career guides, legal pages, ads.txt, sitemap, portfolio and DraftflowAI verified."

@@ -1,0 +1,64 @@
+/* Preview: warm editorial neutrals, burgundy accents, local system typography. */
+body.mw-home-v5{--mk-wine:#641f36;--mk-ink:#33272b;--mk-muted:#65565a;--mk-paper:#faf6ef;--mk-line:#e5d9cc;--mk-sand:#f0e3d1;background:var(--mk-paper);color:var(--mk-ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.mw-home-v5 main{background:var(--mk-paper)}
+.mw-home-v5 h1,.mw-home-v5 h2,.mw-home-v5 h3,.mw-home-v5 .brand{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.mw-home-v5 .site-header{background:#fffdf9;border-color:var(--mk-line);box-shadow:none}
+.mw-home-v5 .site-header .brand,.mw-home-v5 .site-header .nav a{color:var(--mk-wine)}
+.mw-home-v5 .site-header .brand small{color:var(--mk-muted)}
+.mw-home-v5 .site-header .brand-icon{background:#fffdf9!important}
+.mw-home-v5 .site-header .nav-action{background:var(--mk-wine);border-color:var(--mk-wine);color:#fff}
+.mw-home-v5 .site-header .nav-toggle{background:#f5e8e7;color:var(--mk-wine);border-color:#d7b4bd}
+.mw-home-v5 .mk-home-ticker{background:#f1e6d7;color:#553e43;border-color:#e4d5c2}
+.mw-home-v5 .mk-ticker-item{color:#553e43!important}
+.mw-home-v5 .mk-burgundy-hero{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);align-items:center;gap:36px;padding-top:44px;padding-bottom:30px;max-width:1190px}
+.mk-burgundy-kicker{font-size:11px;font-weight:800;letter-spacing:.12em;color:#8c3651;margin:0 0 12px}
+.mk-burgundy-hero h1{font-size:clamp(37px,4.8vw,64px);letter-spacing:-.055em;line-height:1.06;color:var(--mk-wine);font-weight:780;margin:0 0 18px}
+.mk-burgundy-lead{font-size:clamp(15px,1.6vw,19px);line-height:1.55;max-width:540px;margin:0;color:var(--mk-muted)}
+.mk-burgundy-actions{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 16px}
+.mk-burgundy-actions a{display:inline-flex;gap:14px;align-items:center;justify-content:center;min-height:48px;padding:13px 20px;border-radius:9px;font-size:14px;font-weight:750;text-decoration:none;border:1px solid var(--mk-wine)}
+.mk-burgundy-primary{background:var(--mk-wine);color:#fff!important}
+.mk-burgundy-secondary{background:transparent;color:var(--mk-wine)!important}
+.mk-burgundy-trust{font-size:12px;line-height:1.6;color:var(--mk-muted);margin:0}
+.mk-burgundy-trust span{margin-inline:4px;color:#a64d62}
+.mk-burgundy-art{display:block;width:100%;height:auto;max-width:480px;justify-self:end}
+.mk-burgundy-products{padding-top:16px;padding-bottom:18px}
+.mk-burgundy-section-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:15px}
+.mk-burgundy-section-heading .mk-burgundy-kicker{margin-bottom:5px}
+.mk-burgundy-section-heading h2{font-size:clamp(22px,3vw,30px);letter-spacing:-.035em;color:var(--mk-wine);margin:0}
+.mk-burgundy-section-heading>a{font-size:13px;font-weight:750;color:var(--mk-wine);white-space:nowrap;text-decoration:none}
+.mk-burgundy-product-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.mk-burgundy-product{display:flex;align-items:center;gap:11px;min-height:96px;padding:14px;background:#fffdf9;border:1px solid var(--mk-line);border-radius:12px;text-decoration:none;min-width:0;color:var(--mk-ink);transition:border-color .15s}
+.mk-burgundy-product:hover{border-color:#a64d62}
+.mk-burgundy-product-icon{display:grid;place-items:center;color:var(--mk-wine);background:#f3e3e3;border-radius:10px;width:39px;height:39px;flex:0 0 39px}
+.mk-burgundy-product strong{display:block;font-size:15px;line-height:1.25;color:var(--mk-wine);font-weight:750}
+.mk-burgundy-product small{display:block;font-size:12px;line-height:1.4;color:var(--mk-muted);margin-top:5px}
+.mk-burgundy-arrow{margin-left:auto;font-size:19px;color:var(--mk-wine)}
+.mk-burgundy-caption{font-size:12px;color:var(--mk-muted);margin:10px 0 0;line-height:1.5}
+.mw-home-v5 .mk-dashboard-quick{background:transparent;color:var(--mk-wine);border:0;border-block:1px solid var(--mk-line);border-radius:0;padding:20px 0;box-shadow:none}
+.mw-home-v5 .mk-dashboard-quick h2{color:var(--mk-wine);font-size:24px;letter-spacing:-.03em}
+.mw-home-v5 .mk-dashboard-icon{background:#f1e2dd;color:var(--mk-wine)}
+.mw-home-v5 .mk-market{color:var(--mk-ink);margin-block:10px 18px}
+.mw-home-v5 .mk-market .compact-shortcuts a,.mw-home-v5 .mk-market .compact-tools>details,.mw-home-v5 .mk-market .mk-dashboard-indicators{background:#fffdf9;border-color:var(--mk-line);color:var(--mk-wine)}
+.mw-home-v5 .mk-market .mk-dashboard-indicators>summary{color:var(--mk-wine)!important}
+.mw-home-v5 #money-news{background:transparent;border:0;box-shadow:none}
+.mw-home-v5 #money-news h2,.mw-home-v5 #money-news .mk-news-card h3,.mw-home-v5 #money-news .mk-news-read{color:var(--mk-wine)}
+.mw-home-v5 #money-news .mk-news-card{background:#fffdf9;border:1px solid var(--mk-line);border-radius:10px;box-shadow:none;padding:18px}
+.mw-home-v5 #money-news .mk-news-tag{color:#8c3651;background:#f3e3e3}
+.mw-home-v5 #money-news p{color:var(--mk-muted)}
+.mw-home-v5 #tools .mw-section-heading h2,.mw-home-v5 #tools .mw-tool-copy h3{color:var(--mk-wine)}
+.mw-home-v5 #tools .tool-link{background:#fffdf9;border:1px solid var(--mk-line);box-shadow:none}
+.mw-home-v5 #tools .mw-tool-icon{background:#f1e2dd;color:var(--mk-wine)}
+.mw-home-v5 #tools .mw-tool-copy p{color:var(--mk-muted)}
+.mw-home-v5 #tools .mw-category-filters button{background:#fffdf9;border-color:#d9c5bd;color:var(--mk-wine)}
+.mw-home-v5 #tools .mw-category-filters button[aria-pressed="true"]{background:var(--mk-wine);border-color:var(--mk-wine);color:#fff}
+.mw-home-v5 .mw-footer{background:#451b2b;color:#f5e9e2}
+.mw-home-v5 .mk-dashboard-bottom{background:#fffdf9;color:var(--mk-wine);border-color:var(--mk-line)}
+.mw-home-v5 .mk-dashboard-bottom a{color:#70515c}
+.mw-home-v5 .mk-dashboard-bottom a[aria-current]{color:var(--mk-wine)}
+.mw-home-v5 .mk-dashboard-bottom a[aria-current] .mk-dashboard-icon{background:#f1e2dd}
+.mw-home-v5 #mk-nav-restore{background:var(--mk-wine);border-color:var(--mk-wine)}
+.mk-burgundy-hero a:focus-visible,.mk-burgundy-products a:focus-visible{outline:3px solid #a64d62;outline-offset:3px}
+@media(max-width:930px){.mw-home-v5 .site-header .nav{background:#fffdf9;border-color:var(--mk-line)}.mk-burgundy-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.mw-home-v5 .mk-burgundy-hero{grid-template-columns:1fr;gap:12px;padding-top:25px;padding-bottom:16px}.mk-burgundy-hero h1{font-size:clamp(34px,9vw,45px);margin-bottom:12px}.mk-desktop-break{display:none}.mk-burgundy-lead{font-size:15px}.mk-burgundy-actions{margin:18px 0 12px;gap:8px}.mk-burgundy-actions a{flex:1 1 145px;min-height:46px;padding:11px 10px;font-size:13px;gap:5px}.mk-burgundy-art{max-width:240px;justify-self:center}.mk-burgundy-trust{font-size:11px}.mk-burgundy-products{padding-top:8px}.mk-burgundy-section-heading{align-items:start;flex-wrap:wrap;margin-bottom:10px}.mk-burgundy-section-heading h2{font-size:23px}.mk-burgundy-product-grid{gap:9px}.mk-burgundy-product{min-height:104px;padding:11px;align-items:start;flex-direction:column;gap:7px;position:relative}.mk-burgundy-product-icon{width:32px;height:32px;flex:0 0 32px}.mk-burgundy-product-icon svg{width:20px;height:20px}.mk-burgundy-product strong{font-size:14px}.mk-burgundy-product small{font-size:11px;margin-top:3px}.mk-burgundy-arrow{position:absolute;right:10px;top:12px}.mw-home-v5 .mk-dashboard-quick{padding:15px 0}.mw-home-v5 .mk-dashboard-quick h2{font-size:21px}}
+@media(prefers-reduced-motion:reduce){.mk-burgundy-product{transition:none}}
+@media(max-width:930px){.mw-home-v5 #mk-menu-sheet .mk-sheet-panel{background:#fffdf9;color:var(--mk-ink)}.mw-home-v5 #mk-menu-sheet h2,.mw-home-v5 #mk-menu-sheet summary{color:var(--mk-wine)}.mw-home-v5 #mk-menu-sheet a,.mw-home-v5 #mk-menu-sheet details,.mw-home-v5 #mk-menu-sheet .mk-sheet-close{background:#faf6ef;border-color:var(--mk-line);color:var(--mk-wine)}.mw-home-v5 #mk-menu-sheet svg{color:var(--mk-wine)}}
